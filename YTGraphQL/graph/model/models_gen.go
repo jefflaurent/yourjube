@@ -12,6 +12,24 @@ type Channel struct {
 	IsPremium  string `json:"isPremium"`
 }
 
+type Dislike struct {
+	DislikeID      string  `json:"dislikeId"`
+	ChannelID      int     `json:"channelId"`
+	ChannelEmail   string  `json:"channelEmail"`
+	VideoID        int     `json:"videoId"`
+	VideoThumbnail string  `json:"videoThumbnail"`
+	VideoURL       *string `json:"videoURL"`
+}
+
+type Like struct {
+	LikeID         string  `json:"likeId"`
+	ChannelID      int     `json:"channelId"`
+	ChannelEmail   string  `json:"channelEmail"`
+	VideoID        int     `json:"videoId"`
+	VideoThumbnail string  `json:"videoThumbnail"`
+	VideoURL       *string `json:"videoURL"`
+}
+
 type Video struct {
 	VideoID         string `json:"videoId"`
 	VideoTitle      string `json:"videoTitle"`
@@ -41,6 +59,22 @@ type NewChannel struct {
 	IsPremium  string `json:"isPremium"`
 }
 
+type NewDislike struct {
+	ChannelID      int     `json:"channelId"`
+	ChannelEmail   string  `json:"channelEmail"`
+	VideoID        int     `json:"videoId"`
+	VideoThumbnail string  `json:"videoThumbnail"`
+	VideoURL       *string `json:"videoURL"`
+}
+
+type NewLike struct {
+	ChannelID      int     `json:"channelId"`
+	ChannelEmail   string  `json:"channelEmail"`
+	VideoID        int     `json:"videoId"`
+	VideoThumbnail string  `json:"videoThumbnail"`
+	VideoURL       *string `json:"videoURL"`
+}
+
 type NewVideo struct {
 	VideoTitle      string `json:"videoTitle"`
 	VideoDesc       string `json:"videoDesc"`
@@ -58,10 +92,4 @@ type NewVideo struct {
 	ChannelName     string `json:"channelName"`
 	ChannelPhotoURL string `json:"channelPhotoURL"`
 	ChannelEmail    string `json:"channelEmail"`
-}
-
-type WatchVideo struct {
-	Views    int `json:"views"`
-	Likes    int `json:"likes"`
-	Dislikes int `json:"dislikes"`
 }

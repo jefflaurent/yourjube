@@ -8,6 +8,7 @@ import (
 	"Go_graphql/graph/model"
 	"context"
 	"errors"
+	"fmt"
 )
 
 func (r *mutationResolver) CreateChannel(ctx context.Context, input *model.NewChannel) (*model.Channel, error) {
@@ -58,8 +59,9 @@ func (r *mutationResolver) CreateVideo(ctx context.Context, input *model.NewVide
 	return &video, nil
 }
 
-func (r *mutationResolver) UpdateVideo(ctx context.Context, videoID string, input *model.WatchVideo) (bool, error) {
+func (r *mutationResolver) WatchVideo(ctx context.Context, videoID string) (bool, error) {
 	var video model.Video
+	var temp int
 
 	err := r.DB.Model(&video).Where("video_id = ?", videoID).Select()
 
@@ -67,9 +69,184 @@ func (r *mutationResolver) UpdateVideo(ctx context.Context, videoID string, inpu
 		return false, err
 	}
 
-	video.Views = input.Views
-	video.Likes = input.Likes
-	video.Dislikes = input.Dislikes
+	temp = video.Views
+	temp++
+
+	video.Views = temp
+
+	_, updateErr := r.DB.Model(&video).Where("video_id = ?", videoID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) LikeVideo(ctx context.Context, videoID string) (bool, error) {
+	var video model.Video
+	var temp int
+
+	err := r.DB.Model(&video).Where("video_id = ?", videoID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = video.Likes
+	temp++
+
+	video.Likes = temp
+
+	_, updateErr := r.DB.Model(&video).Where("video_id = ?", videoID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) DislikeVideo(ctx context.Context, videoID string) (bool, error) {
+	var video model.Video
+	var temp int
+
+	err := r.DB.Model(&video).Where("video_id = ?", videoID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = video.Dislikes
+	temp++
+
+	video.Dislikes = temp
+
+	_, updateErr := r.DB.Model(&video).Where("video_id = ?", videoID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) AddLike(ctx context.Context, input *model.NewLike) (*model.Like, error) {
+	like := model.Like{
+		ChannelID:      input.ChannelID,
+		ChannelEmail:   input.ChannelEmail,
+		VideoID:        input.VideoID,
+		VideoThumbnail: input.VideoThumbnail,
+		VideoURL:       input.VideoURL,
+	}
+
+	_, err := r.DB.Model(&like).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &like, nil
+}
+
+func (r *mutationResolver) AddDislike(ctx context.Context, input *model.NewDislike) (*model.Dislike, error) {
+	dislike := model.Dislike{
+		ChannelID:      input.ChannelID,
+		ChannelEmail:   input.ChannelEmail,
+		VideoID:        input.VideoID,
+		VideoThumbnail: input.VideoThumbnail,
+		VideoURL:       input.VideoURL,
+	}
+
+	_, err := r.DB.Model(&dislike).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &dislike, nil
+}
+
+func (r *mutationResolver) RemoveLike(ctx context.Context, channelID int, videoID int) (bool, error) {
+	var likes model.Like
+
+	err := r.DB.Model(&likes).Where("video_id = ? AND channel_id = ?", videoID, channelID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	_, deleteErr := r.DB.Model(&likes).Where("video_id = ? AND channel_id = ?", videoID, channelID).Delete()
+
+	if deleteErr != nil {
+		return false, deleteErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) RemoveDislike(ctx context.Context, channelID int, videoID int) (bool, error) {
+	var dislikes model.Dislike
+
+	err := r.DB.Model(&dislikes).Where("video_id = ? AND channel_id = ?", videoID, channelID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	_, deleteErr := r.DB.Model(&dislikes).Where("video_id = ? AND channel_id = ?", videoID, channelID).Delete()
+
+	if deleteErr != nil {
+		return false, deleteErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) DecreaseLike(ctx context.Context, videoID string) (bool, error) {
+	var video model.Video
+	var temp int
+
+	err := r.DB.Model(&video).Where("video_id = ?", videoID).Select()
+
+	if err != nil {
+		return false, err
+	}
+	fmt.Println(video.Likes)
+	temp = video.Likes
+	temp--
+	if temp < 0 {
+		temp = 0
+	}
+	fmt.Println(temp)
+	video.Likes = temp
+
+	_, updateErr := r.DB.Model(&video).Where("video_id = ?", videoID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) DecreaseDislike(ctx context.Context, videoID string) (bool, error) {
+	var video model.Video
+	var temp int
+
+	err := r.DB.Model(&video).Where("video_id = ?", videoID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = video.Dislikes
+	temp--
+	if temp < 0 {
+		temp = 0
+	}
+
+	video.Dislikes = temp
 
 	_, updateErr := r.DB.Model(&video).Where("video_id = ?", videoID).Update()
 
@@ -115,6 +292,42 @@ func (r *queryResolver) PublicVideos(ctx context.Context) ([]*model.Video, error
 	}
 
 	return videos, nil
+}
+
+func (r *queryResolver) Likes(ctx context.Context) ([]*model.Like, error) {
+	var likes []*model.Like
+
+	err := r.DB.Model(&likes).Select()
+
+	if err != nil {
+		return nil, errors.New("Likes not found")
+	}
+
+	return likes, nil
+}
+
+func (r *queryResolver) FindLike(ctx context.Context, email string, videoID int) ([]*model.Like, error) {
+	var likes []*model.Like
+
+	err := r.DB.Model(&likes).Where("video_id = ? AND channel_email = ?", videoID, email).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return likes, nil
+}
+
+func (r *queryResolver) FindDislike(ctx context.Context, channelID int, videoID int) ([]*model.Dislike, error) {
+	var dislikes []*model.Dislike
+
+	err := r.DB.Model(&dislikes).Where("video_id = ? AND channel_id = ?", videoID, channelID).Select()
+
+	if err != nil {
+		return nil, errors.New("Dislike not found")
+	}
+
+	return dislikes, nil
 }
 
 func (r *queryResolver) FindChannel(ctx context.Context, email string) ([]*model.Channel, error) {

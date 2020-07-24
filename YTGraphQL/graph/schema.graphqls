@@ -28,6 +28,24 @@ type Video {
   channelEmail: String!
 }
 
+type Like {
+  likeId: ID!
+  channelId: Int!
+  channelEmail: String!
+  videoId: Int!
+  videoThumbnail: String!
+  videoURL: String
+}
+
+type Dislike {
+  dislikeId: ID!
+  channelId: Int!
+  channelEmail: String!
+  videoId: Int!
+  videoThumbnail: String!
+  videoURL: String
+}
+
 input newVideo {
   videoTitle: String!,
   videoDesc: String!,
@@ -56,21 +74,42 @@ input newChannel {
   isPremium: String!
 }
 
-input watchVideo {
-  views: Int!
-  likes: Int!
-  dislikes: Int!
+input newLike {
+  channelId: Int!
+  channelEmail: String!
+  videoId: Int!
+  videoThumbnail: String!
+  videoURL: String
+}
+
+input newDislike {
+  channelId: Int!
+  channelEmail: String!
+  videoId: Int!
+  videoThumbnail: String!
+  videoURL: String
 }
 
 type Query {
   channels: [Channel!]!
   videos: [Video!]!
   publicVideos: [Video!]!
+  likes: [Like!]!
+  findLike(email: String!, videoId: Int!): [Like!]!
+  findDislike(channelId: Int!, videoId: Int!): [Dislike!]!
   findChannel(email: String!): [Channel!]!
 }
 
 type Mutation {
   createChannel(input: newChannel): Channel!
   createVideo(input: newVideo): Video!
-  updateVideo(videoId: ID!, input: watchVideo): Boolean!
+  watchVideo(videoId: ID!): Boolean!
+  likeVideo(videoId: ID!): Boolean!
+  dislikeVideo(videoId: ID!): Boolean!
+  addLike(input: newLike): Like!
+  addDislike(input: newDislike): Dislike!
+  removeLike(channelId: Int!, videoId: Int!): Boolean!
+  removeDislike(channelId: Int!, videoId: Int!): Boolean!
+  decreaseLike(videoId: ID!): Boolean!
+  decreaseDislike(videoId: ID!): Boolean!
 }

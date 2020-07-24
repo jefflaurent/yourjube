@@ -53,15 +53,44 @@ type ComplexityRoot struct {
 		Subscriber func(childComplexity int) int
 	}
 
+	Dislike struct {
+		ChannelEmail   func(childComplexity int) int
+		ChannelID      func(childComplexity int) int
+		DislikeID      func(childComplexity int) int
+		VideoID        func(childComplexity int) int
+		VideoThumbnail func(childComplexity int) int
+		VideoURL       func(childComplexity int) int
+	}
+
+	Like struct {
+		ChannelEmail   func(childComplexity int) int
+		ChannelID      func(childComplexity int) int
+		LikeID         func(childComplexity int) int
+		VideoID        func(childComplexity int) int
+		VideoThumbnail func(childComplexity int) int
+		VideoURL       func(childComplexity int) int
+	}
+
 	Mutation struct {
-		CreateChannel func(childComplexity int, input *model.NewChannel) int
-		CreateVideo   func(childComplexity int, input *model.NewVideo) int
-		UpdateVideo   func(childComplexity int, videoID string, input *model.WatchVideo) int
+		AddDislike      func(childComplexity int, input *model.NewDislike) int
+		AddLike         func(childComplexity int, input *model.NewLike) int
+		CreateChannel   func(childComplexity int, input *model.NewChannel) int
+		CreateVideo     func(childComplexity int, input *model.NewVideo) int
+		DecreaseDislike func(childComplexity int, videoID string) int
+		DecreaseLike    func(childComplexity int, videoID string) int
+		DislikeVideo    func(childComplexity int, videoID string) int
+		LikeVideo       func(childComplexity int, videoID string) int
+		RemoveDislike   func(childComplexity int, channelID int, videoID int) int
+		RemoveLike      func(childComplexity int, channelID int, videoID int) int
+		WatchVideo      func(childComplexity int, videoID string) int
 	}
 
 	Query struct {
 		Channels     func(childComplexity int) int
 		FindChannel  func(childComplexity int, email string) int
+		FindDislike  func(childComplexity int, channelID int, videoID int) int
+		FindLike     func(childComplexity int, email string, videoID int) int
+		Likes        func(childComplexity int) int
 		PublicVideos func(childComplexity int) int
 		Videos       func(childComplexity int) int
 	}
@@ -90,12 +119,23 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreateChannel(ctx context.Context, input *model.NewChannel) (*model.Channel, error)
 	CreateVideo(ctx context.Context, input *model.NewVideo) (*model.Video, error)
-	UpdateVideo(ctx context.Context, videoID string, input *model.WatchVideo) (bool, error)
+	WatchVideo(ctx context.Context, videoID string) (bool, error)
+	LikeVideo(ctx context.Context, videoID string) (bool, error)
+	DislikeVideo(ctx context.Context, videoID string) (bool, error)
+	AddLike(ctx context.Context, input *model.NewLike) (*model.Like, error)
+	AddDislike(ctx context.Context, input *model.NewDislike) (*model.Dislike, error)
+	RemoveLike(ctx context.Context, channelID int, videoID int) (bool, error)
+	RemoveDislike(ctx context.Context, channelID int, videoID int) (bool, error)
+	DecreaseLike(ctx context.Context, videoID string) (bool, error)
+	DecreaseDislike(ctx context.Context, videoID string) (bool, error)
 }
 type QueryResolver interface {
 	Channels(ctx context.Context) ([]*model.Channel, error)
 	Videos(ctx context.Context) ([]*model.Video, error)
 	PublicVideos(ctx context.Context) ([]*model.Video, error)
+	Likes(ctx context.Context) ([]*model.Like, error)
+	FindLike(ctx context.Context, email string, videoID int) ([]*model.Like, error)
+	FindDislike(ctx context.Context, channelID int, videoID int) ([]*model.Dislike, error)
 	FindChannel(ctx context.Context, email string) ([]*model.Channel, error)
 }
 
@@ -163,6 +203,114 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Channel.Subscriber(childComplexity), true
 
+	case "Dislike.channelEmail":
+		if e.complexity.Dislike.ChannelEmail == nil {
+			break
+		}
+
+		return e.complexity.Dislike.ChannelEmail(childComplexity), true
+
+	case "Dislike.channelId":
+		if e.complexity.Dislike.ChannelID == nil {
+			break
+		}
+
+		return e.complexity.Dislike.ChannelID(childComplexity), true
+
+	case "Dislike.dislikeId":
+		if e.complexity.Dislike.DislikeID == nil {
+			break
+		}
+
+		return e.complexity.Dislike.DislikeID(childComplexity), true
+
+	case "Dislike.videoId":
+		if e.complexity.Dislike.VideoID == nil {
+			break
+		}
+
+		return e.complexity.Dislike.VideoID(childComplexity), true
+
+	case "Dislike.videoThumbnail":
+		if e.complexity.Dislike.VideoThumbnail == nil {
+			break
+		}
+
+		return e.complexity.Dislike.VideoThumbnail(childComplexity), true
+
+	case "Dislike.videoURL":
+		if e.complexity.Dislike.VideoURL == nil {
+			break
+		}
+
+		return e.complexity.Dislike.VideoURL(childComplexity), true
+
+	case "Like.channelEmail":
+		if e.complexity.Like.ChannelEmail == nil {
+			break
+		}
+
+		return e.complexity.Like.ChannelEmail(childComplexity), true
+
+	case "Like.channelId":
+		if e.complexity.Like.ChannelID == nil {
+			break
+		}
+
+		return e.complexity.Like.ChannelID(childComplexity), true
+
+	case "Like.likeId":
+		if e.complexity.Like.LikeID == nil {
+			break
+		}
+
+		return e.complexity.Like.LikeID(childComplexity), true
+
+	case "Like.videoId":
+		if e.complexity.Like.VideoID == nil {
+			break
+		}
+
+		return e.complexity.Like.VideoID(childComplexity), true
+
+	case "Like.videoThumbnail":
+		if e.complexity.Like.VideoThumbnail == nil {
+			break
+		}
+
+		return e.complexity.Like.VideoThumbnail(childComplexity), true
+
+	case "Like.videoURL":
+		if e.complexity.Like.VideoURL == nil {
+			break
+		}
+
+		return e.complexity.Like.VideoURL(childComplexity), true
+
+	case "Mutation.addDislike":
+		if e.complexity.Mutation.AddDislike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addDislike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddDislike(childComplexity, args["input"].(*model.NewDislike)), true
+
+	case "Mutation.addLike":
+		if e.complexity.Mutation.AddLike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddLike(childComplexity, args["input"].(*model.NewLike)), true
+
 	case "Mutation.createChannel":
 		if e.complexity.Mutation.CreateChannel == nil {
 			break
@@ -187,17 +335,89 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateVideo(childComplexity, args["input"].(*model.NewVideo)), true
 
-	case "Mutation.updateVideo":
-		if e.complexity.Mutation.UpdateVideo == nil {
+	case "Mutation.decreaseDislike":
+		if e.complexity.Mutation.DecreaseDislike == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_updateVideo_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_decreaseDislike_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateVideo(childComplexity, args["videoId"].(string), args["input"].(*model.WatchVideo)), true
+		return e.complexity.Mutation.DecreaseDislike(childComplexity, args["videoId"].(string)), true
+
+	case "Mutation.decreaseLike":
+		if e.complexity.Mutation.DecreaseLike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_decreaseLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DecreaseLike(childComplexity, args["videoId"].(string)), true
+
+	case "Mutation.dislikeVideo":
+		if e.complexity.Mutation.DislikeVideo == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_dislikeVideo_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DislikeVideo(childComplexity, args["videoId"].(string)), true
+
+	case "Mutation.likeVideo":
+		if e.complexity.Mutation.LikeVideo == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_likeVideo_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.LikeVideo(childComplexity, args["videoId"].(string)), true
+
+	case "Mutation.removeDislike":
+		if e.complexity.Mutation.RemoveDislike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_removeDislike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RemoveDislike(childComplexity, args["channelId"].(int), args["videoId"].(int)), true
+
+	case "Mutation.removeLike":
+		if e.complexity.Mutation.RemoveLike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_removeLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RemoveLike(childComplexity, args["channelId"].(int), args["videoId"].(int)), true
+
+	case "Mutation.watchVideo":
+		if e.complexity.Mutation.WatchVideo == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_watchVideo_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.WatchVideo(childComplexity, args["videoId"].(string)), true
 
 	case "Query.channels":
 		if e.complexity.Query.Channels == nil {
@@ -217,6 +437,37 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.FindChannel(childComplexity, args["email"].(string)), true
+
+	case "Query.findDislike":
+		if e.complexity.Query.FindDislike == nil {
+			break
+		}
+
+		args, err := ec.field_Query_findDislike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.FindDislike(childComplexity, args["channelId"].(int), args["videoId"].(int)), true
+
+	case "Query.findLike":
+		if e.complexity.Query.FindLike == nil {
+			break
+		}
+
+		args, err := ec.field_Query_findLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.FindLike(childComplexity, args["email"].(string), args["videoId"].(int)), true
+
+	case "Query.likes":
+		if e.complexity.Query.Likes == nil {
+			break
+		}
+
+		return e.complexity.Query.Likes(childComplexity), true
 
 	case "Query.publicVideos":
 		if e.complexity.Query.PublicVideos == nil {
@@ -445,6 +696,24 @@ type Video {
   channelEmail: String!
 }
 
+type Like {
+  likeId: ID!
+  channelId: Int!
+  channelEmail: String!
+  videoId: Int!
+  videoThumbnail: String!
+  videoURL: String
+}
+
+type Dislike {
+  dislikeId: ID!
+  channelId: Int!
+  channelEmail: String!
+  videoId: Int!
+  videoThumbnail: String!
+  videoURL: String
+}
+
 input newVideo {
   videoTitle: String!,
   videoDesc: String!,
@@ -473,23 +742,44 @@ input newChannel {
   isPremium: String!
 }
 
-input watchVideo {
-  views: Int!
-  likes: Int!
-  dislikes: Int!
+input newLike {
+  channelId: Int!
+  channelEmail: String!
+  videoId: Int!
+  videoThumbnail: String!
+  videoURL: String
+}
+
+input newDislike {
+  channelId: Int!
+  channelEmail: String!
+  videoId: Int!
+  videoThumbnail: String!
+  videoURL: String
 }
 
 type Query {
   channels: [Channel!]!
   videos: [Video!]!
   publicVideos: [Video!]!
+  likes: [Like!]!
+  findLike(email: String!, videoId: Int!): [Like!]!
+  findDislike(channelId: Int!, videoId: Int!): [Dislike!]!
   findChannel(email: String!): [Channel!]!
 }
 
 type Mutation {
   createChannel(input: newChannel): Channel!
   createVideo(input: newVideo): Video!
-  updateVideo(videoId: ID!, input: watchVideo): Boolean!
+  watchVideo(videoId: ID!): Boolean!
+  likeVideo(videoId: ID!): Boolean!
+  dislikeVideo(videoId: ID!): Boolean!
+  addLike(input: newLike): Like!
+  addDislike(input: newDislike): Dislike!
+  removeLike(channelId: Int!, videoId: Int!): Boolean!
+  removeDislike(channelId: Int!, videoId: Int!): Boolean!
+  decreaseLike(videoId: ID!): Boolean!
+  decreaseDislike(videoId: ID!): Boolean!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -497,6 +787,34 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_addDislike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.NewDislike
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOnewDislike2ᚖGo_graphqlᚋgraphᚋmodelᚐNewDislike(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_addLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.NewLike
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOnewLike2ᚖGo_graphqlᚋgraphᚋmodelᚐNewLike(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createChannel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -526,7 +844,7 @@ func (ec *executionContext) field_Mutation_createVideo_args(ctx context.Context,
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_updateVideo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_decreaseDislike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -537,14 +855,106 @@ func (ec *executionContext) field_Mutation_updateVideo_args(ctx context.Context,
 		}
 	}
 	args["videoId"] = arg0
-	var arg1 *model.WatchVideo
-	if tmp, ok := rawArgs["input"]; ok {
-		arg1, err = ec.unmarshalOwatchVideo2ᚖGo_graphqlᚋgraphᚋmodelᚐWatchVideo(ctx, tmp)
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_decreaseLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["videoId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg1
+	args["videoId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_dislikeVideo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["videoId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_likeVideo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["videoId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_removeDislike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["channelId"]; ok {
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["channelId"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["videoId"]; ok {
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_removeLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["channelId"]; ok {
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["channelId"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["videoId"]; ok {
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_watchVideo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["videoId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoId"] = arg0
 	return args, nil
 }
 
@@ -573,6 +983,50 @@ func (ec *executionContext) field_Query_findChannel_args(ctx context.Context, ra
 		}
 	}
 	args["email"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_findDislike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["channelId"]; ok {
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["channelId"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["videoId"]; ok {
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_findLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["email"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["email"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["videoId"]; ok {
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoId"] = arg1
 	return args, nil
 }
 
@@ -850,6 +1304,408 @@ func (ec *executionContext) _Channel_isPremium(ctx context.Context, field graphq
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Dislike_dislikeId(ctx context.Context, field graphql.CollectedField, obj *model.Dislike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Dislike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DislikeID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Dislike_channelId(ctx context.Context, field graphql.CollectedField, obj *model.Dislike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Dislike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Dislike_channelEmail(ctx context.Context, field graphql.CollectedField, obj *model.Dislike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Dislike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelEmail, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Dislike_videoId(ctx context.Context, field graphql.CollectedField, obj *model.Dislike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Dislike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VideoID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Dislike_videoThumbnail(ctx context.Context, field graphql.CollectedField, obj *model.Dislike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Dislike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VideoThumbnail, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Dislike_videoURL(ctx context.Context, field graphql.CollectedField, obj *model.Dislike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Dislike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VideoURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Like_likeId(ctx context.Context, field graphql.CollectedField, obj *model.Like) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Like",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LikeID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Like_channelId(ctx context.Context, field graphql.CollectedField, obj *model.Like) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Like",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Like_channelEmail(ctx context.Context, field graphql.CollectedField, obj *model.Like) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Like",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelEmail, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Like_videoId(ctx context.Context, field graphql.CollectedField, obj *model.Like) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Like",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VideoID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Like_videoThumbnail(ctx context.Context, field graphql.CollectedField, obj *model.Like) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Like",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VideoThumbnail, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Like_videoURL(ctx context.Context, field graphql.CollectedField, obj *model.Like) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Like",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VideoURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_createChannel(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -932,7 +1788,7 @@ func (ec *executionContext) _Mutation_createVideo(ctx context.Context, field gra
 	return ec.marshalNVideo2ᚖGo_graphqlᚋgraphᚋmodelᚐVideo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_updateVideo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_watchVideo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -948,7 +1804,7 @@ func (ec *executionContext) _Mutation_updateVideo(ctx context.Context, field gra
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_updateVideo_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_watchVideo_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -956,7 +1812,335 @@ func (ec *executionContext) _Mutation_updateVideo(ctx context.Context, field gra
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateVideo(rctx, args["videoId"].(string), args["input"].(*model.WatchVideo))
+		return ec.resolvers.Mutation().WatchVideo(rctx, args["videoId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_likeVideo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_likeVideo_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().LikeVideo(rctx, args["videoId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_dislikeVideo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_dislikeVideo_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DislikeVideo(rctx, args["videoId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_addLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_addLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddLike(rctx, args["input"].(*model.NewLike))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Like)
+	fc.Result = res
+	return ec.marshalNLike2ᚖGo_graphqlᚋgraphᚋmodelᚐLike(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_addDislike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_addDislike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddDislike(rctx, args["input"].(*model.NewDislike))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Dislike)
+	fc.Result = res
+	return ec.marshalNDislike2ᚖGo_graphqlᚋgraphᚋmodelᚐDislike(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_removeLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_removeLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().RemoveLike(rctx, args["channelId"].(int), args["videoId"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_removeDislike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_removeDislike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().RemoveDislike(rctx, args["channelId"].(int), args["videoId"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_decreaseLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_decreaseLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DecreaseLike(rctx, args["videoId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_decreaseDislike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_decreaseDislike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DecreaseDislike(rctx, args["videoId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1073,6 +2257,122 @@ func (ec *executionContext) _Query_publicVideos(ctx context.Context, field graph
 	res := resTmp.([]*model.Video)
 	fc.Result = res
 	return ec.marshalNVideo2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐVideoᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_likes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Likes(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Like)
+	fc.Result = res
+	return ec.marshalNLike2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐLikeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_findLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_findLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().FindLike(rctx, args["email"].(string), args["videoId"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Like)
+	fc.Result = res
+	return ec.marshalNLike2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐLikeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_findDislike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_findDislike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().FindDislike(rctx, args["channelId"].(int), args["videoId"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Dislike)
+	fc.Result = res
+	return ec.marshalNDislike2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐDislikeᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_findChannel(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2866,6 +4166,90 @@ func (ec *executionContext) unmarshalInputnewChannel(ctx context.Context, obj in
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputnewDislike(ctx context.Context, obj interface{}) (model.NewDislike, error) {
+	var it model.NewDislike
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "channelId":
+			var err error
+			it.ChannelID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "channelEmail":
+			var err error
+			it.ChannelEmail, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "videoId":
+			var err error
+			it.VideoID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "videoThumbnail":
+			var err error
+			it.VideoThumbnail, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "videoURL":
+			var err error
+			it.VideoURL, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputnewLike(ctx context.Context, obj interface{}) (model.NewLike, error) {
+	var it model.NewLike
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "channelId":
+			var err error
+			it.ChannelID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "channelEmail":
+			var err error
+			it.ChannelEmail, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "videoId":
+			var err error
+			it.VideoID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "videoThumbnail":
+			var err error
+			it.VideoThumbnail, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "videoURL":
+			var err error
+			it.VideoURL, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputnewVideo(ctx context.Context, obj interface{}) (model.NewVideo, error) {
 	var it model.NewVideo
 	var asMap = obj.(map[string]interface{})
@@ -2974,36 +4358,6 @@ func (ec *executionContext) unmarshalInputnewVideo(ctx context.Context, obj inte
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputwatchVideo(ctx context.Context, obj interface{}) (model.WatchVideo, error) {
-	var it model.WatchVideo
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "views":
-			var err error
-			it.Views, err = ec.unmarshalNInt2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "likes":
-			var err error
-			it.Likes, err = ec.unmarshalNInt2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "dislikes":
-			var err error
-			it.Dislikes, err = ec.unmarshalNInt2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -3069,6 +4423,104 @@ func (ec *executionContext) _Channel(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var dislikeImplementors = []string{"Dislike"}
+
+func (ec *executionContext) _Dislike(ctx context.Context, sel ast.SelectionSet, obj *model.Dislike) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, dislikeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Dislike")
+		case "dislikeId":
+			out.Values[i] = ec._Dislike_dislikeId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channelId":
+			out.Values[i] = ec._Dislike_channelId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channelEmail":
+			out.Values[i] = ec._Dislike_channelEmail(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "videoId":
+			out.Values[i] = ec._Dislike_videoId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "videoThumbnail":
+			out.Values[i] = ec._Dislike_videoThumbnail(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "videoURL":
+			out.Values[i] = ec._Dislike_videoURL(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var likeImplementors = []string{"Like"}
+
+func (ec *executionContext) _Like(ctx context.Context, sel ast.SelectionSet, obj *model.Like) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, likeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Like")
+		case "likeId":
+			out.Values[i] = ec._Like_likeId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channelId":
+			out.Values[i] = ec._Like_channelId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channelEmail":
+			out.Values[i] = ec._Like_channelEmail(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "videoId":
+			out.Values[i] = ec._Like_videoId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "videoThumbnail":
+			out.Values[i] = ec._Like_videoThumbnail(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "videoURL":
+			out.Values[i] = ec._Like_videoURL(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -3094,8 +4546,48 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "updateVideo":
-			out.Values[i] = ec._Mutation_updateVideo(ctx, field)
+		case "watchVideo":
+			out.Values[i] = ec._Mutation_watchVideo(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "likeVideo":
+			out.Values[i] = ec._Mutation_likeVideo(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "dislikeVideo":
+			out.Values[i] = ec._Mutation_dislikeVideo(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "addLike":
+			out.Values[i] = ec._Mutation_addLike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "addDislike":
+			out.Values[i] = ec._Mutation_addDislike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "removeLike":
+			out.Values[i] = ec._Mutation_removeLike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "removeDislike":
+			out.Values[i] = ec._Mutation_removeDislike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "decreaseLike":
+			out.Values[i] = ec._Mutation_decreaseLike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "decreaseDislike":
+			out.Values[i] = ec._Mutation_decreaseDislike(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3162,6 +4654,48 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_publicVideos(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "likes":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_likes(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "findLike":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_findLike(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "findDislike":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_findDislike(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -3613,6 +5147,57 @@ func (ec *executionContext) marshalNChannel2ᚖGo_graphqlᚋgraphᚋmodelᚐChan
 	return ec._Channel(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNDislike2Go_graphqlᚋgraphᚋmodelᚐDislike(ctx context.Context, sel ast.SelectionSet, v model.Dislike) graphql.Marshaler {
+	return ec._Dislike(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDislike2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐDislikeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Dislike) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDislike2ᚖGo_graphqlᚋgraphᚋmodelᚐDislike(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNDislike2ᚖGo_graphqlᚋgraphᚋmodelᚐDislike(ctx context.Context, sel ast.SelectionSet, v *model.Dislike) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Dislike(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
 	return graphql.UnmarshalID(v)
 }
@@ -3639,6 +5224,57 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNLike2Go_graphqlᚋgraphᚋmodelᚐLike(ctx context.Context, sel ast.SelectionSet, v model.Like) graphql.Marshaler {
+	return ec._Like(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNLike2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐLikeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Like) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNLike2ᚖGo_graphqlᚋgraphᚋmodelᚐLike(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNLike2ᚖGo_graphqlᚋgraphᚋmodelᚐLike(ctx context.Context, sel ast.SelectionSet, v *model.Like) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Like(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -4172,6 +5808,30 @@ func (ec *executionContext) unmarshalOnewChannel2ᚖGo_graphqlᚋgraphᚋmodel�
 	return &res, err
 }
 
+func (ec *executionContext) unmarshalOnewDislike2Go_graphqlᚋgraphᚋmodelᚐNewDislike(ctx context.Context, v interface{}) (model.NewDislike, error) {
+	return ec.unmarshalInputnewDislike(ctx, v)
+}
+
+func (ec *executionContext) unmarshalOnewDislike2ᚖGo_graphqlᚋgraphᚋmodelᚐNewDislike(ctx context.Context, v interface{}) (*model.NewDislike, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOnewDislike2Go_graphqlᚋgraphᚋmodelᚐNewDislike(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) unmarshalOnewLike2Go_graphqlᚋgraphᚋmodelᚐNewLike(ctx context.Context, v interface{}) (model.NewLike, error) {
+	return ec.unmarshalInputnewLike(ctx, v)
+}
+
+func (ec *executionContext) unmarshalOnewLike2ᚖGo_graphqlᚋgraphᚋmodelᚐNewLike(ctx context.Context, v interface{}) (*model.NewLike, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOnewLike2Go_graphqlᚋgraphᚋmodelᚐNewLike(ctx, v)
+	return &res, err
+}
+
 func (ec *executionContext) unmarshalOnewVideo2Go_graphqlᚋgraphᚋmodelᚐNewVideo(ctx context.Context, v interface{}) (model.NewVideo, error) {
 	return ec.unmarshalInputnewVideo(ctx, v)
 }
@@ -4181,18 +5841,6 @@ func (ec *executionContext) unmarshalOnewVideo2ᚖGo_graphqlᚋgraphᚋmodelᚐN
 		return nil, nil
 	}
 	res, err := ec.unmarshalOnewVideo2Go_graphqlᚋgraphᚋmodelᚐNewVideo(ctx, v)
-	return &res, err
-}
-
-func (ec *executionContext) unmarshalOwatchVideo2Go_graphqlᚋgraphᚋmodelᚐWatchVideo(ctx context.Context, v interface{}) (model.WatchVideo, error) {
-	return ec.unmarshalInputwatchVideo(ctx, v)
-}
-
-func (ec *executionContext) unmarshalOwatchVideo2ᚖGo_graphqlᚋgraphᚋmodelᚐWatchVideo(ctx context.Context, v interface{}) (*model.WatchVideo, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalOwatchVideo2Go_graphqlᚋgraphᚋmodelᚐWatchVideo(ctx, v)
 	return &res, err
 }
 
