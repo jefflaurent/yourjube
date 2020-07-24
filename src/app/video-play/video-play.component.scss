@@ -1,0 +1,170 @@
+.container
+{
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 25px;
+    padding-left: 35px;
+    box-sizing: border-box;
+}
+
+.left
+{
+    width: 65%;
+    box-sizing: border-box;
+}
+
+.right
+{
+    margin-left: 30px;
+    width: 35%;
+}
+
+#mainvideo
+{
+    width: 50%;
+}
+
+.video-title
+{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.title
+{
+    font-size: 18px;
+}
+
+.views
+{
+    margin-top: 15px;
+    color: rgba(76, 67, 67, 1); 
+}
+
+.desc-top
+{
+    display: flex;
+    justify-content: space-between;
+}
+
+.profile
+{
+    display: flex;
+    justify-content: flex-start;
+}
+
+.profile-desc
+{
+    margin-left: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.profile-name
+{
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.profile-subs
+{
+    font-size: 13px;
+    color: rgba(76, 67, 67, 1); 
+}
+
+.avatar img
+{
+    border-radius: 50%;
+}
+
+.sub-container
+{
+    display: flex;
+    align-items: center;
+}
+
+.sub-button
+{
+    color: white;
+    background-color: #D51313;
+    font-weight: 400;
+    font-size: 13px;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.misc
+{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.icon
+{
+    color: rgba(76, 67, 67, 1);
+    margin: 15px;
+    margin-top: -30px;
+    margin-bottom: 10px;
+}
+
+.icon:hover
+{
+    cursor: pointer;
+}
+
+.share
+{
+    display: flex;
+    justify-content: center;
+}
+
+.save
+{
+    display: flex;
+    justify-items: center;
+}
+
+.pls
+{
+    margin-right: 10px;
+}
+
+.desc-bot.limited
+{
+    margin-left: 55px;
+    height: 42px;
+    overflow: hidden;
+    width: 80%;
+}
+
+.desc-bot
+{
+    width: 80%;
+    margin-left: 55px;
+}
+
+.controller:hover
+{
+    cursor: pointer;
+}
+
+.controller-txt
+{
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgba(76, 67, 67, 1); 
+    margin-left: 55px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.controller-txt.hidden
+{
+    display: none;
+}

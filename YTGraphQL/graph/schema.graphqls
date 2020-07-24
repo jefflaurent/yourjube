@@ -1,0 +1,76 @@
+type Channel {
+   id: ID!
+   name: String!
+   email: String!
+   photoURL: String!
+   bannerURL: String!
+   subscriber: Int!
+   isPremium: String!
+}
+
+type Video {
+  videoId: ID!
+  videoTitle: String!
+  videoDesc: String!
+  videoURL: String!
+  videoThumbnail: String!
+  uploadDay: String!
+  uploadMonth: String!
+  uploadYear: String!
+  views: Int!
+  likes: Int!
+  dislikes: Int!
+  visibility: String!
+  viewer: String!
+  category: String!
+  channelName: String!
+  channelPhotoURL: String!
+  channelEmail: String!
+}
+
+input newVideo {
+  videoTitle: String!,
+  videoDesc: String!,
+  videoURL: String!,
+  videoThumbnail: String!,
+  uploadDay: String!,
+  uploadMonth: String!,
+  uploadYear: String!,
+  views: Int!,
+  likes: Int!,
+  dislikes: Int!,
+  visibility: String!,
+  viewer: String!,
+  category: String!,
+  channelName: String!,
+  channelPhotoURL: String!,
+  channelEmail: String!,
+}
+
+input newChannel {
+  name: String!
+  email: String!
+  photoURL: String!
+  bannerURL: String!
+  subscriber: Int!
+  isPremium: String!
+}
+
+input watchVideo {
+  views: Int!
+  likes: Int!
+  dislikes: Int!
+}
+
+type Query {
+  channels: [Channel!]!
+  videos: [Video!]!
+  publicVideos: [Video!]!
+  findChannel(email: String!): [Channel!]!
+}
+
+type Mutation {
+  createChannel(input: newChannel): Channel!
+  createVideo(input: newVideo): Video!
+  updateVideo(videoId: ID!, input: watchVideo): Boolean!
+}

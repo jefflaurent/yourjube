@@ -1,0 +1,27 @@
+.container
+{
+    display: flex;
+    justify-content: flex-start;
+    width: 380px;
+    height: 95px; 
+    margin-bottom: 10px;
+}
+
+.right
+{
+    margin-left: 10px;
+    font-family: Arial, Helvetica, sans-serif
+}
+
+.top
+{
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.bottom
+{
+    color: rgba(76, 67, 67, 1);
+    font-size: 12px;
+}

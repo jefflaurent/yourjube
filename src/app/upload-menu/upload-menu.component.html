@@ -1,0 +1,225 @@
+<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+
+     <div class="container">
+        <div class="top">
+            <div id="top-title">
+                {{ titleBox }}
+            </div>
+            <div class="close">
+                <a href="#">
+                    <img src="../../assets/upload/close.png" alt="" width="13px" height="13px">
+                </a>
+            </div>
+        </div>
+
+        <hr>
+    
+        <div class="rest">
+    
+            <div class="sticky">
+                <div class="section">
+                    <span class="number">
+                        1
+                    </span>
+                    <div>
+                        Upload Video
+                    </div>
+                </div>
+                
+                <hr class="arrow"> 
+    
+                <div class="section">
+                    <span class="number">
+                        2
+                    </span>
+                    <div>
+                        Video elements
+                    </div>
+                </div>
+                
+                <hr class="arrow"> 
+    
+                <div class="section">
+                    <span class="number">
+                        3
+                    </span>
+                    <div>
+                        Visibility
+                    </div>
+                </div>
+            </div>
+    
+            <div class="first">
+                Details
+            </div>
+    
+            <div class="middle">
+                <div class="left">  
+                    <div>
+                        <textarea id="title" rows="4" placeholder="Title (required)" [value]="(titleBox)" (input)="titleBox = $event.target.value"></textarea>
+                    </div>
+    
+                    <div>
+                        <textarea id="description" rows="8" placeholder="Description" [value]="(descriptionBox)" (input)="descriptionBox = $event.target.value"></textarea>
+                    </div>
+                </div>
+
+                <div *ngIf="downloadURL as url" class="preview">
+                    <div>
+                        <video [src]="url" width="100%"></video>
+                    </div>
+                    <div>
+                        <u><a [href]="url">Download here</a></u>
+                    </div>
+                </div>   
+    
+                <div class="dropzone"
+                    dropZone
+                    (hovered)="toggleHover($event)"
+                    (dropped)="startUpload($event)"
+                    [class.hovering]="isHovering"
+                    *ngIf="downloadURL == null">
+
+                    <div>
+                        Drop Files Here
+                    </div>
+                    <div class="dropFile">
+                        <label>
+                            <input type="file" (change)="startUpload($event.target.files)">
+                        </label>
+                    </div>
+                    
+                    <div *ngIf="percentage | async as pct" class="progressBar">
+                        <progress [value]="pct" max="100"></progress>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="middle">
+                <div class="thumbnail">
+                    <div class="sub-title">
+                        Thumbnail
+                    </div>
+
+                    <div class="desc">
+                        Select or upload a picture that shows what's in your video. 
+                        A good thumbnail stands out and draws viewers' attention.                    
+                    </div>
+    
+                    <div class="thumb-pick">
+                        <div class="dropImage"
+                            dropZone
+                            (hovered)="toggleHover($event)"
+                            (dropped)="uploadImage($event)"
+                            [class.hovering]="isHovering"
+                            *ngIf="imgDownloadURL == null">
+
+                            <div>
+                                Drop Files Here
+                            </div>
+                            <div class="dropFile">
+                                <input type="file" (change)="uploadImage($event.target.files)">
+                            </div>
+                            
+                            <div *ngIf="imgPercentage | async as pct" class="progressBar">
+                                <progress [value]="pct" max="100"></progress>
+                            </div>
+                           
+                        </div>
+
+                        <div class="imgPreview" *ngIf="imgDownloadURL as url">
+                            <img [src]="url" width="100%">
+                        </div> 
+                    </div>
+                </div>
+            </div>
+
+            <div class="audience">
+                <div class="sub-title">
+                    Audience
+                </div>
+                <div class="audience-sub">
+                    Is this video made for kids? (required)
+                </div>
+                <div class="desc">
+                    Regardless of your location, you're legally required to comply with the Children's 
+                    Online Privacy Protection Act (COPPA) and/or other laws. 
+                    You're required to tell us whether your videos are made for kids.
+                </div>
+                <div class="choice">
+                    <div>
+                        <input type="radio" name="kids" id="yes" value="kids">
+                    </div>
+                    <div>
+                        <label for="yes">Yes, it's made for kids</label>
+                    </div>
+                </div>
+                <div class="choice">
+                    <div>
+                        <input type="radio" name="kids" id="no" value="mature">
+                    </div>
+                    <div>
+                        <label for="no">No, it's not made for kids</label>
+                    </div>
+                </div>
+            </div>
+            
+
+            <div class="visibility">
+                <div class="first">
+                    Visibility
+                </div>
+
+                <div class="whatever">
+                    Choose when to publish and who can see your video
+                </div>
+
+                <div class="choose">
+                    <div class="box">
+                        <div>
+                            <input type="radio" name="visible" id="private" value="private">
+                        </div>
+                        <div>
+                            <label for="private">Private</label>
+                        </div>
+                    </div>
+                    <div class="vis-desc">
+                        Only you and people you choose can watch your video
+                    </div>
+                    <div class="box">
+                        <div>
+                            <input type="radio" name="visible" id="unlisted" value="unlisted">
+                        </div>
+                        <div>
+                            <label for="unlisted">Unlisted</label>
+                        </div>
+                    </div>
+                    <div class="vis-desc">
+                        Anyone with the video link can watch your video
+                    </div>
+                    <div class="box">
+                        <div>
+                            <input type="radio" name="visible" id="public" value="public">
+                        </div>
+                        <div>
+                            <label for="public">Public</label>
+                        </div>
+                    </div>
+                    <div class="vis-desc">
+                        Everyone can watch your video
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="submit-box">
+            <div>
+                <button id="submit" (click)="uploadYt()">
+                    SAVE
+                </button>
+            </div>
+        </div>
+    </div>
+
+

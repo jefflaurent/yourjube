@@ -1,0 +1,31 @@
+<div class="container">
+    <div class="thumbnail">
+        <a [routerLink]="['/video', video.videoId]">
+            <img [src]="video.videoThumbnail" alt="" width="320px" height="180px">
+        </a>
+    </div>
+    
+    <div class="inner">
+        <div class="top">
+            <div>
+                <img [src]="video.channelPhotoURL" width="38px" height="38px">
+            </div>
+            <div class="title">
+                {{video.videoTitle}}
+            </div>
+        </div>
+
+        <div class="bottom">
+            <div class="channel-name">
+                <div class="profile-name">
+                    {{video.channelName}}
+                </div>
+                <div class="channel-detail">
+                    {{video.views}} views <span>&#8226;</span> {{ post }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty"></div>
+</div>

@@ -1,0 +1,47 @@
+.container{
+    margin: 8px;
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.thumbnail
+{
+    width: 100%;
+    margin-bottom: 13px;
+}
+
+.top
+{
+    display: flex;
+    justify-content: flex-start;
+}
+
+.top img
+{
+    border-radius: 50%;
+}
+
+.title
+{
+    font-family: 'Roboto';
+    font-weight: 600;
+    line-height: 1.4em;
+    margin-left: 25px;
+}
+
+.bottom
+{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    color: rgba(76, 67, 67, 1);
+    margin-left: 63px;
+}
+
+.empty
+{
+    height: 50px;
+}

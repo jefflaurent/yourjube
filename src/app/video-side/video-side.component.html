@@ -1,0 +1,18 @@
+<div class="container">
+    <div class="left">
+        <img [src]="video.videoThumbnail" alt="" width="165px" height="95px">
+    </div>
+    <div class="right">
+        <div class="top">
+            {{ title }}
+        </div>
+        <div class="bottom">
+            <div class="channel">
+                {{ video.channelName }}
+            </div>
+            <div class="detail">
+                {{ video.views }} views <span>&#8226;</span> {{ post }}
+            </div>
+        </div>
+    </div>
+</div>
