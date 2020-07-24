@@ -3,16 +3,70 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { HeaderComponent } from './header/header.component';
+import { FileUploadComponent } from './file-upload/file-upload.component';
+
+import { SocialLoginModule,SocialAuthServiceConfig } from 'angularx-social-login';
+import { GoogleLoginProvider } from 'angularx-social-login';
+
+import { AngularFireModule } from 'angularfire2';
+
+import { AngularFirestoreModule, AngularFirestore } from 'angularfire2/firestore';
+import { AngularFireStorageModule } from 'angularfire2/storage';
+
+import { environment } from '../environments/environment';
+import { DropZoneDirective } from './drop-zone.directive';
+import { UploadMenuComponent } from './upload-menu/upload-menu.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { VideoPageComponent } from './video-page/video-page.component';
+import { MatVideoModule } from 'mat-video';
+import { GraphQLModule } from './graphql.module';
+import { HttpClientModule } from '@angular/common/http';
+import { MainPageComponent } from './main-page/main-page.component';
+import { VideoPlayComponent } from './video-play/video-play.component';
+import { VideoSideComponent } from './video-side/video-side.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HeaderComponent,
+    FileUploadComponent,
+    DropZoneDirective,
+    UploadMenuComponent,
+    VideoPageComponent,
+    MainPageComponent,
+    VideoPlayComponent,
+    VideoSideComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    SocialLoginModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule,
+    AngularFireStorageModule,
+    BrowserAnimationsModule,
+    MatVideoModule,
+    GraphQLModule,
+    HttpClientModule,
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: true,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(
+              '671734057304-gmn2nk0ludqlrmtime6jlsva9jcoi261.apps.googleusercontent.com'
+              ),
+          },
+        ],
+      } as SocialAuthServiceConfig,
+    },
+  ],
+  bootstrap: [AppComponent],
 })
 export class AppModule { }
+

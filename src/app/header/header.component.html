@@ -1,0 +1,107 @@
+<div class="head">
+    <div class="container">
+        <div class="menu" id="toggleOn">
+            <img src="../../assets/navIcon/menu.png" width="15px" height="15px">
+        </div>
+    
+        <div class="icon">
+            <a href="#">
+                <img src="../../assets/navIcon/logo1.jpg" width="85px" height="40px">
+            </a>
+        </div>
+    </div>
+
+    <div class="middle">
+        <div class="search">
+            <input type="text" id="searchBar" placeholder="Search">
+            <button type="submit" id="searchIcon">
+                <img src="../../assets/navIcon/search.png" height="15px">
+            </button>
+        </div>
+    </div>
+
+    <div class="containerRight">
+        <div>
+            <a href="#">
+                <img src="../../assets/navIcon/film.png" width="25px" height="25px">
+            </a>
+        </div>
+
+        <div>
+            <a href="#">
+                <img src="../../assets/navIcon/menu2.png" width="20px" height="20px">
+            </a>
+        </div>
+    
+        <div>
+            <a href="#">
+                <img src="../../assets/navIcon/bell.png" width="25px" height="25px">
+            </a>
+        </div>
+
+        <div class="signContainer" *ngIf="user == null" (click)="signInWithGoogle()">
+            <div class="signIn">
+                <div class="signIcon">
+                    <img src="../../assets//navIcon/user.png" width="20px" height="20px">
+                </div>
+                <div>
+                    SIGN IN 
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="user">
+            <img src="{{ user.photoUrl }}" alt="" width="32px" height="32px" style="border-radius: 50%;">
+        </div>
+
+        <div class="signout">
+            <button (click)=signOut()>click me</button>
+        </div>
+    </div>
+</div>
+
+<div class="nav">
+    <div class="top">
+        <div class="menu" id="toggleClose">
+            <img src="../../assets/navIcon/menu.png" width="15px" height="15px">
+        </div>
+    
+        <div class="icon">
+            <a href="#">
+                <img src="../../assets/navIcon/logo1.jpg" width="85px" height="40px">
+            </a>
+        </div>
+    </div>
+    <hr>
+    <div class="item">
+        <div class="item-content-l">
+            <div>
+                <a href="#"><img src="../../assets/navItem/home-run.png" alt="" width="20px" height="20px"></a>
+            </div>
+        </div>
+        <div class="item-content">
+            <a href="#"><p>Home</p></a>
+        </div>
+    </div>
+    <div class="item">
+        <div class="item-content-l">
+            <div>
+                <a href="#"><img src="../../assets/navItem/fire.png" alt="" width="20px" height="20px"></a>
+            </div>
+        </div>
+        <div class="item-content">
+            <a href="#"><p>Trending</p></a>
+        </div>
+    </div>
+    <div class="item">
+        <div class="item-content-l">
+            <div>
+                <a href="#"><img src="../../assets/navItem/youtube.png" alt="" width="20px" height="20px"></a>
+            </div>
+        </div>
+        <div class="item-content">
+            <a href="#"><p>Subscriptions</p></a>
+        </div>
+    </div>
+    <hr>
+</div>
