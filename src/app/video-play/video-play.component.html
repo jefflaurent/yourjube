@@ -16,11 +16,11 @@
                 </div>
             </div>
             <div class="misc">
-                <div class="like icon">
-                    <i class="fa fa-thumbs-up fa-lg"></i>
+                <div class="like icon" *ngIf="currVid" (click)="initiateLike()">
+                    {{ currVid.likes }} <i class="fa fa-thumbs-up fa-lg"></i>
                 </div>
-                <div class="dislike icon">
-                    <i class="fa fa-thumbs-down fa-lg"></i>
+                <div class="dislike icon" *ngIf="currVid" (click)="removeLike()">
+                    {{ currVid.dislikes }} <i class="fa fa-thumbs-down fa-lg"></i>
                 </div>
                 <div class="share icon">
                     <div class="pls">

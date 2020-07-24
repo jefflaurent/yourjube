@@ -128,6 +128,7 @@
 
 .nav
 {
+    z-index: 69;
     padding-top: 7px;
     padding-bottom: 7px;
     background-color: white;
@@ -141,6 +142,7 @@
 
 .nav.active
 {
+    z-index: 69;
     left: 0;
     transition: 500ms;
 }

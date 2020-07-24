@@ -1,10 +1,14 @@
 <div class="container">
     <div class="left">
-        <img [src]="video.videoThumbnail" alt="" width="165px" height="95px">
+        <a [routerLink]="['/video', video.videoId]">
+            <img [src]="video.videoThumbnail" alt="" width="165px" height="95px">
+        </a>
     </div>
     <div class="right">
         <div class="top">
-            {{ title }}
+            <a [routerLink]="['/video', video.videoId]">
+                {{ title }}
+            </a>
         </div>
         <div class="bottom">
             <div class="channel">
