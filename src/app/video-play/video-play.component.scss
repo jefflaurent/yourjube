@@ -114,6 +114,14 @@
     margin-bottom: 10px;
 }
 
+.icon.clicked
+{
+    color: blue;
+    margin: 15px;
+    margin-top: -30px;
+    margin-bottom: 10px;
+}
+
 .icon:hover
 {
     cursor: pointer;
@@ -168,3 +176,139 @@
 {
     display: none;
 }
+
+.header 
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    width: 380px;
+    margin-bottom: 13px;
+} 
+
+.autoplay
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(76, 67, 67, 1);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.special
+{
+    width: 400px;
+    margin-top: 13px;
+    margin-bottom: 13px;
+}
+
+.same-container
+{
+    display: flex;
+    justify-content: flex-start;
+}
+
+.top-section
+{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.qty
+{
+    font-size: 16px;
+}
+
+.sort-section
+{
+    margin-left: 25px;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(76, 67, 67, 1);
+}
+
+.sort-section:hover
+{
+    cursor: pointer;
+}
+
+.comment-left
+{
+    width: 5%;
+}
+
+.comment-right
+{
+    width: 95%;
+    margin-left: 15px;
+    box-sizing: border-box;
+}
+
+.comment-right input[type='text']
+{
+    font-size: 14px;
+    background-color: #f2f2f2;
+    width: 99%;
+    border: 1px solid lightgray;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    padding: 4px;
+}
+
+.comment-right input[type='text']:focus
+{
+    outline-width: 0;
+    background-color: #f2f2f2;
+    width: 100%;
+    border: 1px solid black;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    padding: 4px;
+}
+
+.comment-left img
+{
+    width: 90%;
+    border-radius: 50%;
+}
+
+.click-container
+{
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+}
+
+.clickables
+{
+    color: white;
+    background-color: blue;
+    font-weight: 400;
+    font-size: 13px;
+    padding: 8px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-left: 10px;
+    border-radius: 2px;
+}
+
+.clickables:hover
+{
+    cursor: pointer;
+    // color: white;
+    // background-color: blue;
+    // font-weight: 400;
+    // font-size: 13px;
+    // padding: 8px;
+    // padding-left: 15px;
+    // padding-right: 15px;
+    // margin-left: 10px;
+    // border-radius: 2px;
+}
+
+
+

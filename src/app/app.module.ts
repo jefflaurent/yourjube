@@ -25,6 +25,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { MainPageComponent } from './main-page/main-page.component';
 import { VideoPlayComponent } from './video-play/video-play.component';
 import { VideoSideComponent } from './video-side/video-side.component';
+import { CommentComponent } from './comment/comment.component';
+import { NestedCommentComponent } from './nested-comment/nested-comment.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { VideoSideComponent } from './video-side/video-side.component';
     VideoPageComponent,
     MainPageComponent,
     VideoPlayComponent,
-    VideoSideComponent
+    VideoSideComponent,
+    CommentComponent,
+    NestedCommentComponent
   ],
   imports: [
     BrowserModule,

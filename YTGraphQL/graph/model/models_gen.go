@@ -12,6 +12,23 @@ type Channel struct {
 	IsPremium  string `json:"isPremium"`
 }
 
+type Comment struct {
+	CommentID       string  `json:"commentId"`
+	VideoID         int     `json:"videoId"`
+	ChannelID       int     `json:"channelId"`
+	ChannelName     *string `json:"channelName"`
+	ChannelEmail    string  `json:"channelEmail"`
+	ChannelPhotoURL string  `json:"channelPhotoURL"`
+	Content         string  `json:"content"`
+	ReplyTo         int     `json:"replyTo"`
+	Likes           int     `json:"likes"`
+	Dislikes        int     `json:"dislikes"`
+	Day             int     `json:"day"`
+	Month           int     `json:"month"`
+	Year            int     `json:"year"`
+	Replies         int     `json:"replies"`
+}
+
 type Dislike struct {
 	DislikeID      string  `json:"dislikeId"`
 	ChannelID      int     `json:"channelId"`
@@ -57,6 +74,22 @@ type NewChannel struct {
 	BannerURL  string `json:"bannerURL"`
 	Subscriber int    `json:"subscriber"`
 	IsPremium  string `json:"isPremium"`
+}
+
+type NewComment struct {
+	VideoID         int     `json:"videoId"`
+	ChannelID       int     `json:"channelId"`
+	ChannelName     *string `json:"channelName"`
+	ChannelEmail    string  `json:"channelEmail"`
+	ChannelPhotoURL string  `json:"channelPhotoURL"`
+	Content         string  `json:"content"`
+	ReplyTo         int     `json:"replyTo"`
+	Likes           int     `json:"likes"`
+	Dislikes        int     `json:"dislikes"`
+	Day             int     `json:"day"`
+	Month           int     `json:"month"`
+	Year            int     `json:"year"`
+	Replies         int     `json:"replies"`
 }
 
 type NewDislike struct {

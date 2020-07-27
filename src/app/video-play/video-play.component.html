@@ -19,7 +19,7 @@
                 <div class="like icon" *ngIf="currVid" (click)="initiateLike()">
                     {{ currVid.likes }} <i class="fa fa-thumbs-up fa-lg"></i>
                 </div>
-                <div class="dislike icon" *ngIf="currVid" (click)="removeLike()">
+                <div class="dislike icon" *ngIf="currVid" (click)="initiateDislike()">
                     {{ currVid.dislikes }} <i class="fa fa-thumbs-down fa-lg"></i>
                 </div>
                 <div class="share icon">
@@ -80,8 +80,58 @@
                 <hr>
             </div>
         </div>
+        <div class="comment-box">
+            <div class="same-container top-section">
+                <div class="qty" *ngIf="comments">
+                    {{ commentQty }} Comments
+                </div>
+                <div class="same-container sort-section">
+                    <div style="margin-right: 10px;">
+                        <i class="fa fa-sort-amount-desc fa-lg"></i>
+                    </div>
+                    <div>
+                        SORT BY
+                    </div>
+                </div>
+            </div>
+            <div class="same-container">
+                <div class="comment-left" *ngIf="currVid">
+                    <img [src]="currVid.channelPhotoURL">
+                </div>
+                <div class="comment-right">
+                    <input type="text" placeholder="Add a public comment..." (value)="content" (input)="content = $event.target.value">
+                </div>
+            </div>
+            <div class="click-container">
+                <div class="clickables" style="background-color: #f2f2f2; color: rgba(76, 67, 67, 1); font-weight: 500;">
+                    CANCEL
+                </div>
+                <div class="clickables" (click)="addComment()">
+                    COMMENT
+                </div>
+            </div>
+        </div>
+        <app-comment *ngFor="let comment of comments" [com]=(comment)></app-comment>
     </div>
     <div class="right">
-        <app-video-side *ngFor="let video of videos" [vid]=(video)></app-video-side>
+        <div class="header">
+            <div class="txt">
+                Up next
+            </div>
+            <div class="autoplay">
+                <div style="margin-right: 5px;">
+                    AUTOPLAY
+                </div>
+                <div>
+                    <i class="fa fa-toggle-off fa-lg"></i>
+                </div>
+            </div>
+        </div>
+        <app-video-side *ngFor="let video of firstVideo" [vid]=(video)></app-video-side>
+    
+        <div class="special">
+            <hr>
+        </div>
+        <app-video-side *ngFor="let video of passVideos" [vid]=(video)></app-video-side>
     </div>
 </div>

@@ -257,6 +257,32 @@ func (r *mutationResolver) DecreaseDislike(ctx context.Context, videoID string) 
 	return true, nil
 }
 
+func (r *mutationResolver) AddComment(ctx context.Context, input *model.NewComment) (*model.Comment, error) {
+	comment := model.Comment{
+		VideoID:         input.VideoID,
+		ChannelID:       input.ChannelID,
+		ChannelName:     input.ChannelName,
+		ChannelEmail:    input.ChannelEmail,
+		ChannelPhotoURL: input.ChannelPhotoURL,
+		Content:         input.Content,
+		ReplyTo:         input.ReplyTo,
+		Likes:           input.Likes,
+		Dislikes:        input.Dislikes,
+		Day:             input.Day,
+		Month:           input.Month,
+		Year:            input.Year,
+		Replies:         input.Replies,
+	}
+
+	_, err := r.DB.Model(&comment).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &comment, nil
+}
+
 func (r *queryResolver) Channels(ctx context.Context) ([]*model.Channel, error) {
 	var channels []*model.Channel
 
@@ -318,10 +344,10 @@ func (r *queryResolver) FindLike(ctx context.Context, email string, videoID int)
 	return likes, nil
 }
 
-func (r *queryResolver) FindDislike(ctx context.Context, channelID int, videoID int) ([]*model.Dislike, error) {
+func (r *queryResolver) FindDislike(ctx context.Context, email string, videoID int) ([]*model.Dislike, error) {
 	var dislikes []*model.Dislike
 
-	err := r.DB.Model(&dislikes).Where("video_id = ? AND channel_id = ?", videoID, channelID).Select()
+	err := r.DB.Model(&dislikes).Where("channel_email = ? AND video_id = ?", email, videoID).Select()
 
 	if err != nil {
 		return nil, errors.New("Dislike not found")
@@ -340,6 +366,30 @@ func (r *queryResolver) FindChannel(ctx context.Context, email string) ([]*model
 	}
 
 	return channels, nil
+}
+
+func (r *queryResolver) Comments(ctx context.Context, videoID int) ([]*model.Comment, error) {
+	var comments []*model.Comment
+
+	err := r.DB.Model(&comments).Where("video_id = ?", videoID).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return comments, nil
+}
+
+func (r *queryResolver) FindReply(ctx context.Context, replyTo int) ([]*model.Comment, error) {
+	var replies []*model.Comment
+
+	err := r.DB.Model(&replies).Where("reply_to = ?", replyTo).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return replies, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

@@ -46,6 +46,23 @@ type Dislike {
   videoURL: String
 }
 
+type Comment {
+  commentId: ID!
+  videoId: Int!
+  channelId: Int!
+  channelName: String
+  channelEmail: String!
+  channelPhotoURL: String!
+  content: String!
+  replyTo: Int!
+  likes: Int!
+  dislikes: Int!
+  day: Int!
+  month: Int!
+  year: Int!
+  replies: Int!
+}
+
 input newVideo {
   videoTitle: String!,
   videoDesc: String!,
@@ -90,14 +107,32 @@ input newDislike {
   videoURL: String
 }
 
+input newComment {
+  videoId: Int!
+  channelId: Int!
+  channelName: String
+  channelEmail: String!
+  channelPhotoURL: String!
+  content: String!
+  replyTo: Int!
+  likes: Int!
+  dislikes: Int!
+  day: Int!
+  month: Int!
+  year: Int!
+  replies: Int!
+}
+
 type Query {
   channels: [Channel!]!
   videos: [Video!]!
   publicVideos: [Video!]!
   likes: [Like!]!
   findLike(email: String!, videoId: Int!): [Like!]!
-  findDislike(channelId: Int!, videoId: Int!): [Dislike!]!
+  findDislike(email: String!, videoId: Int!): [Dislike!]!
   findChannel(email: String!): [Channel!]!
+  comments(videoId: Int!): [Comment!]!
+  findReply(replyTo: Int!): [Comment!]!
 }
 
 type Mutation {
@@ -112,4 +147,5 @@ type Mutation {
   removeDislike(channelId: Int!, videoId: Int!): Boolean!
   decreaseLike(videoId: ID!): Boolean!
   decreaseDislike(videoId: ID!): Boolean!
+  addComment(input: newComment): Comment!
 }

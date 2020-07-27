@@ -94,6 +94,13 @@
     border-bottom-right-radius: unset;
 }
 
+#searchBar:focus
+{
+    outline-width: 0;
+    outline: none;
+    border: 1px solid blue;
+}
+
 .signIn
 {
     display: flex;

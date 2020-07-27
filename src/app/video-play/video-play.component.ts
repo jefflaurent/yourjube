@@ -1,7 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Apollo } from'apollo-angular';
+import { Apollo } from 'apollo-angular';
 import { Videos } from '../video';
+import { Comments } from '../comment';
 import gql from 'graphql-tag';
 
 @Component({
@@ -11,52 +12,55 @@ import gql from 'graphql-tag';
 })
 export class VideoPlayComponent implements OnInit {
 
-    getVideoQuery = gql`
-      query getVideos {
-        videos {
-          videoId,
-          videoTitle,
-          videoDesc,
-          videoURL,
-          videoThumbnail,
-          uploadDay,
-          uploadMonth,
-          uploadYear,
-          views,
-          likes,
-          dislikes,
-          visibility,
-          viewer,
-          category,
-          channelName,
-          channelPhotoURL,
-          channelEmail,
-        }
+  getVideoQuery = gql`
+    query getVideos {
+      videos {
+        videoId,
+        videoTitle,
+        videoDesc,
+        videoURL,
+        videoThumbnail,
+        uploadDay,
+        uploadMonth,
+        uploadYear,
+        views,
+        likes,
+        dislikes,
+        visibility,
+        viewer,
+        category,
+        channelName,
+        channelPhotoURL,
+        channelEmail,
       }
-    `;
+    }
+  `;
 
+  getCommentQuery = gql`
+  query getComments($videoId: Int!){
+      comments(videoId: $videoId) {
+        commentId,
+        videoId,
+        channelId,
+        channelName,
+        channelEmail,
+        channelPhotoURL,
+        content,
+        replyTo,
+        likes,
+        dislikes,
+        day,
+        month,
+        year,
+        replies
+      }
+    }
+  `;
 
-  @Input('vid') video: {
-    videoId: BigInteger,        
-    videoTitle: string,  
-    videoDesc: string,
-    videoURL: string,
-    videoThumbnail: string,
-    uploadDay: string,
-    uploadMonth: string,
-    uploadYear: string,
-    views: BigInteger,
-    likes: BigInteger,     
-    dislikes: BigInteger,      
-    visibility: string,    
-    viewer: string,       
-    category: string,      
-    channelName: string,
-    channelPhotoURL: string,
-    channelEmail: string,
-  }
-
+  firstVideo: Videos[] = [];
   videos: Videos[] = [];
+  passVideos: Videos[] = [];
+  comments: Comments[] = [];
   currVid: Videos
   id: any
   month: any
@@ -65,7 +69,13 @@ export class VideoPlayComponent implements OnInit {
   isLimited: boolean = true
   isLiked: boolean
   isDisliked: boolean
-  user : any
+  commentQty: number
+  user: any
+  content: string
+  declare: any
+  d: number
+  m: number
+  y: number
 
   constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute) { }
 
@@ -76,9 +86,9 @@ export class VideoPlayComponent implements OnInit {
     this.activatedRoute.paramMap.subscribe(params => {
       this.id = params.get('id');
       this.watchVideo();
-      this.checkLiked()
-      console.log(this.id)
-      console.log(this.user.email)
+      this.fetchComments();
+      this.checkLiked();
+      this.checkDisliked();
     })
   }
 
@@ -130,33 +140,72 @@ export class VideoPlayComponent implements OnInit {
     }).subscribe()
   }
 
+  paintBlue(whichClass): void {
+    var container = document.querySelector(whichClass)
+    container.classList.add('clicked')
+  }
+
+  paintGrey(whichClass): void {
+    var container = document.querySelector(whichClass)
+    container.classList.remove('clicked')
+  }
+
   initiateLike(): void {
     if(this.isLiked == false) {
-      this.addLike()
-      this.increaseLike()
-      this.isLiked = true
-      console.log(this.isLiked)
+      this.like()
+      if(this.isDisliked == true)
+        this.undislike()
     } else if(this.isLiked == true){
-      this.removeLike()
-      this.decreaseLike()
-      this.isLiked = false
-      console.log(this.isLiked)
+      this.unlike()
     }
   }
 
-  // initiateDislike(): void {
-  //   if(this.isDisliked == false) {
-  //     this.addLike()
-  //     this.increaseLike()
-  //     this.isLiked = true
-  //     console.log(this.isLiked)
-  //   } else if(this.isDisliked == true){
-  //     this.removeLike()
-  //     this.decreaseLike()
-  //     this.isLiked = false
-  //     console.log(this.isLiked)
-  //   }
-  // }
+  initiateDislike(): void {
+    if(this.isDisliked == false) {
+      this.dislike()
+      if(this.isLiked == true)
+        this.unlike()
+    } else if(this.isDisliked == true){
+      this.undislike();
+    }
+  }
+
+  addComment(): void {
+    var date = new Date()
+    this.d = date.getDate()
+    this.m = date.getMonth()
+    this.y = date.getFullYear()
+    this.addCommentQuery()
+    this.content = " "
+  }
+
+  like(): void {
+    this.addLike()
+    this.increaseLike()
+    this.isLiked = true
+    this.paintBlue('.like')
+  }
+
+  unlike(): void {
+    this.removeLike()
+    this.decreaseLike()
+    this.isLiked = false
+    this.paintGrey('.like')
+  }
+
+  dislike(): void {
+    this.addDislike()
+    this.increaseDislike()
+    this.isDisliked = true
+    this.paintBlue('.dislike')
+  }
+
+  undislike(): void {
+    this.removeDislike()
+    this.decreaseDislike()
+    this.isDisliked = false
+    this.paintGrey('.dislike')
+  }
 
   increaseLike(): void {
     this.apollo.mutate({
@@ -346,10 +395,43 @@ export class VideoPlayComponent implements OnInit {
         channelId: this.id
       }
     }).subscribe( result => {
-      if(result.data.findLike.length > 0)
+      if(result.data.findLike.length > 0){
         this.isLiked = true
-      else if(result.data.findLike.length == 0)
+        this.paintBlue('.like')
+      }
+      else if(result.data.findLike.length == 0){
         this.isLiked = false
+        this.paintGrey('.like')
+      }
+    })
+  }
+
+  checkDisliked(): void {
+    this.apollo.query<any>({
+      query: gql`
+      query find ($channelEmail: String!, $channelId: Int!){
+        findDislike(email: $channelEmail, videoId: $channelId) {
+          channelId,
+          channelEmail,
+          videoId,
+          videoThumbnail,
+          videoURL,
+        }
+      }
+      `,
+      variables: {
+        channelEmail: this.user.email,
+        channelId: this.id
+      }
+    }).subscribe( result => {
+      if(result.data.findDislike.length > 0) {
+        this.isDisliked = true
+        this.paintBlue('.dislike')
+      }
+      else if(result.data.findDislike.length == 0) {
+        this.isDisliked = false
+        this.paintGrey('.dislike')
+      }
     })
   }
 
@@ -386,35 +468,168 @@ export class VideoPlayComponent implements OnInit {
       this.activatedRoute.paramMap.subscribe(params => {
         this.id = params.get('id');
         this.currVid = this.videos.find( v => v.videoId == this.id)
-        if(parseInt(this.currVid.uploadMonth) == 1)
-          this.month = 'Jan'
-        else if(parseInt(this.currVid.uploadMonth) == 2)
-          this.month = 'Feb'
-        else if(parseInt(this.currVid.uploadMonth) == 3)
-          this.month = 'Mar'
-        else if(parseInt(this.currVid.uploadMonth) == 4)
-          this.month = 'Apr'
-        else if(parseInt(this.currVid.uploadMonth) == 5)
-          this.month = 'May'
-        else if(parseInt(this.currVid.uploadMonth) == 6)
-          this.month = 'Jun'
-        else if(parseInt(this.currVid.uploadMonth) == 7)
-          this.month = 'Jul'
-        else if(parseInt(this.currVid.uploadMonth) == 8)
-          this.month = 'Aug'
-        else if(parseInt(this.currVid.uploadMonth) == 9)
-          this.month = 'Sep'
-        else if(parseInt(this.currVid.uploadMonth) == 10)
-          this.month = 'Oct'
-        else if(parseInt(this.currVid.uploadMonth) == 11)
-          this.month = 'Nov'
-        else if(parseInt(this.currVid.uploadMonth) == 12)
-          this.month = 'Dec'
-        
-        this.post = this.month + ' ' + this.currVid.uploadDay + ', ' + this.currVid.uploadYear
-      
+        this.convertDate();
         this.fetchUser();
+        this.sortVideos();
+        this.processVideos();
       })
     })
+  }
+
+ fetchComments(): void {
+   this.apollo.watchQuery<any>({
+     query: this.getCommentQuery,
+     variables:{
+       videoId: this.id
+     }
+   }).valueChanges.subscribe(result => {
+     this.comments = result.data.comments
+     this.commentQty = result.data.comments.length
+   })
+ }
+
+  convertDate(): void {
+    if(parseInt(this.currVid.uploadMonth) == 1)
+      this.month = 'Jan'
+    else if(parseInt(this.currVid.uploadMonth) == 2)
+      this.month = 'Feb'
+    else if(parseInt(this.currVid.uploadMonth) == 3)
+      this.month = 'Mar'
+    else if(parseInt(this.currVid.uploadMonth) == 4)
+      this.month = 'Apr'
+    else if(parseInt(this.currVid.uploadMonth) == 5)
+      this.month = 'May'
+    else if(parseInt(this.currVid.uploadMonth) == 6)
+      this.month = 'Jun'
+    else if(parseInt(this.currVid.uploadMonth) == 7)
+      this.month = 'Jul'
+    else if(parseInt(this.currVid.uploadMonth) == 8)
+      this.month = 'Aug'
+    else if(parseInt(this.currVid.uploadMonth) == 9)
+      this.month = 'Sep'
+    else if(parseInt(this.currVid.uploadMonth) == 10)
+      this.month = 'Oct'
+    else if(parseInt(this.currVid.uploadMonth) == 11)
+      this.month = 'Nov'
+    else if(parseInt(this.currVid.uploadMonth) == 12)
+      this.month = 'Dec'
+    
+    this.post = this.month + ' ' + this.currVid.uploadDay + ', ' + this.currVid.uploadYear
+  }
+
+  sortVideos(): void {
+    this.videos.sort(function(a,b) {return a.videoId - b.videoId})
+  }
+
+  processVideos(): void {
+    var j = 0;
+    for(let i = 0; i < this.videos.length; i++) {
+      if(this.videos[i].videoId > this.id) {
+        this.passVideos[j] = this.videos[i];
+        j++;
+      }
+    }
+
+    for(let i = 0; i < this.videos.length; i++) {
+      if(this.videos[i].videoId < this.id) {
+        this.passVideos[j] = this.videos[i];
+        j++;
+      }
+    }
+
+    this.firstVideo[0] = this.passVideos[0]
+    this.passVideos.shift()
+  }
+
+  addCommentQuery(): void {
+    this.apollo.mutate({
+      mutation: gql`
+        mutation createComment(
+          $videoId: Int!, 
+          $channelId: Int!,
+          $channelName: String!,
+          $channelEmail: String!,
+          $channelPhotoURL: String!,
+          $content: String!,
+          $replyTo: Int!,
+          $likes: Int!,
+          $dislikes: Int!,
+          $day: Int!,
+          $month: Int!,
+          $year: Int!,
+          $replies: Int!,
+        ) {
+          addComment(input: {
+            videoId: $videoId,
+            channelId: $channelId,
+            channelName: $channelName,
+            channelEmail: $channelEmail,
+            channelPhotoURL: $channelPhotoURL,
+            content: $content,
+            replyTo: $replyTo,
+            likes: $likes,
+            dislikes: $dislikes,
+            day: $day,
+            month: $month,
+            year: $year,
+            replies: $replies,
+          }) {
+            videoId,
+            channelId,
+            channelName,
+            channelEmail,
+            channelPhotoURL,
+            content,
+            replyTo,
+            likes,
+            dislikes,
+            day,
+            month,
+            year,
+            replies,
+          }
+        }
+      `,
+      variables: {
+        videoId: this.id,
+        channelId: this.channel.data.findChannel[0].id,
+        channelName: this.user.name,
+        channelEmail: this.user.email,
+        channelPhotoURL: this.user.photoUrl,
+        content: this.content,
+        replyTo: 0,
+        likes: 0,
+        dislikes: 0,
+        day: this.d,
+        month: this.m,
+        year: this.y,
+        replies: 0
+      },
+      refetchQueries: [{
+        query: gql`
+        query getComments($videoId: Int!){
+            comments(videoId: $videoId) {
+              commentId,
+              videoId,
+              channelId,
+              channelName,
+              channelEmail,
+              channelPhotoURL,
+              content,
+              replyTo,
+              likes,
+              dislikes,
+              day,
+              month,
+              year,
+              replies
+            }
+          }
+        `,
+        variables: {
+          videoId: this.id
+        }
+      }],
+    }).subscribe()
   }
 }

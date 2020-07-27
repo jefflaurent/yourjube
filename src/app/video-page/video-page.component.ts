@@ -57,12 +57,26 @@ export class VideoPageComponent implements OnInit {
     }
     else if(parseInt(this.video.uploadYear) == this.year && parseInt(this.video.uploadMonth) == this.month && parseInt(this.video.uploadDay) <= this.date) {
       let gap = this.date - parseInt(this.video.uploadDay)
-      if(gap == 0)
-        this.post = 'Today';
-      else if(gap == 1)
-        this.post = gap + ' day ago';
-      else
-        this.post = gap + ' days ago';
+      if(gap >= 7)
+      {
+        if(gap >= 7 && gap < 14)
+          this.post = '1 week ago'
+        else if(gap >= 14 && gap < 21)
+          this.post = '2 weeks ago'
+        else if(gap >= 21 && gap < 28)
+          this.post = '3 weeks ago'
+        else if(gap >= 28)
+          this.post = '4 weeks ago'
+      }
+      else 
+      {
+        if(gap == 0)
+          this.post = 'Today';
+        else if(gap == 1)
+          this.post = gap + ' day ago';
+        else
+          this.post = gap + ' days ago';
+      }
     }
   }
 }

@@ -1,0 +1,57 @@
+<div class="container" *ngIf="comment">
+    <div class="left">
+        <img [src]="comment.channelPhotoURL" alt="">
+    </div>
+    <div class="right">
+        <div class="inner-container">
+            <div class="name">
+                {{ comment.channelName }}
+            </div>
+            <div class="time">
+                1 day ago
+            </div>
+        </div>
+        <div class="middle">
+            {{ comment.content }}
+        </div>
+        <div class="inner-container">
+            <div class="items">
+                <i class="fa fa-thumbs-up"></i> {{ comment.likes }}
+            </div>
+            <div class="items">
+                <i class="fa fa-thumbs-down"></i> {{ comment.dislikes }}
+            </div>
+            <div class="items rep" style="font-weight: 550;" (click)="openReply()">
+                REPLY
+            </div>
+        </div>
+        <div class="reply closed" [id]="dummyId">
+            <div class="inner-container" style="margin-top: 10px;">
+                <div class="comment-left">
+                    <img [src]="user.photoUrl" alt="">
+                </div>
+                <div class="comment-right">
+                    <input type="text" placeholder="Add a public reply...">
+                </div>
+                <div>
+                    {{ comment.commentID }}
+                </div>
+            </div>
+            <div class="click-container">
+                <div class="clickables" style="background-color: #f2f2f2; color: rgba(76, 67, 67, 1); font-weight: 500;" (click)="closeReply()">
+                    CANCEL
+                </div>
+                <div class="clickables">
+                    REPLY
+                </div>
+            </div>
+        </div>
+        <div class="view">
+            <i class="fa fa-caret-down" style="margin-right: 10px;"></i> View 17 replies
+        </div>
+        <div class="hide" *ngIf="replies">
+            <app-nested-comment *ngFor="let reply of replies" [com]="reply"></app-nested-comment>
+        </div>
+        <div style="height: 23px"></div>
+    </div>
+</div>
