@@ -1,0 +1,91 @@
+<div class="container">
+    <div class="left">
+        <div class="inner-container">
+            <div class="thumbnail">
+                <img src="../../assets/upload/thumbnail.png" alt="">
+                <div class="overlap">
+                    <div class="overlap-container">
+                        <div>
+                            <i class="fa fa-play"></i>
+                        </div>
+                        <div>
+                            PLAY ALL
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="space-between block">
+                <div class="title hidden">
+                    <input type="text" name="" id="" [value]="playlistName" (input)="playlistName = $event.target.value">
+                </div>
+                <div class="titleTxt">
+                    {{ playlistName }}
+                </div>
+                <div class="icon editTitle" (click)="hidePencil()">
+                    <i class="fa fa-pencil fa-lg"></i>
+                </div>
+            </div>
+            <div class="title-btn titleBtn hidden">
+                <div class="cancelTitle" (click)="returnTitle()">
+                    CANCEL
+                </div>
+                <div class="saveTitle">
+                    SAVE
+                </div>
+            </div>
+            <div class="details block">
+                5 videos <span>&#8226;</span> 27 views <span>&#8226;</span> Last updated on Sep 15, 2019
+            </div>
+            <div class="visibility block">
+                Private
+            </div>
+            <div class="flex-start block">
+                <div class="icon" style="margin-right: 20px;">
+                    <i class="fa fa-random fa-lg"></i>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-ellipsis-h fa-lg"></i>
+                </div>
+            </div>
+            <div class="space-between block">
+                <div class="desc hidden">
+                    <input type="text" name="" id="" [value]="playlistDescription" (input)="playlistDescription = $event.target.value">
+                </div>
+                <div class="descTxt">
+                    {{ playlistDescription }}
+                </div>
+                <div class="icon editDesc" (click)="hideDescPencil()">
+                    <i class="fa fa-pencil fa-lg"></i>
+                </div>
+            </div>
+            <div class="cancelBtn hidden">
+                <div class="cancelTitle" (click)="returnDesc()">
+                    CANCEL
+                </div>
+                <div class="saveTitle">
+                    SAVE
+                </div>
+            </div>
+            <hr>
+            <div class="channel block">
+                <div class="photo">
+                    <img src="../../assets/navIcon/user.png" alt="">
+                </div>  
+                <div class="name">
+                    Jeff L
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="right" *ngIf="videos">
+        <div class="sort">
+            <div>
+                <i class="fa fa-sort-amount-desc fa-lg"></i>
+            </div>
+            <div style="margin-left: 15px; font-size: 14px;">
+                SORT BY
+            </div>
+        </div>
+        <app-playlist-side *ngFor="let video of videos" [vid]="(video)"></app-playlist-side>
+    </div>
+</div>

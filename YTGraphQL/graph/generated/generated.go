@@ -70,6 +70,20 @@ type ComplexityRoot struct {
 		Year            func(childComplexity int) int
 	}
 
+	CommentDislike struct {
+		ChannelEmail     func(childComplexity int) int
+		ChannelID        func(childComplexity int) int
+		CommentDislikeID func(childComplexity int) int
+		CommentID        func(childComplexity int) int
+	}
+
+	CommentLike struct {
+		ChannelEmail  func(childComplexity int) int
+		ChannelID     func(childComplexity int) int
+		CommentID     func(childComplexity int) int
+		CommentLikeID func(childComplexity int) int
+	}
+
 	Dislike struct {
 		ChannelEmail   func(childComplexity int) int
 		ChannelID      func(childComplexity int) int
@@ -89,30 +103,41 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		AddComment      func(childComplexity int, input *model.NewComment) int
-		AddDislike      func(childComplexity int, input *model.NewDislike) int
-		AddLike         func(childComplexity int, input *model.NewLike) int
-		CreateChannel   func(childComplexity int, input *model.NewChannel) int
-		CreateVideo     func(childComplexity int, input *model.NewVideo) int
-		DecreaseDislike func(childComplexity int, videoID string) int
-		DecreaseLike    func(childComplexity int, videoID string) int
-		DislikeVideo    func(childComplexity int, videoID string) int
-		LikeVideo       func(childComplexity int, videoID string) int
-		RemoveDislike   func(childComplexity int, channelID int, videoID int) int
-		RemoveLike      func(childComplexity int, channelID int, videoID int) int
-		WatchVideo      func(childComplexity int, videoID string) int
+		AddComment             func(childComplexity int, input *model.NewComment) int
+		AddDislike             func(childComplexity int, input *model.NewDislike) int
+		AddLike                func(childComplexity int, input *model.NewLike) int
+		AddReplyCount          func(childComplexity int, commentID string) int
+		CreateChannel          func(childComplexity int, input *model.NewChannel) int
+		CreateVideo            func(childComplexity int, input *model.NewVideo) int
+		DecreaseCommentDislike func(childComplexity int, commentID string) int
+		DecreaseCommentLike    func(childComplexity int, commentID string) int
+		DecreaseDislike        func(childComplexity int, videoID string) int
+		DecreaseLike           func(childComplexity int, videoID string) int
+		DislikeVideo           func(childComplexity int, videoID string) int
+		IncreaseCommentDislike func(childComplexity int, commentID string) int
+		IncreaseCommentLike    func(childComplexity int, commentID string) int
+		LikeVideo              func(childComplexity int, videoID string) int
+		RegisterCommentDislike func(childComplexity int, input *model.NewCommentDislike) int
+		RegisterCommentLike    func(childComplexity int, input *model.NewCommentLike) int
+		RemoveCommentDislike   func(childComplexity int, commentID int, channelEmail string) int
+		RemoveCommentLike      func(childComplexity int, commentID int, channelEmail string) int
+		RemoveDislike          func(childComplexity int, channelID int, videoID int) int
+		RemoveLike             func(childComplexity int, channelID int, videoID int) int
+		WatchVideo             func(childComplexity int, videoID string) int
 	}
 
 	Query struct {
-		Channels     func(childComplexity int) int
-		Comments     func(childComplexity int, videoID int) int
-		FindChannel  func(childComplexity int, email string) int
-		FindDislike  func(childComplexity int, email string, videoID int) int
-		FindLike     func(childComplexity int, email string, videoID int) int
-		FindReply    func(childComplexity int, replyTo int) int
-		Likes        func(childComplexity int) int
-		PublicVideos func(childComplexity int) int
-		Videos       func(childComplexity int) int
+		Channels           func(childComplexity int) int
+		Comments           func(childComplexity int, videoID int) int
+		FindChannel        func(childComplexity int, email string) int
+		FindCommentDislike func(childComplexity int, channelEmail string, commentID string) int
+		FindCommentLike    func(childComplexity int, channelEmail string, commentID string) int
+		FindDislike        func(childComplexity int, email string, videoID int) int
+		FindLike           func(childComplexity int, email string, videoID int) int
+		FindReply          func(childComplexity int, replyTo int) int
+		Likes              func(childComplexity int) int
+		PublicVideos       func(childComplexity int) int
+		Videos             func(childComplexity int) int
 	}
 
 	Video struct {
@@ -149,6 +174,15 @@ type MutationResolver interface {
 	DecreaseLike(ctx context.Context, videoID string) (bool, error)
 	DecreaseDislike(ctx context.Context, videoID string) (bool, error)
 	AddComment(ctx context.Context, input *model.NewComment) (*model.Comment, error)
+	AddReplyCount(ctx context.Context, commentID string) (bool, error)
+	IncreaseCommentLike(ctx context.Context, commentID string) (bool, error)
+	DecreaseCommentLike(ctx context.Context, commentID string) (bool, error)
+	IncreaseCommentDislike(ctx context.Context, commentID string) (bool, error)
+	DecreaseCommentDislike(ctx context.Context, commentID string) (bool, error)
+	RegisterCommentLike(ctx context.Context, input *model.NewCommentLike) (*model.CommentLike, error)
+	RegisterCommentDislike(ctx context.Context, input *model.NewCommentDislike) (*model.CommentDislike, error)
+	RemoveCommentLike(ctx context.Context, commentID int, channelEmail string) (bool, error)
+	RemoveCommentDislike(ctx context.Context, commentID int, channelEmail string) (bool, error)
 }
 type QueryResolver interface {
 	Channels(ctx context.Context) ([]*model.Channel, error)
@@ -160,6 +194,8 @@ type QueryResolver interface {
 	FindChannel(ctx context.Context, email string) ([]*model.Channel, error)
 	Comments(ctx context.Context, videoID int) ([]*model.Comment, error)
 	FindReply(ctx context.Context, replyTo int) ([]*model.Comment, error)
+	FindCommentLike(ctx context.Context, channelEmail string, commentID string) ([]*model.CommentLike, error)
+	FindCommentDislike(ctx context.Context, channelEmail string, commentID string) ([]*model.CommentDislike, error)
 }
 
 type executableSchema struct {
@@ -324,6 +360,62 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Comment.Year(childComplexity), true
 
+	case "CommentDislike.channelEmail":
+		if e.complexity.CommentDislike.ChannelEmail == nil {
+			break
+		}
+
+		return e.complexity.CommentDislike.ChannelEmail(childComplexity), true
+
+	case "CommentDislike.channelId":
+		if e.complexity.CommentDislike.ChannelID == nil {
+			break
+		}
+
+		return e.complexity.CommentDislike.ChannelID(childComplexity), true
+
+	case "CommentDislike.commentDislikeId":
+		if e.complexity.CommentDislike.CommentDislikeID == nil {
+			break
+		}
+
+		return e.complexity.CommentDislike.CommentDislikeID(childComplexity), true
+
+	case "CommentDislike.commentId":
+		if e.complexity.CommentDislike.CommentID == nil {
+			break
+		}
+
+		return e.complexity.CommentDislike.CommentID(childComplexity), true
+
+	case "CommentLike.channelEmail":
+		if e.complexity.CommentLike.ChannelEmail == nil {
+			break
+		}
+
+		return e.complexity.CommentLike.ChannelEmail(childComplexity), true
+
+	case "CommentLike.channelId":
+		if e.complexity.CommentLike.ChannelID == nil {
+			break
+		}
+
+		return e.complexity.CommentLike.ChannelID(childComplexity), true
+
+	case "CommentLike.commentId":
+		if e.complexity.CommentLike.CommentID == nil {
+			break
+		}
+
+		return e.complexity.CommentLike.CommentID(childComplexity), true
+
+	case "CommentLike.commentLikeId":
+		if e.complexity.CommentLike.CommentLikeID == nil {
+			break
+		}
+
+		return e.complexity.CommentLike.CommentLikeID(childComplexity), true
+
 	case "Dislike.channelEmail":
 		if e.complexity.Dislike.ChannelEmail == nil {
 			break
@@ -444,6 +536,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.AddLike(childComplexity, args["input"].(*model.NewLike)), true
 
+	case "Mutation.addReplyCount":
+		if e.complexity.Mutation.AddReplyCount == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addReplyCount_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddReplyCount(childComplexity, args["commentId"].(string)), true
+
 	case "Mutation.createChannel":
 		if e.complexity.Mutation.CreateChannel == nil {
 			break
@@ -467,6 +571,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateVideo(childComplexity, args["input"].(*model.NewVideo)), true
+
+	case "Mutation.decreaseCommentDislike":
+		if e.complexity.Mutation.DecreaseCommentDislike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_decreaseCommentDislike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DecreaseCommentDislike(childComplexity, args["commentId"].(string)), true
+
+	case "Mutation.decreaseCommentLike":
+		if e.complexity.Mutation.DecreaseCommentLike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_decreaseCommentLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DecreaseCommentLike(childComplexity, args["commentId"].(string)), true
 
 	case "Mutation.decreaseDislike":
 		if e.complexity.Mutation.DecreaseDislike == nil {
@@ -504,6 +632,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DislikeVideo(childComplexity, args["videoId"].(string)), true
 
+	case "Mutation.increaseCommentDislike":
+		if e.complexity.Mutation.IncreaseCommentDislike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_increaseCommentDislike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.IncreaseCommentDislike(childComplexity, args["commentId"].(string)), true
+
+	case "Mutation.increaseCommentLike":
+		if e.complexity.Mutation.IncreaseCommentLike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_increaseCommentLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.IncreaseCommentLike(childComplexity, args["commentId"].(string)), true
+
 	case "Mutation.likeVideo":
 		if e.complexity.Mutation.LikeVideo == nil {
 			break
@@ -515,6 +667,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.LikeVideo(childComplexity, args["videoId"].(string)), true
+
+	case "Mutation.registerCommentDislike":
+		if e.complexity.Mutation.RegisterCommentDislike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_registerCommentDislike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RegisterCommentDislike(childComplexity, args["input"].(*model.NewCommentDislike)), true
+
+	case "Mutation.registerCommentLike":
+		if e.complexity.Mutation.RegisterCommentLike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_registerCommentLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RegisterCommentLike(childComplexity, args["input"].(*model.NewCommentLike)), true
+
+	case "Mutation.removeCommentDislike":
+		if e.complexity.Mutation.RemoveCommentDislike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_removeCommentDislike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RemoveCommentDislike(childComplexity, args["commentId"].(int), args["channelEmail"].(string)), true
+
+	case "Mutation.removeCommentLike":
+		if e.complexity.Mutation.RemoveCommentLike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_removeCommentLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RemoveCommentLike(childComplexity, args["commentId"].(int), args["channelEmail"].(string)), true
 
 	case "Mutation.removeDislike":
 		if e.complexity.Mutation.RemoveDislike == nil {
@@ -582,6 +782,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.FindChannel(childComplexity, args["email"].(string)), true
+
+	case "Query.findCommentDislike":
+		if e.complexity.Query.FindCommentDislike == nil {
+			break
+		}
+
+		args, err := ec.field_Query_findCommentDislike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.FindCommentDislike(childComplexity, args["channelEmail"].(string), args["commentId"].(string)), true
+
+	case "Query.findCommentLike":
+		if e.complexity.Query.FindCommentLike == nil {
+			break
+		}
+
+		args, err := ec.field_Query_findCommentLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.FindCommentLike(childComplexity, args["channelEmail"].(string), args["commentId"].(string)), true
 
 	case "Query.findDislike":
 		if e.complexity.Query.FindDislike == nil {
@@ -859,7 +1083,7 @@ type Like {
   channelEmail: String!
   videoId: Int!
   videoThumbnail: String!
-  videoURL: String
+  videoURL: String!
 }
 
 type Dislike {
@@ -868,14 +1092,14 @@ type Dislike {
   channelEmail: String!
   videoId: Int!
   videoThumbnail: String!
-  videoURL: String
+  videoURL: String!
 }
 
 type Comment {
   commentId: ID!
   videoId: Int!
   channelId: Int!
-  channelName: String
+  channelName: String!
   channelEmail: String!
   channelPhotoURL: String!
   content: String!
@@ -888,23 +1112,37 @@ type Comment {
   replies: Int!
 }
 
+type CommentLike {
+  commentLikeId: ID!
+  commentId: Int!
+  channelId: Int!
+  channelEmail: String!
+}
+
+type CommentDislike {
+  commentDislikeId: ID!
+  commentId: Int!
+  channelId: Int!
+  channelEmail: String!
+}
+
 input newVideo {
-  videoTitle: String!,
-  videoDesc: String!,
-  videoURL: String!,
-  videoThumbnail: String!,
-  uploadDay: String!,
-  uploadMonth: String!,
-  uploadYear: String!,
-  views: Int!,
-  likes: Int!,
-  dislikes: Int!,
-  visibility: String!,
-  viewer: String!,
-  category: String!,
-  channelName: String!,
-  channelPhotoURL: String!,
-  channelEmail: String!,
+  videoTitle: String!
+  videoDesc: String!
+  videoURL: String!
+  videoThumbnail: String!
+  uploadDay: String!
+  uploadMonth: String!
+  uploadYear: String!
+  views: Int!
+  likes: Int!
+  dislikes: Int!
+  visibility: String!
+  viewer: String!
+  category: String!
+  channelName: String!
+  channelPhotoURL: String!
+  channelEmail: String!
 }
 
 input newChannel {
@@ -921,7 +1159,7 @@ input newLike {
   channelEmail: String!
   videoId: Int!
   videoThumbnail: String!
-  videoURL: String
+  videoURL: String!
 }
 
 input newDislike {
@@ -929,13 +1167,25 @@ input newDislike {
   channelEmail: String!
   videoId: Int!
   videoThumbnail: String!
-  videoURL: String
+  videoURL: String!
+}
+
+input newCommentLike {
+  commentId: Int!
+  channelId: Int!
+  channelEmail: String!
+}
+
+input newCommentDislike {
+  commentId: Int!
+  channelId: Int!
+  channelEmail: String!
 }
 
 input newComment {
   videoId: Int!
   channelId: Int!
-  channelName: String
+  channelName: String!
   channelEmail: String!
   channelPhotoURL: String!
   content: String!
@@ -958,6 +1208,8 @@ type Query {
   findChannel(email: String!): [Channel!]!
   comments(videoId: Int!): [Comment!]!
   findReply(replyTo: Int!): [Comment!]!
+  findCommentLike(channelEmail: String!, commentId: ID!): [CommentLike!]!
+  findCommentDislike(channelEmail: String!, commentId: ID!): [CommentDislike!]!
 }
 
 type Mutation {
@@ -973,6 +1225,15 @@ type Mutation {
   decreaseLike(videoId: ID!): Boolean!
   decreaseDislike(videoId: ID!): Boolean!
   addComment(input: newComment): Comment!
+  addReplyCount(commentId: ID!): Boolean!
+  increaseCommentLike(commentId: ID!): Boolean!
+  decreaseCommentLike(commentId: ID!): Boolean!
+  increaseCommentDislike(commentId: ID!): Boolean!
+  decreaseCommentDislike(commentId: ID!): Boolean!
+  registerCommentLike(input: newCommentLike): CommentLike!
+  registerCommentDislike(input: newCommentDislike): CommentDislike!
+  removeCommentLike(commentId: Int!, channelEmail: String!): Boolean!
+  removeCommentDislike(commentId: Int!, channelEmail: String!): Boolean!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -1023,6 +1284,20 @@ func (ec *executionContext) field_Mutation_addLike_args(ctx context.Context, raw
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_addReplyCount_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["commentId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["commentId"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createChannel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1048,6 +1323,34 @@ func (ec *executionContext) field_Mutation_createVideo_args(ctx context.Context,
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_decreaseCommentDislike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["commentId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["commentId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_decreaseCommentLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["commentId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["commentId"] = arg0
 	return args, nil
 }
 
@@ -1093,6 +1396,34 @@ func (ec *executionContext) field_Mutation_dislikeVideo_args(ctx context.Context
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_increaseCommentDislike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["commentId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["commentId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_increaseCommentLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["commentId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["commentId"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_likeVideo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1104,6 +1435,78 @@ func (ec *executionContext) field_Mutation_likeVideo_args(ctx context.Context, r
 		}
 	}
 	args["videoId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_registerCommentDislike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.NewCommentDislike
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOnewCommentDislike2ᚖGo_graphqlᚋgraphᚋmodelᚐNewCommentDislike(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_registerCommentLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.NewCommentLike
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOnewCommentLike2ᚖGo_graphqlᚋgraphᚋmodelᚐNewCommentLike(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_removeCommentDislike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["commentId"]; ok {
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["commentId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["channelEmail"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["channelEmail"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_removeCommentLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["commentId"]; ok {
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["commentId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["channelEmail"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["channelEmail"] = arg1
 	return args, nil
 }
 
@@ -1204,6 +1607,50 @@ func (ec *executionContext) field_Query_findChannel_args(ctx context.Context, ra
 		}
 	}
 	args["email"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_findCommentDislike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["channelEmail"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["channelEmail"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["commentId"]; ok {
+		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["commentId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_findCommentLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["channelEmail"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["channelEmail"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["commentId"]; ok {
+		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["commentId"] = arg1
 	return args, nil
 }
 
@@ -1665,11 +2112,14 @@ func (ec *executionContext) _Comment_channelName(ctx context.Context, field grap
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Comment_channelEmail(ctx context.Context, field graphql.CollectedField, obj *model.Comment) (ret graphql.Marshaler) {
@@ -2012,6 +2462,278 @@ func (ec *executionContext) _Comment_replies(ctx context.Context, field graphql.
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _CommentDislike_commentDislikeId(ctx context.Context, field graphql.CollectedField, obj *model.CommentDislike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "CommentDislike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CommentDislikeID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CommentDislike_commentId(ctx context.Context, field graphql.CollectedField, obj *model.CommentDislike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "CommentDislike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CommentID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CommentDislike_channelId(ctx context.Context, field graphql.CollectedField, obj *model.CommentDislike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "CommentDislike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CommentDislike_channelEmail(ctx context.Context, field graphql.CollectedField, obj *model.CommentDislike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "CommentDislike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelEmail, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CommentLike_commentLikeId(ctx context.Context, field graphql.CollectedField, obj *model.CommentLike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "CommentLike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CommentLikeID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CommentLike_commentId(ctx context.Context, field graphql.CollectedField, obj *model.CommentLike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "CommentLike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CommentID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CommentLike_channelId(ctx context.Context, field graphql.CollectedField, obj *model.CommentLike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "CommentLike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CommentLike_channelEmail(ctx context.Context, field graphql.CollectedField, obj *model.CommentLike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "CommentLike",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelEmail, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Dislike_dislikeId(ctx context.Context, field graphql.CollectedField, obj *model.Dislike) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2206,11 +2928,14 @@ func (ec *executionContext) _Dislike_videoURL(ctx context.Context, field graphql
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Like_likeId(ctx context.Context, field graphql.CollectedField, obj *model.Like) (ret graphql.Marshaler) {
@@ -2407,11 +3132,14 @@ func (ec *executionContext) _Like_videoURL(ctx context.Context, field graphql.Co
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createChannel(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2906,6 +3634,375 @@ func (ec *executionContext) _Mutation_addComment(ctx context.Context, field grap
 	return ec.marshalNComment2ᚖGo_graphqlᚋgraphᚋmodelᚐComment(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_addReplyCount(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_addReplyCount_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddReplyCount(rctx, args["commentId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_increaseCommentLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_increaseCommentLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().IncreaseCommentLike(rctx, args["commentId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_decreaseCommentLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_decreaseCommentLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DecreaseCommentLike(rctx, args["commentId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_increaseCommentDislike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_increaseCommentDislike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().IncreaseCommentDislike(rctx, args["commentId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_decreaseCommentDislike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_decreaseCommentDislike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DecreaseCommentDislike(rctx, args["commentId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_registerCommentLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_registerCommentLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().RegisterCommentLike(rctx, args["input"].(*model.NewCommentLike))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.CommentLike)
+	fc.Result = res
+	return ec.marshalNCommentLike2ᚖGo_graphqlᚋgraphᚋmodelᚐCommentLike(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_registerCommentDislike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_registerCommentDislike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().RegisterCommentDislike(rctx, args["input"].(*model.NewCommentDislike))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.CommentDislike)
+	fc.Result = res
+	return ec.marshalNCommentDislike2ᚖGo_graphqlᚋgraphᚋmodelᚐCommentDislike(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_removeCommentLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_removeCommentLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().RemoveCommentLike(rctx, args["commentId"].(int), args["channelEmail"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_removeCommentDislike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_removeCommentDislike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().RemoveCommentDislike(rctx, args["commentId"].(int), args["channelEmail"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_channels(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3245,6 +4342,88 @@ func (ec *executionContext) _Query_findReply(ctx context.Context, field graphql.
 	res := resTmp.([]*model.Comment)
 	fc.Result = res
 	return ec.marshalNComment2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐCommentᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_findCommentLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_findCommentLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().FindCommentLike(rctx, args["channelEmail"].(string), args["commentId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.CommentLike)
+	fc.Result = res
+	return ec.marshalNCommentLike2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐCommentLikeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_findCommentDislike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_findCommentDislike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().FindCommentDislike(rctx, args["channelEmail"].(string), args["commentId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.CommentDislike)
+	fc.Result = res
+	return ec.marshalNCommentDislike2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐCommentDislikeᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -5017,7 +6196,7 @@ func (ec *executionContext) unmarshalInputnewComment(ctx context.Context, obj in
 			}
 		case "channelName":
 			var err error
-			it.ChannelName, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.ChannelName, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5087,6 +6266,66 @@ func (ec *executionContext) unmarshalInputnewComment(ctx context.Context, obj in
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputnewCommentDislike(ctx context.Context, obj interface{}) (model.NewCommentDislike, error) {
+	var it model.NewCommentDislike
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "commentId":
+			var err error
+			it.CommentID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "channelId":
+			var err error
+			it.ChannelID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "channelEmail":
+			var err error
+			it.ChannelEmail, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputnewCommentLike(ctx context.Context, obj interface{}) (model.NewCommentLike, error) {
+	var it model.NewCommentLike
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "commentId":
+			var err error
+			it.CommentID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "channelId":
+			var err error
+			it.ChannelID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "channelEmail":
+			var err error
+			it.ChannelEmail, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputnewDislike(ctx context.Context, obj interface{}) (model.NewDislike, error) {
 	var it model.NewDislike
 	var asMap = obj.(map[string]interface{})
@@ -5119,7 +6358,7 @@ func (ec *executionContext) unmarshalInputnewDislike(ctx context.Context, obj in
 			}
 		case "videoURL":
 			var err error
-			it.VideoURL, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.VideoURL, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5161,7 +6400,7 @@ func (ec *executionContext) unmarshalInputnewLike(ctx context.Context, obj inter
 			}
 		case "videoURL":
 			var err error
-			it.VideoURL, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.VideoURL, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5372,6 +6611,9 @@ func (ec *executionContext) _Comment(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "channelName":
 			out.Values[i] = ec._Comment_channelName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "channelEmail":
 			out.Values[i] = ec._Comment_channelEmail(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -5433,6 +6675,90 @@ func (ec *executionContext) _Comment(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var commentDislikeImplementors = []string{"CommentDislike"}
+
+func (ec *executionContext) _CommentDislike(ctx context.Context, sel ast.SelectionSet, obj *model.CommentDislike) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commentDislikeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CommentDislike")
+		case "commentDislikeId":
+			out.Values[i] = ec._CommentDislike_commentDislikeId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "commentId":
+			out.Values[i] = ec._CommentDislike_commentId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channelId":
+			out.Values[i] = ec._CommentDislike_channelId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channelEmail":
+			out.Values[i] = ec._CommentDislike_channelEmail(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commentLikeImplementors = []string{"CommentLike"}
+
+func (ec *executionContext) _CommentLike(ctx context.Context, sel ast.SelectionSet, obj *model.CommentLike) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commentLikeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CommentLike")
+		case "commentLikeId":
+			out.Values[i] = ec._CommentLike_commentLikeId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "commentId":
+			out.Values[i] = ec._CommentLike_commentId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channelId":
+			out.Values[i] = ec._CommentLike_channelId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channelEmail":
+			out.Values[i] = ec._CommentLike_channelEmail(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var dislikeImplementors = []string{"Dislike"}
 
 func (ec *executionContext) _Dislike(ctx context.Context, sel ast.SelectionSet, obj *model.Dislike) graphql.Marshaler {
@@ -5471,6 +6797,9 @@ func (ec *executionContext) _Dislike(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "videoURL":
 			out.Values[i] = ec._Dislike_videoURL(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5520,6 +6849,9 @@ func (ec *executionContext) _Like(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "videoURL":
 			out.Values[i] = ec._Like_videoURL(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5603,6 +6935,51 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "addComment":
 			out.Values[i] = ec._Mutation_addComment(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "addReplyCount":
+			out.Values[i] = ec._Mutation_addReplyCount(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "increaseCommentLike":
+			out.Values[i] = ec._Mutation_increaseCommentLike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "decreaseCommentLike":
+			out.Values[i] = ec._Mutation_decreaseCommentLike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "increaseCommentDislike":
+			out.Values[i] = ec._Mutation_increaseCommentDislike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "decreaseCommentDislike":
+			out.Values[i] = ec._Mutation_decreaseCommentDislike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "registerCommentLike":
+			out.Values[i] = ec._Mutation_registerCommentLike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "registerCommentDislike":
+			out.Values[i] = ec._Mutation_registerCommentDislike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "removeCommentLike":
+			out.Values[i] = ec._Mutation_removeCommentLike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "removeCommentDislike":
+			out.Values[i] = ec._Mutation_removeCommentDislike(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -5753,6 +7130,34 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_findReply(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "findCommentLike":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_findCommentLike(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "findCommentDislike":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_findCommentDislike(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -6239,6 +7644,108 @@ func (ec *executionContext) marshalNComment2ᚖGo_graphqlᚋgraphᚋmodelᚐComm
 		return graphql.Null
 	}
 	return ec._Comment(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCommentDislike2Go_graphqlᚋgraphᚋmodelᚐCommentDislike(ctx context.Context, sel ast.SelectionSet, v model.CommentDislike) graphql.Marshaler {
+	return ec._CommentDislike(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommentDislike2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐCommentDislikeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.CommentDislike) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommentDislike2ᚖGo_graphqlᚋgraphᚋmodelᚐCommentDislike(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNCommentDislike2ᚖGo_graphqlᚋgraphᚋmodelᚐCommentDislike(ctx context.Context, sel ast.SelectionSet, v *model.CommentDislike) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._CommentDislike(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCommentLike2Go_graphqlᚋgraphᚋmodelᚐCommentLike(ctx context.Context, sel ast.SelectionSet, v model.CommentLike) graphql.Marshaler {
+	return ec._CommentLike(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommentLike2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐCommentLikeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.CommentLike) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommentLike2ᚖGo_graphqlᚋgraphᚋmodelᚐCommentLike(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNCommentLike2ᚖGo_graphqlᚋgraphᚋmodelᚐCommentLike(ctx context.Context, sel ast.SelectionSet, v *model.CommentLike) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._CommentLike(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNDislike2Go_graphqlᚋgraphᚋmodelᚐDislike(ctx context.Context, sel ast.SelectionSet, v model.Dislike) graphql.Marshaler {
@@ -6911,6 +8418,30 @@ func (ec *executionContext) unmarshalOnewComment2ᚖGo_graphqlᚋgraphᚋmodel�
 		return nil, nil
 	}
 	res, err := ec.unmarshalOnewComment2Go_graphqlᚋgraphᚋmodelᚐNewComment(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) unmarshalOnewCommentDislike2Go_graphqlᚋgraphᚋmodelᚐNewCommentDislike(ctx context.Context, v interface{}) (model.NewCommentDislike, error) {
+	return ec.unmarshalInputnewCommentDislike(ctx, v)
+}
+
+func (ec *executionContext) unmarshalOnewCommentDislike2ᚖGo_graphqlᚋgraphᚋmodelᚐNewCommentDislike(ctx context.Context, v interface{}) (*model.NewCommentDislike, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOnewCommentDislike2Go_graphqlᚋgraphᚋmodelᚐNewCommentDislike(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) unmarshalOnewCommentLike2Go_graphqlᚋgraphᚋmodelᚐNewCommentLike(ctx context.Context, v interface{}) (model.NewCommentLike, error) {
+	return ec.unmarshalInputnewCommentLike(ctx, v)
+}
+
+func (ec *executionContext) unmarshalOnewCommentLike2ᚖGo_graphqlᚋgraphᚋmodelᚐNewCommentLike(ctx context.Context, v interface{}) (*model.NewCommentLike, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOnewCommentLike2Go_graphqlᚋgraphᚋmodelᚐNewCommentLike(ctx, v)
 	return &res, err
 }
 

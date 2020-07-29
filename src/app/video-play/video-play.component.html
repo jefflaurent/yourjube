@@ -71,10 +71,10 @@
                 <div></div>
             </div>
             <div class="controller">
-                <div class="controller-txt" id="expandBtn">
+                <div class="controller-txt" id="expandBtn" (click)="expandField()">
                     SHOW MORE
                 </div>
-                <div class="controller-txt hidden" id="shrinkBtn">
+                <div class="controller-txt hidden" id="shrinkBtn" (click)="shrinkField()">
                     SHOW LESS
                 </div>
                 <hr>
@@ -99,7 +99,7 @@
                     <img [src]="currVid.channelPhotoURL">
                 </div>
                 <div class="comment-right">
-                    <input type="text" placeholder="Add a public comment..." (value)="content" (input)="content = $event.target.value">
+                    <input type="text" placeholder="Add a public comment..." [value]="content" (input)="content = $event.target.value">
                 </div>
             </div>
             <div class="click-container">
@@ -111,7 +111,7 @@
                 </div>
             </div>
         </div>
-        <app-comment *ngFor="let comment of comments" [com]=(comment)></app-comment>
+        <app-comment *ngFor="let comment of showComments" [com]=(comment)></app-comment>
     </div>
     <div class="right">
         <div class="header">
@@ -128,7 +128,6 @@
             </div>
         </div>
         <app-video-side *ngFor="let video of firstVideo" [vid]=(video)></app-video-side>
-    
         <div class="special">
             <hr>
         </div>

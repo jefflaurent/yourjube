@@ -1,0 +1,265 @@
+.container
+{
+    display: flex;
+    justify-content: flex-start;
+}
+
+.left
+{
+    display: flex;
+    justify-content: center;
+    // align-items: center;
+    width: 35%;
+    box-sizing: border-box;
+    background-color:#ffffff8f;
+    padding: 30px;
+}
+
+.block
+{
+    margin-top: 15px;
+}
+
+.inner-container
+{
+    width: 100%;
+    color:#7a7a52;
+}
+
+.thumbnail
+{
+    margin: 0;
+    margin-bottom: -55px;
+}
+
+.overlap
+{
+    position: relative;
+    top: -55px;
+}
+
+.overlap-container
+{
+    background-color: black;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    padding: 15px;
+    opacity: 80%;
+}
+
+.space-between
+{
+    box-sizing: border-box;
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flex-start
+{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.thumbnail img
+{
+    width: 100%;
+}
+
+.icon:hover
+{
+    cursor: pointer;
+}
+
+.title
+{
+    width: 100%;
+}
+
+.title input[type='text']
+{
+    width: 100%;
+    padding: 0;
+    padding-bottom: 3px;
+    color: black;
+    font-size: 20px;
+    font-weight: 500;
+    background-color: #ffffff8f;
+    border: none;
+    border-bottom: 1px solid black;
+}
+
+.title input[type='text']:focus
+{
+    color: black;
+    font-size: 20px;
+    font-weight: 500;
+    background-color: #ffffff8f;
+    border-bottom: 1px solid black;
+    outline-width: 0;
+}
+
+.title.hidden
+{
+    display: none
+}
+
+.titleTxt
+{
+    color: black;
+    font-size: 20px;
+}
+
+.titleTxt.hidden
+{
+    display: none;
+}
+
+.icon
+{
+    color: rgba(76, 67, 67, 1); 
+}
+
+.channel
+{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    color:black;
+    font-weight: 500;
+}
+
+.photo
+{
+    width: 10%;
+}
+
+.photo img
+{
+    width: 100%;
+    border-radius: 50%;
+}
+
+.name
+{
+    width: 90%;
+    margin-left: 15px;
+}
+
+.right
+{
+    width: 65%;
+}
+
+.sort
+{
+    display: flex;
+    justify-content: flex-start;
+    font-weight: 500;
+    color: rgba(76, 67, 67, 1);
+    padding-top: 30px;
+    padding-left: 35px;
+    padding-bottom: 20px;
+}
+
+.editTitle.none
+{
+    display : none;
+}
+
+.titleBtn 
+{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-weight: 500;
+    margin-top: 20px;
+}
+
+.titleBtn.hidden
+{
+    display: none;
+}
+
+.saveTitle
+{
+    color: blue;
+    margin-left: 20px;
+}
+
+.saveTitle:hover
+{
+    cursor: pointer;
+}
+
+.cancelTitle:hover
+{
+    cursor: pointer;
+}
+
+.desc
+{
+    width: 100%;
+}
+
+.desc input[type='text']
+{
+    width: 100%;
+    padding: 0;
+    padding-bottom: 3px;
+    color: black;
+    font-size: 13px;
+    background-color: #ffffff8f;
+    border: none;
+    border-bottom: 1px solid black;
+}
+
+.desc input[type='text']:focus
+{
+    color: black;
+    font-size: 13px;
+    background-color: #ffffff8f;
+    border-bottom: 1px solid black;
+    outline-width: 0;
+}
+
+.desc.hidden
+{
+    display: none;
+}
+
+.descTxt
+{
+    font-size: 14px;
+    color:black;
+}
+
+.descTxt.hidden
+{
+    display: none;
+}
+
+.cancelBtn 
+{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-weight: 500;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.cancelBtn.hidden
+{
+    display: none;
+}
+
+.editDesc.hidden
+{
+    display: none;
+}

@@ -158,7 +158,18 @@
     font-weight: 600;
 }
 
+.view.closed
+{
+    display: none
+}
+
+.hide.closed
+{
+    display: none
+}
+
 .view:hover
 {
     cursor: pointer;
 }
+

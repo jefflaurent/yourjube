@@ -8,7 +8,6 @@ import (
 	"Go_graphql/graph/model"
 	"context"
 	"errors"
-	"fmt"
 )
 
 func (r *mutationResolver) CreateChannel(ctx context.Context, input *model.NewChannel) (*model.Channel, error) {
@@ -212,13 +211,13 @@ func (r *mutationResolver) DecreaseLike(ctx context.Context, videoID string) (bo
 	if err != nil {
 		return false, err
 	}
-	fmt.Println(video.Likes)
+
 	temp = video.Likes
 	temp--
 	if temp < 0 {
 		temp = 0
 	}
-	fmt.Println(temp)
+
 	video.Likes = temp
 
 	_, updateErr := r.DB.Model(&video).Where("video_id = ?", videoID).Update()
@@ -281,6 +280,202 @@ func (r *mutationResolver) AddComment(ctx context.Context, input *model.NewComme
 	}
 
 	return &comment, nil
+}
+
+func (r *mutationResolver) AddReplyCount(ctx context.Context, commentID string) (bool, error) {
+	var comment model.Comment
+	var temp int
+
+	err := r.DB.Model(&comment).Where("comment_id = ?", commentID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = comment.Replies
+	temp++
+
+	comment.Replies = temp
+
+	_, updateErr := r.DB.Model(&comment).Where("comment_id = ?", commentID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) IncreaseCommentLike(ctx context.Context, commentID string) (bool, error) {
+	var comment model.Comment
+	var temp int
+
+	err := r.DB.Model(&comment).Where("comment_id = ?", commentID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = comment.Likes
+	temp++
+
+	comment.Likes = temp
+
+	_, updateErr := r.DB.Model(&comment).Where("comment_id = ?", commentID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) DecreaseCommentLike(ctx context.Context, commentID string) (bool, error) {
+	var comment model.Comment
+	var temp int
+
+	err := r.DB.Model(&comment).Where("comment_id = ?", commentID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = comment.Likes
+	temp--
+
+	if temp < 0 {
+		temp = 0
+	}
+
+	comment.Likes = temp
+
+	_, updateErr := r.DB.Model(&comment).Where("comment_id = ?", commentID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) IncreaseCommentDislike(ctx context.Context, commentID string) (bool, error) {
+	var comment model.Comment
+	var temp int
+
+	err := r.DB.Model(&comment).Where("comment_id = ?", commentID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = comment.Dislikes
+	temp++
+
+	comment.Dislikes = temp
+
+	_, updateErr := r.DB.Model(&comment).Where("comment_id = ?", commentID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) DecreaseCommentDislike(ctx context.Context, commentID string) (bool, error) {
+	var comment model.Comment
+	var temp int
+
+	err := r.DB.Model(&comment).Where("comment_id = ?", commentID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = comment.Dislikes
+	temp--
+
+	if temp < 0 {
+		temp = 0
+	}
+
+	comment.Dislikes = temp
+
+	_, updateErr := r.DB.Model(&comment).Where("comment_id = ?", commentID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) RegisterCommentLike(ctx context.Context, input *model.NewCommentLike) (*model.CommentLike, error) {
+	commentLike := model.CommentLike{
+		CommentID:    input.CommentID,
+		ChannelID:    input.ChannelID,
+		ChannelEmail: input.ChannelEmail,
+	}
+
+	_, err := r.DB.Model(&commentLike).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &commentLike, nil
+}
+
+func (r *mutationResolver) RegisterCommentDislike(ctx context.Context, input *model.NewCommentDislike) (*model.CommentDislike, error) {
+	commentDislike := model.CommentDislike{
+		CommentID:    input.CommentID,
+		ChannelID:    input.ChannelID,
+		ChannelEmail: input.ChannelEmail,
+	}
+
+	_, err := r.DB.Model(&commentDislike).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &commentDislike, nil
+}
+
+func (r *mutationResolver) RemoveCommentLike(ctx context.Context, commentID int, channelEmail string) (bool, error) {
+	var commentLike model.CommentLike
+
+	err := r.DB.Model(&commentLike).Where("comment_id = ? AND channel_email = ?", commentID, channelEmail).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	_, deleteErr := r.DB.Model(&commentLike).Where("comment_id = ? AND channel_email = ?", commentID, channelEmail).Delete()
+
+	if deleteErr != nil {
+		return false, deleteErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) RemoveCommentDislike(ctx context.Context, commentID int, channelEmail string) (bool, error) {
+	var commentDislike model.CommentDislike
+
+	err := r.DB.Model(&commentDislike).Where("comment_id = ? AND channel_email = ?", commentID, channelEmail).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	_, deleteErr := r.DB.Model(&commentDislike).Where("comment_id = ? AND channel_email = ?", commentID, channelEmail).Delete()
+
+	if deleteErr != nil {
+		return false, deleteErr
+	}
+
+	return true, nil
 }
 
 func (r *queryResolver) Channels(ctx context.Context) ([]*model.Channel, error) {
@@ -390,6 +585,30 @@ func (r *queryResolver) FindReply(ctx context.Context, replyTo int) ([]*model.Co
 	}
 
 	return replies, nil
+}
+
+func (r *queryResolver) FindCommentLike(ctx context.Context, channelEmail string, commentID string) ([]*model.CommentLike, error) {
+	var commentLike []*model.CommentLike
+
+	err := r.DB.Model(&commentLike).Where("channel_email =  ? AND comment_id = ?", channelEmail, commentID).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return commentLike, nil
+}
+
+func (r *queryResolver) FindCommentDislike(ctx context.Context, channelEmail string, commentID string) ([]*model.CommentDislike, error) {
+	var commentDislike []*model.CommentDislike
+
+	err := r.DB.Model(&commentDislike).Where("channel_email =  ? AND comment_id = ?", channelEmail, commentID).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return commentDislike, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

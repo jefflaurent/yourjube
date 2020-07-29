@@ -1,4 +1,5 @@
-.container{
+.container
+{
     margin: 8px;
     width: 320px;
     display: flex;
@@ -17,31 +18,137 @@
 {
     display: flex;
     justify-content: flex-start;
+    align-items: flex-start;
 }
 
 .top img
 {
     border-radius: 50%;
+    width: 90%;
+}
+
+.left 
+{
+    width: 13%;
+    display: flex;
+    justify-content: center;
 }
 
 .title
 {
     font-family: 'Roboto';
-    font-weight: 600;
+    font-weight: 500;
+    font-size: 14px;
     line-height: 1.4em;
-    margin-left: 25px;
+    margin-left: 15px;
+    width: 82%;
+}
+
+.right
+{
+    width: 5%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.right:hover
+{
+    width: 5%;
+    display: flex;
+    justify-content: flex-end;
+    cursor: pointer;
 }
 
 .bottom
 {
+    margin-top: 5px;
+    font-size: 14px;
     width: 100%;
     display: flex;
     flex-direction: column;
     color: rgba(76, 67, 67, 1);
-    margin-left: 63px;
+    margin-left: 53px;
 }
 
 .empty
 {
     height: 50px;
+}
+
+.modal.hidden
+{
+    display: none;
+}
+
+.modal
+{
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 10px;
+    margin-top: -120px;
+    z-index: 69;
+    color: rgba(76, 67, 67, 1);
+    font-size: 14px;
+}
+
+.modal-container
+{
+    background-color: white;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    width: 60%;
+}
+
+.flex-start
+{
+    padding: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.flex-start:hover
+{
+    background-color: lightgrey;
+    cursor: pointer;
+}
+
+.modal-left
+{
+    width: 15%;
+}
+
+.modal-right
+{
+    width: 85%;
+}
+
+.playlist
+{
+    position: absolute;
+    padding: 5px;
+    background-color: white;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    width: 15%;
+    height: 30%;
+    margin: auto;
+    overflow-y: scroll;
+}
+
+.flex-between
+{
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.center
+{
+    padding: 10px;
+    display: flex;
+    justify-content: center;
 }

@@ -34,7 +34,7 @@ type Like {
   channelEmail: String!
   videoId: Int!
   videoThumbnail: String!
-  videoURL: String
+  videoURL: String!
 }
 
 type Dislike {
@@ -43,14 +43,14 @@ type Dislike {
   channelEmail: String!
   videoId: Int!
   videoThumbnail: String!
-  videoURL: String
+  videoURL: String!
 }
 
 type Comment {
   commentId: ID!
   videoId: Int!
   channelId: Int!
-  channelName: String
+  channelName: String!
   channelEmail: String!
   channelPhotoURL: String!
   content: String!
@@ -63,23 +63,37 @@ type Comment {
   replies: Int!
 }
 
+type CommentLike {
+  commentLikeId: ID!
+  commentId: Int!
+  channelId: Int!
+  channelEmail: String!
+}
+
+type CommentDislike {
+  commentDislikeId: ID!
+  commentId: Int!
+  channelId: Int!
+  channelEmail: String!
+}
+
 input newVideo {
-  videoTitle: String!,
-  videoDesc: String!,
-  videoURL: String!,
-  videoThumbnail: String!,
-  uploadDay: String!,
-  uploadMonth: String!,
-  uploadYear: String!,
-  views: Int!,
-  likes: Int!,
-  dislikes: Int!,
-  visibility: String!,
-  viewer: String!,
-  category: String!,
-  channelName: String!,
-  channelPhotoURL: String!,
-  channelEmail: String!,
+  videoTitle: String!
+  videoDesc: String!
+  videoURL: String!
+  videoThumbnail: String!
+  uploadDay: String!
+  uploadMonth: String!
+  uploadYear: String!
+  views: Int!
+  likes: Int!
+  dislikes: Int!
+  visibility: String!
+  viewer: String!
+  category: String!
+  channelName: String!
+  channelPhotoURL: String!
+  channelEmail: String!
 }
 
 input newChannel {
@@ -96,7 +110,7 @@ input newLike {
   channelEmail: String!
   videoId: Int!
   videoThumbnail: String!
-  videoURL: String
+  videoURL: String!
 }
 
 input newDislike {
@@ -104,13 +118,25 @@ input newDislike {
   channelEmail: String!
   videoId: Int!
   videoThumbnail: String!
-  videoURL: String
+  videoURL: String!
+}
+
+input newCommentLike {
+  commentId: Int!
+  channelId: Int!
+  channelEmail: String!
+}
+
+input newCommentDislike {
+  commentId: Int!
+  channelId: Int!
+  channelEmail: String!
 }
 
 input newComment {
   videoId: Int!
   channelId: Int!
-  channelName: String
+  channelName: String!
   channelEmail: String!
   channelPhotoURL: String!
   content: String!
@@ -133,6 +159,8 @@ type Query {
   findChannel(email: String!): [Channel!]!
   comments(videoId: Int!): [Comment!]!
   findReply(replyTo: Int!): [Comment!]!
+  findCommentLike(channelEmail: String!, commentId: ID!): [CommentLike!]!
+  findCommentDislike(channelEmail: String!, commentId: ID!): [CommentDislike!]!
 }
 
 type Mutation {
@@ -148,4 +176,13 @@ type Mutation {
   decreaseLike(videoId: ID!): Boolean!
   decreaseDislike(videoId: ID!): Boolean!
   addComment(input: newComment): Comment!
+  addReplyCount(commentId: ID!): Boolean!
+  increaseCommentLike(commentId: ID!): Boolean!
+  decreaseCommentLike(commentId: ID!): Boolean!
+  increaseCommentDislike(commentId: ID!): Boolean!
+  decreaseCommentDislike(commentId: ID!): Boolean!
+  registerCommentLike(input: newCommentLike): CommentLike!
+  registerCommentDislike(input: newCommentDislike): CommentDislike!
+  removeCommentLike(commentId: Int!, channelEmail: String!): Boolean!
+  removeCommentDislike(commentId: Int!, channelEmail: String!): Boolean!
 }

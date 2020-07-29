@@ -60,6 +60,7 @@ export class VideoPlayComponent implements OnInit {
   firstVideo: Videos[] = [];
   videos: Videos[] = [];
   passVideos: Videos[] = [];
+  showComments: Comments[] = [];
   comments: Comments[] = [];
   currVid: Videos
   id: any
@@ -71,7 +72,7 @@ export class VideoPlayComponent implements OnInit {
   isDisliked: boolean
   commentQty: number
   user: any
-  content: string
+  content: string = ""
   declare: any
   d: number
   m: number
@@ -90,14 +91,6 @@ export class VideoPlayComponent implements OnInit {
       this.checkLiked();
       this.checkDisliked();
     })
-  }
-
-  getElements() : void {
-    var btnExpand = document.querySelector('#expandBtn')
-    btnExpand.addEventListener('click', this.expandField)
-    
-    var btnShrink = document.querySelector('#shrinkBtn')
-    btnShrink.addEventListener('click', this.shrinkField)
   }
 
   expandField() : void {
@@ -455,7 +448,6 @@ export class VideoPlayComponent implements OnInit {
       },
     }).subscribe( channel => {
         this.channel = channel;
-        this.getElements();
     })
   }
 
@@ -483,8 +475,11 @@ export class VideoPlayComponent implements OnInit {
        videoId: this.id
      }
    }).valueChanges.subscribe(result => {
+     console.log('jalan')
+     console.log(result)
      this.comments = result.data.comments
      this.commentQty = result.data.comments.length
+     this.processComments()
    })
  }
 
@@ -539,6 +534,16 @@ export class VideoPlayComponent implements OnInit {
 
     this.firstVideo[0] = this.passVideos[0]
     this.passVideos.shift()
+  }
+
+  processComments(): void {
+    let j = 0
+    for(let i = 0; i < this.comments.length; i++) {
+      if(this.comments[i].replyTo == 0) {
+        this.showComments[j] = this.comments[i]
+        j++
+      }
+    }
   }
 
   addCommentQuery(): void {
@@ -606,26 +611,7 @@ export class VideoPlayComponent implements OnInit {
         replies: 0
       },
       refetchQueries: [{
-        query: gql`
-        query getComments($videoId: Int!){
-            comments(videoId: $videoId) {
-              commentId,
-              videoId,
-              channelId,
-              channelName,
-              channelEmail,
-              channelPhotoURL,
-              content,
-              replyTo,
-              likes,
-              dislikes,
-              day,
-              month,
-              year,
-              replies
-            }
-          }
-        `,
+        query: this.getCommentQuery,
         variables: {
           videoId: this.id
         }

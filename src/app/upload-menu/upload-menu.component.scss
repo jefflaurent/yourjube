@@ -18,7 +18,6 @@
     color: black;
     box-sizing: border-box;
     border-radius: 13px;
-    font-family: 'Arial';
     overflow-y: scroll;
     box-shadow: 3px 3px 3px 3px gray;
 }
@@ -142,7 +141,7 @@ hr
     width: 100%;
     padding: 8px;
     font-size: 13px;
-    font-family: 'Arial';
+
     box-sizing: border-box;
 }
 
@@ -162,7 +161,6 @@ hr
     font-size: 15px;
     font-weight: bold;
     color: #4C4343;
-    margin-bottom: 13px;
 }
 
 .desc
@@ -171,7 +169,6 @@ hr
     color: gray;
     padding-top: 5px;
     text-align: left;
-    margin-top: 13px;
     margin-bottom: 13px;
     box-sizing: border-box;
 }
@@ -213,7 +210,6 @@ hr
 {
     font-size: 13px;
     padding-top: 5px;
-    font-family: 'Arial';
     font-weight: bold;
     color: #4C4343;
 }

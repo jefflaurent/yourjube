@@ -34,6 +34,7 @@ export class UploadMenuComponent implements OnInit {
   descriptionBox: string = "";
   audience: string = "";
   visibility: string = "";
+  category: string 
   time: Date
   day: any
   month: any
@@ -57,6 +58,8 @@ export class UploadMenuComponent implements OnInit {
     this.public = document.querySelector('#public')
     this.yes = document.querySelector('#yes')
     this.no = document.querySelector('#no')
+    var x = (<HTMLSelectElement>document.getElementById('vidCategory'))
+    this.category = x.options[x.selectedIndex].value;
 
     if(this.private.checked)
       this.visibility = "private"
@@ -187,7 +190,7 @@ export class UploadMenuComponent implements OnInit {
         dislikes: 0,
         visibility: this.visibility,
         viewer: this.audience,
-        category: "None",
+        category: this.category,
         channelName: this.user.name.toString(),
         channelPhotoURL: this.user.photoUrl.toString(),
         channelEmail: this.user.email.toString(),

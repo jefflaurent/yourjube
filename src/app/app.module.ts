@@ -1,10 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpModule } from '@angular/http';
 import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
-import { FileUploadComponent } from './file-upload/file-upload.component';
 
 import { SocialLoginModule,SocialAuthServiceConfig } from 'angularx-social-login';
 import { GoogleLoginProvider } from 'angularx-social-login';
@@ -27,12 +27,14 @@ import { VideoPlayComponent } from './video-play/video-play.component';
 import { VideoSideComponent } from './video-side/video-side.component';
 import { CommentComponent } from './comment/comment.component';
 import { NestedCommentComponent } from './nested-comment/nested-comment.component';
+import { PlaylistDropdownComponent } from './playlist-dropdown/playlist-dropdown.component';
+import { PlaylistPageComponent } from './playlist-page/playlist-page.component';
+import { PlaylistSideComponent } from './playlist-side/playlist-side.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    FileUploadComponent,
     DropZoneDirective,
     UploadMenuComponent,
     VideoPageComponent,
@@ -40,9 +42,13 @@ import { NestedCommentComponent } from './nested-comment/nested-comment.componen
     VideoPlayComponent,
     VideoSideComponent,
     CommentComponent,
-    NestedCommentComponent
+    NestedCommentComponent,
+    PlaylistDropdownComponent,
+    PlaylistPageComponent,
+    PlaylistSideComponent
   ],
   imports: [
+    HttpModule,
     BrowserModule,
     AppRoutingModule,
     SocialLoginModule,

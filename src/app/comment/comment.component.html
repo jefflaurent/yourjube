@@ -31,7 +31,7 @@
                     <img [src]="user.photoUrl" alt="">
                 </div>
                 <div class="comment-right">
-                    <input type="text" placeholder="Add a public reply...">
+                    <input type="text" placeholder="Add a public reply..." [value]="content" (input)="content = $event.target.value">
                 </div>
                 <div>
                     {{ comment.commentID }}
@@ -41,15 +41,18 @@
                 <div class="clickables" style="background-color: #f2f2f2; color: rgba(76, 67, 67, 1); font-weight: 500;" (click)="closeReply()">
                     CANCEL
                 </div>
-                <div class="clickables">
+                <div class="clickables" (click)="addComment()">
                     REPLY
                 </div>
             </div>
         </div>
-        <div class="view">
-            <i class="fa fa-caret-down" style="margin-right: 10px;"></i> View 17 replies
+        <div class="view" *ngIf="howMany != undefined" (click)="showReply()" [id]="dummyId3" >
+            <i class="fa fa-caret-down" style="margin-right: 10px;"></i> View {{ howMany }} replies
         </div>
-        <div class="hide" *ngIf="replies">
+        <div class="view closed" *ngIf="howMany != undefined" (click)="hideReply()" [id]="dummyId4" >
+            <i class="fa fa-caret-up" style="margin-right: 10px;"></i> Hide {{ howMany }} replies
+        </div>
+        <div class="hide closed" *ngIf="replies" [id]="dummyId2"> 
             <app-nested-comment *ngFor="let reply of replies" [com]="reply"></app-nested-comment>
         </div>
         <div style="height: 23px"></div>

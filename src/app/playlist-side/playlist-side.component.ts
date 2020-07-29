@@ -1,11 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-video-page',
-  templateUrl: './video-page.component.html',
-  styleUrls: ['./video-page.component.scss']
+  selector: 'app-playlist-side',
+  templateUrl: './playlist-side.component.html',
+  styleUrls: ['./playlist-side.component.scss']
 })
-export class VideoPageComponent implements OnInit {
+export class PlaylistSideComponent implements OnInit {
+
   @Input('vid') video: {
     videoId: BigInteger,        
     videoTitle: string,  
@@ -26,9 +27,6 @@ export class VideoPageComponent implements OnInit {
     channelEmail: string,
   }
 
-  constructor() { }
-
-  dummyId: string = ''
   time : Date
   date : any
   month : any
@@ -36,8 +34,11 @@ export class VideoPageComponent implements OnInit {
 
   post : string
 
+
+  constructor() { }
+
   ngOnInit(): void {
-    this.dummyId = 'vid' + this.video.videoId
+
     this.time = new Date()
     this.date = this.time.getDate()
     this.month = this.time.getMonth()
@@ -59,40 +60,13 @@ export class VideoPageComponent implements OnInit {
     }
     else if(parseInt(this.video.uploadYear) == this.year && parseInt(this.video.uploadMonth) == this.month && parseInt(this.video.uploadDay) <= this.date) {
       let gap = this.date - parseInt(this.video.uploadDay)
-      if(gap >= 7)
-      {
-        if(gap >= 7 && gap < 14)
-          this.post = '1 week ago'
-        else if(gap >= 14 && gap < 21)
-          this.post = '2 weeks ago'
-        else if(gap >= 21 && gap < 28)
-          this.post = '3 weeks ago'
-        else if(gap >= 28)
-          this.post = '4 weeks ago'
-      }
-      else 
-      {
-        if(gap == 0)
-          this.post = 'Today';
-        else if(gap == 1)
-          this.post = gap + ' day ago';
-        else
-          this.post = gap + ' days ago';
-      }
+      if(gap == 0)
+        this.post = 'Today';
+      else if(gap == 1)
+        this.post = gap + ' day ago';
+      else
+        this.post = gap + ' days ago';
     }
   }
 
-  showModal(): void {
-    var query = '#' + this.dummyId
-    var x = document.querySelector(query)
-    
-    x.classList.remove('hidden')
-  }
-
-  hideModal(): void {
-    var query = '#' + this.dummyId
-    var x = document.querySelector(query)
-    
-    x.classList.add('hidden')
-  }
 }
