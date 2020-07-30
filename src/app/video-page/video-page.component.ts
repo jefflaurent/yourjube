@@ -1,4 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Playlists } from '../model/playlist';
+import { PlaylistService } from '../data-service/playlist-data';
+import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
+import { PlaylistModalComponent } from '../playlist-modal/playlist-modal.component';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
 
 @Component({
   selector: 'app-video-page',
@@ -26,22 +32,47 @@ export class VideoPageComponent implements OnInit {
     channelEmail: string,
   }
 
-  constructor() { }
+  getPlaylistQuery = gql`
+    query getPlaylist($channelEmail: String!) {
+      playlists(channelEmail: $channelEmail){
+        playlistId,
+        playlistName,
+        playlistThumbnail,
+        playlistDescription,
+        channelEmail,
+        lastDate,
+        lastMonth,
+        lastYear,
+        videoCount,
+        views,
+        visibility,
+      }
+    }
+  `;
 
+  constructor(private apollo: Apollo, private data: PlaylistService, private status: PlaylistModalInfo) { }
+
+  playlists: Playlists[] = [];
   dummyId: string = ''
-  time : Date
-  date : any
-  month : any
-  year : any
+  dummyId2: string = ""
+  time: Date
+  date: any
+  month: any
+  year: any
+  user: any
 
   post : string
 
   ngOnInit(): void {
+    // this.data.currentPlaylist.subscribe( playlist => this.playlists = playlist)
     this.dummyId = 'vid' + this.video.videoId
+    this.dummyId2 = 'play' + this.video.videoId
     this.time = new Date()
     this.date = this.time.getDate()
     this.month = this.time.getMonth()
     this.year = this.time.getFullYear()
+
+    this.user = JSON.parse(localStorage.getItem('users'))
 
     if(parseInt(this.video.uploadYear) < this.year) {
       let gap = this.year - parseInt(this.video.uploadYear) 
@@ -83,6 +114,7 @@ export class VideoPageComponent implements OnInit {
   }
 
   showModal(): void {
+
     var query = '#' + this.dummyId
     var x = document.querySelector(query)
     
@@ -94,5 +126,11 @@ export class VideoPageComponent implements OnInit {
     var x = document.querySelector(query)
     
     x.classList.add('hidden')
+  }
+
+  showPlaylist(): void {
+    this.data.changeVideo(this.video.videoId)
+    this.data.ngOnInit()
+    this.status.changeStatus(true)
   }
 }

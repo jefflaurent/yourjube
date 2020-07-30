@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Apollo } from 'apollo-angular';
-import { Videos } from '../videos';
+import { Videos } from '../model/video';
 import gql from 'graphql-tag';
 
 @Component({

@@ -1,8 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Apollo } from 'apollo-angular';
-import { Videos } from '../video';
-import { Comments } from '../comment';
+import { Videos } from '../model/video';
+import { Comments } from '../model/comment';
 import gql from 'graphql-tag';
 
 @Component({

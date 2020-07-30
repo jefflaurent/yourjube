@@ -41,7 +41,7 @@
                     Add to queue
                 </div>
             </div>
-            <div class="flex-start">
+            <div class="flex-start" (click)="showPlaylist()">
                 <div class="modal-left">
                     <i class="fa fa-plus fa-lg"></i>
                 </div>
@@ -61,7 +61,7 @@
     </span>
     <div class="empty"></div>
 
-    <!-- <div class="playlist">
+    <!-- <div class="playlist hidden" [id]="dummyId2">
         <div class="flex-between">
             <div>
                 Save to...
@@ -72,9 +72,8 @@
         </div>
         <hr>
         
-        <div>
-
-        </div>
+        <app-playlist-choice *ngFor="let playlist of playlists" [play]="(playlist)"></app-playlist-choice>
+        
         <hr>
 
         <div class="center">

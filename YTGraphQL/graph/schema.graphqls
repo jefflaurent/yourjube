@@ -77,6 +77,31 @@ type CommentDislike {
   channelEmail: String!
 }
 
+type Playlist {
+  playlistId: ID!
+  playlistName: String!
+  playlistThumbnail: String!
+  playlistDescription: String!
+  channelEmail: String!
+  lastDate: Int!
+  lastMonth: Int!
+  lastYear: Int!
+  videoCount: Int!
+  views: Int!
+  visibility: String!
+}
+
+type PlaylistVideo {
+  id: ID!
+  playlistId: Int!
+  videoId: Int!
+  videoName: String!
+  videoThumbnail: String!
+  videoURL: String!
+  channelName: String!
+  channelEmail: String!
+}
+
 input newVideo {
   videoTitle: String!
   videoDesc: String!
@@ -149,18 +174,45 @@ input newComment {
   replies: Int!
 }
 
+input newPlaylist {
+  playlistName: String!
+  playlistThumbnail: String!
+  playlistDescription: String!
+  channelEmail: String!
+  lastDate: Int!
+  lastMonth: Int!
+  lastYear: Int!
+  videoCount: Int!
+  views: Int!
+  visibility: String!
+}
+
+input newPlaylistVideo {
+  playlistId: Int!
+  videoId: Int!
+  videoName: String!
+  videoThumbnail: String!
+  videoURL: String!
+  channelName: String!
+  channelEmail: String!
+}
+
 type Query {
   channels: [Channel!]!
   videos: [Video!]!
   publicVideos: [Video!]!
   likes: [Like!]!
+  comments(videoId: Int!): [Comment!]!
+  playlists(channelEmail: String!): [Playlist!]!
+  playlistVideos(channelEmail: String!): [PlaylistVideo!]!
+  findVideo(videoId: ID!): [Video!]!
   findLike(email: String!, videoId: Int!): [Like!]!
   findDislike(email: String!, videoId: Int!): [Dislike!]!
   findChannel(email: String!): [Channel!]!
-  comments(videoId: Int!): [Comment!]!
   findReply(replyTo: Int!): [Comment!]!
   findCommentLike(channelEmail: String!, commentId: ID!): [CommentLike!]!
   findCommentDislike(channelEmail: String!, commentId: ID!): [CommentDislike!]!
+  findVideoPlaylist(playlistId: Int!, videoId: Int!): [PlaylistVideo!]!
 }
 
 type Mutation {
@@ -185,4 +237,7 @@ type Mutation {
   registerCommentDislike(input: newCommentDislike): CommentDislike!
   removeCommentLike(commentId: Int!, channelEmail: String!): Boolean!
   removeCommentDislike(commentId: Int!, channelEmail: String!): Boolean!
+  createPlaylist(input: newPlaylist): Playlist!
+  addPlaylist(input: newPlaylistVideo): PlaylistVideo!
+  removePlaylistVideo(playlistId: Int!, videoId: Int!): Boolean!
 }

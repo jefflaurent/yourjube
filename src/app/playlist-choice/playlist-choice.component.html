@@ -1,0 +1,14 @@
+<div class="container">
+    <div class="click-container">
+        <div class="click" [id]="dummyId" (click)="toggleColor()"> {{ empty }} </div>
+    </div>
+    <div>
+        {{ playlist.playlistName }}
+    </div>
+    <div *ngIf="playlist.visibility == 'public'">
+        <i class="fa fa-globe fa-lg"></i>
+    </div>
+    <div *ngIf="playlist.visibility == 'private'">
+        <i class="fa fa-lock fa-lg"></i>
+    </div>
+</div>

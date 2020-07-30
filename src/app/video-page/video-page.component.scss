@@ -124,19 +124,39 @@
     width: 85%;
 }
 
+// .playlist
+// {
+//     position: absolute;
+//     padding: 5px;
+//     background-color: white;
+//     top: 0px;
+//     left: 0px;
+//     bottom: 0px;
+//     right: 0px;
+//     width: 15%;
+//     height: 30%;
+//     margin: auto;
+//     overflow-y: auto;
+// }
+
 .playlist
 {
-    position: absolute;
+    position: relative;
     padding: 5px;
     background-color: white;
-    top: 0px;
-    left: 0px;
-    bottom: 0px;
-    right: 0px;
-    width: 15%;
-    height: 30%;
+    // top: 0px;
+    // left: 0px;
+    // bottom: 0px;
+    // right: 0px;
+    width: 300px;
+    height: 500px;
     margin: auto;
-    overflow-y: scroll;
+    overflow-y: auto;
+}
+
+.playlist.hidden
+{
+    display: none;
 }
 
 .flex-between

@@ -1,0 +1,24 @@
+<div class="playlist-modal" *ngIf="status == true">
+    <div class="flex-between">
+        <div>
+            Save to...
+        </div>
+        <div (click)="closeModal()" class="close">
+            <i class="fa fa-close fa-lg"></i>
+        </div>
+    </div>
+    <hr>
+    
+    <app-playlist-choice *ngFor="let playlist of playlists" [play]="(playlist)"></app-playlist-choice>
+    
+    <hr>
+
+    <div class="center">
+        <div>
+            <i class="fa fa-plus fa-lg"></i>
+        </div>
+        <div>
+            Create new playlist
+        </div>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Apollo } from 'apollo-angular';
-import { Comments } from '../comment';
+import { Comments } from '../model/comment';
 import gql from 'graphql-tag';
 
 @Component({

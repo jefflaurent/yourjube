@@ -478,6 +478,67 @@ func (r *mutationResolver) RemoveCommentDislike(ctx context.Context, commentID i
 	return true, nil
 }
 
+func (r *mutationResolver) CreatePlaylist(ctx context.Context, input *model.NewPlaylist) (*model.Playlist, error) {
+	playlist := model.Playlist{
+		PlaylistName:        input.PlaylistName,
+		PlaylistThumbnail:   input.PlaylistThumbnail,
+		PlaylistDescription: input.PlaylistDescription,
+		ChannelEmail:        input.ChannelEmail,
+		LastDate:            input.LastDate,
+		LastMonth:           input.LastMonth,
+		LastYear:            input.LastYear,
+		VideoCount:          input.VideoCount,
+		Views:               input.Views,
+		Visibility:          input.Visibility,
+	}
+
+	_, err := r.DB.Model(&playlist).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &playlist, nil
+}
+
+func (r *mutationResolver) AddPlaylist(ctx context.Context, input *model.NewPlaylistVideo) (*model.PlaylistVideo, error) {
+	playlistVideo := model.PlaylistVideo{
+		PlaylistID:     input.PlaylistID,
+		VideoID:        input.VideoID,
+		VideoName:      input.VideoName,
+		VideoThumbnail: input.VideoThumbnail,
+		VideoURL:       input.VideoURL,
+		ChannelName:    input.ChannelName,
+		ChannelEmail:   input.ChannelEmail,
+	}
+
+	_, err := r.DB.Model(&playlistVideo).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &playlistVideo, nil
+}
+
+func (r *mutationResolver) RemovePlaylistVideo(ctx context.Context, playlistID int, videoID int) (bool, error) {
+	var playlistVideo model.PlaylistVideo
+
+	err := r.DB.Model(&playlistVideo).Where("video_id = ? AND playlist_id = ?", videoID, playlistID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	_, deleteErr := r.DB.Model(&playlistVideo).Where("video_id = ? AND playlist_id = ?", videoID, playlistID).Delete()
+
+	if deleteErr != nil {
+		return false, deleteErr
+	}
+
+	return true, nil
+}
+
 func (r *queryResolver) Channels(ctx context.Context) ([]*model.Channel, error) {
 	var channels []*model.Channel
 
@@ -527,6 +588,54 @@ func (r *queryResolver) Likes(ctx context.Context) ([]*model.Like, error) {
 	return likes, nil
 }
 
+func (r *queryResolver) Comments(ctx context.Context, videoID int) ([]*model.Comment, error) {
+	var comments []*model.Comment
+
+	err := r.DB.Model(&comments).Where("video_id = ?", videoID).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return comments, nil
+}
+
+func (r *queryResolver) Playlists(ctx context.Context, channelEmail string) ([]*model.Playlist, error) {
+	var playlists []*model.Playlist
+
+	err := r.DB.Model(&playlists).Where("channel_email = ?", channelEmail).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return playlists, nil
+}
+
+func (r *queryResolver) PlaylistVideos(ctx context.Context, channelEmail string) ([]*model.PlaylistVideo, error) {
+	var playlistVideos []*model.PlaylistVideo
+
+	err := r.DB.Model(&playlistVideos).Where("channel_email = ?", channelEmail).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return playlistVideos, nil
+}
+
+func (r *queryResolver) FindVideo(ctx context.Context, videoID string) ([]*model.Video, error) {
+	var video []*model.Video
+
+	err := r.DB.Model(&video).Where("video_id = ?", videoID).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return video, nil
+}
+
 func (r *queryResolver) FindLike(ctx context.Context, email string, videoID int) ([]*model.Like, error) {
 	var likes []*model.Like
 
@@ -563,18 +672,6 @@ func (r *queryResolver) FindChannel(ctx context.Context, email string) ([]*model
 	return channels, nil
 }
 
-func (r *queryResolver) Comments(ctx context.Context, videoID int) ([]*model.Comment, error) {
-	var comments []*model.Comment
-
-	err := r.DB.Model(&comments).Where("video_id = ?", videoID).Select()
-
-	if err != nil {
-		return nil, err
-	}
-
-	return comments, nil
-}
-
 func (r *queryResolver) FindReply(ctx context.Context, replyTo int) ([]*model.Comment, error) {
 	var replies []*model.Comment
 
@@ -609,6 +706,18 @@ func (r *queryResolver) FindCommentDislike(ctx context.Context, channelEmail str
 	}
 
 	return commentDislike, nil
+}
+
+func (r *queryResolver) FindVideoPlaylist(ctx context.Context, playlistID int, videoID int) ([]*model.PlaylistVideo, error) {
+	var playlistVideo []*model.PlaylistVideo
+
+	err := r.DB.Model(&playlistVideo).Where("playlist_id = ? AND video_id = ?", playlistID, videoID).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return playlistVideo, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

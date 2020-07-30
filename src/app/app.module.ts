@@ -30,6 +30,10 @@ import { NestedCommentComponent } from './nested-comment/nested-comment.componen
 import { PlaylistDropdownComponent } from './playlist-dropdown/playlist-dropdown.component';
 import { PlaylistPageComponent } from './playlist-page/playlist-page.component';
 import { PlaylistSideComponent } from './playlist-side/playlist-side.component';
+import { PlaylistService } from './data-service/playlist-data';
+import { PlaylistChoiceComponent } from './playlist-choice/playlist-choice.component';
+import { PlaylistModalComponent } from './playlist-modal/playlist-modal.component';
+import { PlaylistModalInfo } from './data-service/playlist-modal-service';
 
 @NgModule({
   declarations: [
@@ -45,7 +49,9 @@ import { PlaylistSideComponent } from './playlist-side/playlist-side.component';
     NestedCommentComponent,
     PlaylistDropdownComponent,
     PlaylistPageComponent,
-    PlaylistSideComponent
+    PlaylistSideComponent,
+    PlaylistChoiceComponent,
+    PlaylistModalComponent
   ],
   imports: [
     HttpModule,
@@ -75,6 +81,8 @@ import { PlaylistSideComponent } from './playlist-side/playlist-side.component';
         ],
       } as SocialAuthServiceConfig,
     },
+    PlaylistService,
+    PlaylistModalInfo,
   ],
   bootstrap: [AppComponent],
 })

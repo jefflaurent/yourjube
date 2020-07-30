@@ -61,6 +61,31 @@ type Like struct {
 	VideoURL       string `json:"videoURL"`
 }
 
+type Playlist struct {
+	PlaylistID          string `json:"playlistId"`
+	PlaylistName        string `json:"playlistName"`
+	PlaylistThumbnail   string `json:"playlistThumbnail"`
+	PlaylistDescription string `json:"playlistDescription"`
+	ChannelEmail        string `json:"channelEmail"`
+	LastDate            int    `json:"lastDate"`
+	LastMonth           int    `json:"lastMonth"`
+	LastYear            int    `json:"lastYear"`
+	VideoCount          int    `json:"videoCount"`
+	Views               int    `json:"views"`
+	Visibility          string `json:"visibility"`
+}
+
+type PlaylistVideo struct {
+	ID             string `json:"id"`
+	PlaylistID     int    `json:"playlistId"`
+	VideoID        int    `json:"videoId"`
+	VideoName      string `json:"videoName"`
+	VideoThumbnail string `json:"videoThumbnail"`
+	VideoURL       string `json:"videoURL"`
+	ChannelName    string `json:"channelName"`
+	ChannelEmail   string `json:"channelEmail"`
+}
+
 type Video struct {
 	VideoID         string `json:"videoId"`
 	VideoTitle      string `json:"videoTitle"`
@@ -132,6 +157,29 @@ type NewLike struct {
 	VideoID        int    `json:"videoId"`
 	VideoThumbnail string `json:"videoThumbnail"`
 	VideoURL       string `json:"videoURL"`
+}
+
+type NewPlaylist struct {
+	PlaylistName        string `json:"playlistName"`
+	PlaylistThumbnail   string `json:"playlistThumbnail"`
+	PlaylistDescription string `json:"playlistDescription"`
+	ChannelEmail        string `json:"channelEmail"`
+	LastDate            int    `json:"lastDate"`
+	LastMonth           int    `json:"lastMonth"`
+	LastYear            int    `json:"lastYear"`
+	VideoCount          int    `json:"videoCount"`
+	Views               int    `json:"views"`
+	Visibility          string `json:"visibility"`
+}
+
+type NewPlaylistVideo struct {
+	PlaylistID     int    `json:"playlistId"`
+	VideoID        int    `json:"videoId"`
+	VideoName      string `json:"videoName"`
+	VideoThumbnail string `json:"videoThumbnail"`
+	VideoURL       string `json:"videoURL"`
+	ChannelName    string `json:"channelName"`
+	ChannelEmail   string `json:"channelEmail"`
 }
 
 type NewVideo struct {

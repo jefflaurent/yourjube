@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SocialAuthService, SocialUser } from "angularx-social-login";
 import { GoogleLoginProvider } from 'angularx-social-login';
 import { Apollo } from'apollo-angular';
+// import { PlaylistService } from '../data-service/playlist-data'
 import gql from 'graphql-tag';
 
 @Component({
@@ -15,10 +16,13 @@ export class HeaderComponent implements OnInit {
   loggedIn: boolean
   user: SocialUser
   channel: any = null
+  message: string
+  selectedVideo: any
 
   constructor(private authService: SocialAuthService, private apollo: Apollo) { }
   
   ngOnInit(): void {
+    // this.data.currentPlaylist.subscribe( message => this.message = message)
     var btnOn = document.querySelector('#toggleOn');
     var btnClose = document.querySelector('#toggleClose');
     btnOn.addEventListener('click', this.toggleOn);
@@ -136,4 +140,8 @@ export class HeaderComponent implements OnInit {
 
     nav.classList.remove('active');
   }
+
+  // newMessage(): void {
+  //   this.data.changeMessage("diubah dari header")
+  // }
 }
