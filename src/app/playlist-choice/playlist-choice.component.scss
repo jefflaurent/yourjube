@@ -12,18 +12,19 @@
     box-sizing: border-box;
     padding: 3px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
+    width: 15%;
 }
 
-.click
+.white
 {
     width: 15px;
     height: 15px;
     border: 2px solid black;
 }
 
-.click.clicked
+.blue
 {
     width: 15px;
     height: 15px;
@@ -31,7 +32,30 @@
     background-color: rgb(41, 139, 231);
 }
 
-.click:hover
+.blue:hover
 {
     cursor: pointer;
+}
+
+.white:hover
+{
+    cursor: pointer;
+}
+
+.name
+{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 70%;
+    box-sizing: border-box;
+    padding-left: 20px;
+}
+
+.last
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 15%;
 }

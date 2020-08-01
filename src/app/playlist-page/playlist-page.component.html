@@ -1,8 +1,8 @@
-<div class="container">
+<div class="container" *ngIf="currPlaylist">
     <div class="left">
         <div class="inner-container">
             <div class="thumbnail">
-                <img src="../../assets/upload/thumbnail.png" alt="">
+                <img [src]="currPlaylist.playlistThumbnail" alt="">
                 <div class="overlap">
                     <div class="overlap-container">
                         <div>
@@ -19,7 +19,7 @@
                     <input type="text" name="" id="" [value]="playlistName" (input)="playlistName = $event.target.value">
                 </div>
                 <div class="titleTxt">
-                    {{ playlistName }}
+                    {{ currPlaylist.playlistName }}
                 </div>
                 <div class="icon editTitle" (click)="hidePencil()">
                     <i class="fa fa-pencil fa-lg"></i>
@@ -34,10 +34,10 @@
                 </div>
             </div>
             <div class="details block">
-                5 videos <span>&#8226;</span> 27 views <span>&#8226;</span> Last updated on Sep 15, 2019
+                {{ currPlaylist.videoCount }} videos <span>&#8226;</span> {{ currPlaylist.views }} views <span>&#8226;</span> Last updated on Sep 15, 2019
             </div>
             <div class="visibility block">
-                Private
+                {{ currPlaylist.visibility }}
             </div>
             <div class="flex-start block">
                 <div class="icon" style="margin-right: 20px;">
@@ -52,7 +52,7 @@
                     <input type="text" name="" id="" [value]="playlistDescription" (input)="playlistDescription = $event.target.value">
                 </div>
                 <div class="descTxt">
-                    {{ playlistDescription }}
+                    {{ currPlaylist.playlistDescription }}
                 </div>
                 <div class="icon editDesc" (click)="hideDescPencil()">
                     <i class="fa fa-pencil fa-lg"></i>
@@ -77,7 +77,7 @@
             </div>
         </div>
     </div>
-    <div class="right" *ngIf="videos">
+    <div class="right" *ngIf="playlistVideos.length != 0">
         <div class="sort">
             <div>
                 <i class="fa fa-sort-amount-desc fa-lg"></i>
@@ -86,6 +86,6 @@
                 SORT BY
             </div>
         </div>
-        <app-playlist-side *ngFor="let video of videos" [vid]="(video)"></app-playlist-side>
+        <app-playlist-side *ngFor="let playlist of playlistVideos" [play]="(playlist)"></app-playlist-side>
     </div>
 </div>

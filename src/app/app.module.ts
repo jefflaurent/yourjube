@@ -30,11 +30,14 @@ import { NestedCommentComponent } from './nested-comment/nested-comment.componen
 import { PlaylistDropdownComponent } from './playlist-dropdown/playlist-dropdown.component';
 import { PlaylistPageComponent } from './playlist-page/playlist-page.component';
 import { PlaylistSideComponent } from './playlist-side/playlist-side.component';
-import { PlaylistService } from './data-service/playlist-data';
 import { PlaylistChoiceComponent } from './playlist-choice/playlist-choice.component';
 import { PlaylistModalComponent } from './playlist-modal/playlist-modal.component';
-import { PlaylistModalInfo } from './data-service/playlist-modal-service';
 
+import { PlaylistService } from './data-service/playlist-data';
+import { PlaylistModalInfo } from './data-service/playlist-modal-service';
+import { PlaylistVideoService } from './data-service/playlist-video-service';
+import { PlaylistHeaderComponent } from './playlist-header/playlist-header.component';
+ 
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,7 +54,8 @@ import { PlaylistModalInfo } from './data-service/playlist-modal-service';
     PlaylistPageComponent,
     PlaylistSideComponent,
     PlaylistChoiceComponent,
-    PlaylistModalComponent
+    PlaylistModalComponent,
+    PlaylistHeaderComponent
   ],
   imports: [
     HttpModule,
@@ -83,6 +87,7 @@ import { PlaylistModalInfo } from './data-service/playlist-modal-service';
     },
     PlaylistService,
     PlaylistModalInfo,
+    PlaylistVideoService,
   ],
   bootstrap: [AppComponent],
 })

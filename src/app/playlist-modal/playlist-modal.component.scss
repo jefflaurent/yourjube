@@ -26,9 +26,80 @@
     padding: 10px;
     display: flex;
     justify-content: center;
+    font-size: 14px;
+}
+
+.center:hover
+{
+    cursor: pointer;
 }
 
 .close:hover
 {
     cursor: pointer;
+}
+
+.common-container
+{
+    box-sizing: border-box;
+    padding: 10px;
+}
+
+.common-container.hidden
+{
+    display: none;
+}
+
+.common
+{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.common input[type='text']
+{
+    border: none;
+    border-bottom: 1px solid black;
+    font-size: 14px;
+    width: 97%;
+}
+
+.common input[type='text']:focus
+{
+    outline-width: 0;
+    border: none;
+    border-bottom: 1px solid black;
+    font-size: 14px;
+    width: 97%;
+}
+
+.common select
+{
+    margin-top: 2px;
+    width: 100%;
+    font-size: 14px;
+}
+
+.common select:focus
+{
+    outline-width: 0;
+    margin-top: 2px;
+    width: 100%;
+    font-size: 14px;
+}
+
+.desc
+{
+    font-size: 13px;
+}
+
+.create
+{
+    font-size: 15px;
+    font-weight: 500;
+    color: blue;
+    display: flex;
+    justify-content: flex-end;
 }

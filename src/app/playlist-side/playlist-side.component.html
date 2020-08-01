@@ -6,19 +6,19 @@
             </div>
         </div>
         <div class="left">
-            <a [routerLink]="['/video', video.videoId]">
-                <img [src]="video.videoThumbnail" alt="">
+            <a [routerLink]="['/video', playlistVideo.videoId]">
+                <img [src]="playlistVideo.videoThumbnail" alt="">
             </a>
         </div>
         <div class="right">
             <div class="top">
-                <a [routerLink]="['/video', video.videoId]">
-                    {{ video.videoTitle }}
+                <a [routerLink]="['/video', playlistVideo.videoId]">
+                    {{ playlistVideo.videoName }}
                 </a>
             </div>
             <div class="bottom">
                 <div class="channel">
-                    {{ video.channelName }}
+                    {{ playlistVideo.channelName }}
                 </div>
             </div>
         </div>

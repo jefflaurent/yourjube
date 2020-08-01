@@ -1,0 +1,33 @@
+.container a 
+{
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.left
+{
+    width: 40%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(76, 67, 67, 1);
+}
+
+.right
+{
+    width: 60%;
+    height: 50px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    color: rgba(76, 67, 67, 1);
+    font-size: 14px;
+}
+
+.container:hover
+{
+    background-color: #f5f5f0;
+    cursor: pointer;
+}

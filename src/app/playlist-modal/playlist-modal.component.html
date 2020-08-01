@@ -10,15 +10,43 @@
     <hr>
     
     <app-playlist-choice *ngFor="let playlist of playlists" [play]="(playlist)"></app-playlist-choice>
-    
+
     <hr>
 
-    <div class="center">
+    <div class="center" (click)="openCreate()">
         <div>
             <i class="fa fa-plus fa-lg"></i>
         </div>
-        <div>
+        <div style="box-sizing:border-box; margin-left: 10px;">
             Create new playlist
+        </div>
+    </div>
+
+    <div class="common-container hidden">
+        <div class="common">
+            <div class="desc">
+                Name
+            </div>
+            <div>
+                <input type="text" placeholder="Enter a playlist name..."
+                (input)="playlistName = $event.target.value" [value]="playlistName">
+            </div>
+        </div>
+
+        <div class="common">
+            <div class="desc">
+                Privacy
+            </div>
+            <div>
+                <select id="visibilityOption">
+                    <option value="public">Public</option>
+                    <option value="private">Private</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="create" (click)="createPlaylist()">
+            CREATE
         </div>
     </div>
 </div>

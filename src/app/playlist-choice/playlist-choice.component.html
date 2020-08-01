@@ -1,14 +1,15 @@
 <div class="container">
     <div class="click-container">
-        <div class="click" [id]="dummyId" (click)="toggleColor()"> {{ empty }} </div>
+        <div class="blue" *ngIf="clicked == true" (click)="paintWhite()"></div>
+        <div class="white" *ngIf="clicked == false" (click)="paintBlue()"></div>
     </div>
-    <div>
+    <div class="name">
         {{ playlist.playlistName }}
     </div>
-    <div *ngIf="playlist.visibility == 'public'">
+    <div *ngIf="playlist.visibility == 'public'" class="last">
         <i class="fa fa-globe fa-lg"></i>
     </div>
-    <div *ngIf="playlist.visibility == 'private'">
+    <div *ngIf="playlist.visibility == 'private'" class="last">
         <i class="fa fa-lock fa-lg"></i>
     </div>
 </div>

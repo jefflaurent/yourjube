@@ -10,17 +10,33 @@ import { PlaylistService } from '../data-service/playlist-data';
 })
 export class PlaylistModalComponent implements OnInit {
 
+  playlistName: string = ''
+  visibility: string
   playlists: Playlists[] = []
   status: boolean
-  constructor(private state: PlaylistModalInfo, private data: PlaylistService ) { }
+  date: any
+  channel: any
+  constructor(private state: PlaylistModalInfo, private data: PlaylistService) { }
 
   ngOnInit(): void {
     this.data.currentPlaylist.subscribe( playlist => this.playlists = playlist)
     this.state.currentStatus.subscribe( status => this.status = status)
+    this.channel = JSON.parse(localStorage.getItem('users'))
+    this.date = new Date()
   }
 
   closeModal(): void {
     this.state.changeStatus(false)
   }
 
+  createPlaylist(): void {
+    var x = (<HTMLSelectElement>document.getElementById('visibilityOption'))
+    this.visibility = x.options[x.selectedIndex].value;
+    this.data.initiateCreatePlaylist(this.playlistName, this.visibility)
+  }
+
+  openCreate(): void {
+    var x = document.querySelector('.common-container')
+    x.classList.remove('hidden')
+  }
 }

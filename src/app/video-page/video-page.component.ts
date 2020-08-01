@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Playlists } from '../model/playlist';
 import { PlaylistService } from '../data-service/playlist-data';
 import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
-import { PlaylistModalComponent } from '../playlist-modal/playlist-modal.component';
+import { PlaylistVideoService } from '../data-service/playlist-video-service';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 
@@ -50,7 +50,7 @@ export class VideoPageComponent implements OnInit {
     }
   `;
 
-  constructor(private apollo: Apollo, private data: PlaylistService, private status: PlaylistModalInfo) { }
+  constructor(private apollo: Apollo, private data: PlaylistService, private status: PlaylistModalInfo, private playlistData: PlaylistVideoService) { }
 
   playlists: Playlists[] = [];
   dummyId: string = ''
@@ -114,10 +114,9 @@ export class VideoPageComponent implements OnInit {
   }
 
   showModal(): void {
-
     var query = '#' + this.dummyId
     var x = document.querySelector(query)
-    
+    this.playlistData.ngOnInit();
     x.classList.remove('hidden')
   }
 

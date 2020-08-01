@@ -104,8 +104,9 @@
         </div>
     </div>
     <hr>
-
-    <div>
-        {{ message }}
+    
+    <div *ngIf="playlists">
+        <app-playlist-header *ngFor="let playlist of playlists" [play]="(playlist)"></app-playlist-header>
     </div>
+
 </div>

@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { SocialAuthService, SocialUser } from "angularx-social-login";
 import { GoogleLoginProvider } from 'angularx-social-login';
 import { Apollo } from'apollo-angular';
-// import { PlaylistService } from '../data-service/playlist-data'
+import { PlaylistService } from '../data-service/playlist-data';
+import { PlaylistVideoService } from '../data-service/playlist-video-service';
+import { Playlists } from '../model/playlist'
 import gql from 'graphql-tag';
 
 @Component({
@@ -18,11 +20,14 @@ export class HeaderComponent implements OnInit {
   channel: any = null
   message: string
   selectedVideo: any
+  playlists: Playlists[] = []
 
-  constructor(private authService: SocialAuthService, private apollo: Apollo) { }
+  constructor(private authService: SocialAuthService, private apollo: Apollo, private data: PlaylistService, private videoData: PlaylistVideoService) { }
   
   ngOnInit(): void {
-    // this.data.currentPlaylist.subscribe( message => this.message = message)
+    this.videoData.ngOnInit();
+    this.data.ngOnInit();
+    this.data.currentPlaylist.subscribe( playlist => this.playlists = playlist)
     var btnOn = document.querySelector('#toggleOn');
     var btnClose = document.querySelector('#toggleClose');
     btnOn.addEventListener('click', this.toggleOn);
@@ -44,7 +49,6 @@ export class HeaderComponent implements OnInit {
       this.loggedIn = (user != null)
       this.addStorage(user)
       this.checkExist();
-      console.log(this.user)
     });
   }
 
@@ -64,7 +68,7 @@ export class HeaderComponent implements OnInit {
       }
     }).subscribe(channel => {
       if(channel.data.findChannel.length != 0) {
-        console.log('udah ada')
+
       }
       else {
         this.channel = channel;
@@ -95,9 +99,7 @@ export class HeaderComponent implements OnInit {
         subscriber: 0,
         isPremium: 'false',
       }
-    }).subscribe( result => {
-      console.log(result)
-    })
+    }).subscribe()
   }
 
   signOut() : void {
@@ -140,8 +142,4 @@ export class HeaderComponent implements OnInit {
 
     nav.classList.remove('active');
   }
-
-  // newMessage(): void {
-  //   this.data.changeMessage("diubah dari header")
-  // }
 }

@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Apollo } from 'apollo-angular';
-import { Videos } from '../model/video';
-import gql from 'graphql-tag';
+import { Playlists } from '../model/playlist';
+import { PlaylistVideoService } from '../data-service/playlist-video-service';
+import { PlaylistVideos } from '../model/playlist-video';
+import { PlaylistService } from '../data-service/playlist-data';
 
 @Component({
   selector: 'app-playlist-page',
@@ -10,44 +13,43 @@ import gql from 'graphql-tag';
 })
 export class PlaylistPageComponent implements OnInit {
 
-  videos: Videos[] = [];
+  playlistVideosTemp: PlaylistVideos[] = []
+  playlistVideos: PlaylistVideos[] = []
+  
+  currPlaylist: Playlists
+  playlists: Playlists[] = []
   playlistName: string = "Playlist #1"
   playlistDescription: string = "No Description"
-  constructor(private apollo: Apollo) { }
+  playlistId: any
+
+  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private data: PlaylistVideoService, private currData: PlaylistService) { }
 
   ngOnInit(): void {
-    this.fetchVideos();
+    this.data.currentPlaylistVideo.subscribe( playlistVideo => {
+      this.playlistVideosTemp = playlistVideo
+    })
+
+    this.currData.currentPlaylist.subscribe( playlist => {
+      this.playlists = playlist
+    })
+    
+    this.activatedRoute.paramMap.subscribe(params => {
+      this.playlistId = params.get('id');
+    })
+
+    this.filterVideos();
+    this.currPlaylist = this.playlists.find( p => p.playlistId == this.playlistId)
   }
 
-  fetchVideos(): void {
-    this.apollo.watchQuery<any>({
-      query: gql`
-      query getVideos {
-        videos {
-          videoId,
-          videoTitle,
-          videoDesc,
-          videoURL,
-          videoThumbnail,
-          uploadDay,
-          uploadMonth,
-          uploadYear,
-          views,
-          likes,
-          dislikes,
-          visibility,
-          viewer,
-          category,
-          channelName,
-          channelPhotoURL,
-          channelEmail,
-        }
+  filterVideos(): void {
+    let j = 0;
+    for(let i = 0; i < this.playlistVideosTemp.length; i++){
+      if(this.playlistVideosTemp[i].playlistId == this.playlistId) {
+        this.playlistVideos[j] = this.playlistVideosTemp[i];
+        j++;
       }
-    `
-    }).valueChanges.subscribe( result => {
-      console.log(result)
-      this.videos = result.data.videos
-    })
+    }
+    console.log(this.playlistVideos)
   }
 
   hidePencil(): void {
