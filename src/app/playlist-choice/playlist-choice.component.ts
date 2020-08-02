@@ -31,6 +31,7 @@ export class PlaylistChoiceComponent implements OnInit {
   playlistVideos: PlaylistVideos[] = []
   video: Videos[] = []
   myId: string
+  user: any
   empty: any = " "
   clicked: boolean
   videoId: any
@@ -38,13 +39,14 @@ export class PlaylistChoiceComponent implements OnInit {
   constructor(private data: PlaylistService, private apollo: Apollo, private playlistData: PlaylistVideoService) {  }
 
   ngOnInit(): void {
+    this.user = JSON.parse(localStorage.getItem('users'))
     this.myId = "myId" + this.playlist.playlistId
     this.data.currentVideo.subscribe( videoId => this.videoId = videoId)
-    this.playlistData.currentPlaylistVideo.subscribe( playlistVideos => {
-      this.playlistVideos = playlistVideos
+    this.playlistData.fetchPlaylistVideos(this.user.email).valueChanges.subscribe( playlistVideos => {
+      this.playlistVideos = playlistVideos.data.playlistVideos
+      this.validateVideo()
     })
     this.findVideo()
-    this.validateVideo()
   }
 
   paintBlue(): void {
