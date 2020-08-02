@@ -203,6 +203,7 @@ type Query {
   publicVideos: [Video!]!
   likes: [Like!]!
   comments(videoId: Int!): [Comment!]!
+  allPlaylists: [Playlist!]!
   playlists(channelEmail: String!): [Playlist!]!
   playlistVideos(channelEmail: String!): [PlaylistVideo!]!
   findVideo(videoId: ID!): [Video!]!
@@ -240,4 +241,8 @@ type Mutation {
   createPlaylist(input: newPlaylist): Playlist!
   addPlaylist(input: newPlaylistVideo): PlaylistVideo!
   removePlaylistVideo(playlistId: Int!, videoId: Int!): Boolean!
+  changePlaylistName(playlistId: ID!, playlistName: String!): Boolean!
+  changePlaylistDesc(playlistId: ID!, playlistDescription: String!): Boolean!
+  changePlaylistVisibility(playlistId: ID!, visibility: String!): Boolean!
+  updatePlaylistUpdate(playlistId: ID!, lastDate: Int!, lastMonth: Int!, lastYear: Int!): Boolean!
 }

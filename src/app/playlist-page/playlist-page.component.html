@@ -16,7 +16,7 @@
             </div>
             <div class="space-between block">
                 <div class="title hidden">
-                    <input type="text" name="" id="" [value]="playlistName" (input)="playlistName = $event.target.value">
+                    <input type="text" [value]="playlistName" (input)="playlistName = $event.target.value">
                 </div>
                 <div class="titleTxt">
                     {{ currPlaylist.playlistName }}
@@ -29,15 +29,20 @@
                 <div class="cancelTitle" (click)="returnTitle()">
                     CANCEL
                 </div>
-                <div class="saveTitle">
+                <div class="saveTitle" (click)="changePlaylistName()" (click)="returnTitle()">
                     SAVE
                 </div>
             </div>
             <div class="details block">
-                {{ currPlaylist.videoCount }} videos <span>&#8226;</span> {{ currPlaylist.views }} views <span>&#8226;</span> Last updated on Sep 15, 2019
+                {{ currPlaylist.videoCount }} videos <span>&#8226;</span> {{ currPlaylist.views }} views <span>&#8226;</span> {{ post }}
             </div>
-            <div class="visibility block">
-                {{ currPlaylist.visibility }}
+            <div class="visibility block" (click)="changePlaylistVisibility()">
+                <div>
+                    {{ visibility }}
+                </div>
+                <div style="margin-left: 5px;">
+                    <i class="fa fa-caret-down"></i>
+                </div>
             </div>
             <div class="flex-start block">
                 <div class="icon" style="margin-right: 20px;">
@@ -49,7 +54,7 @@
             </div>
             <div class="space-between block">
                 <div class="desc hidden">
-                    <input type="text" name="" id="" [value]="playlistDescription" (input)="playlistDescription = $event.target.value">
+                    <input type="text" [value]="playlistDescription" (input)="playlistDescription = $event.target.value">
                 </div>
                 <div class="descTxt">
                     {{ currPlaylist.playlistDescription }}
@@ -62,17 +67,17 @@
                 <div class="cancelTitle" (click)="returnDesc()">
                     CANCEL
                 </div>
-                <div class="saveTitle">
+                <div class="saveTitle" (click)="changePlaylistDesc()" (click)="returnDesc()">
                     SAVE
                 </div>
             </div>
             <hr>
-            <div class="channel block">
+            <div class="channel block" *ngIf="playlistCreator">
                 <div class="photo">
-                    <img src="../../assets/navIcon/user.png" alt="">
+                    <img [src]="playlistCreator.photoURL" alt="">
                 </div>  
                 <div class="name">
-                    Jeff L
+                    {{ playlistCreator.name }}
                 </div>
             </div>
         </div>

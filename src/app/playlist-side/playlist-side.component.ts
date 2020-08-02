@@ -21,6 +21,5 @@ export class PlaylistSideComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log(this.playlistVideo)
   }
 }

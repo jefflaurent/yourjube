@@ -103,30 +103,34 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		AddComment             func(childComplexity int, input *model.NewComment) int
-		AddDislike             func(childComplexity int, input *model.NewDislike) int
-		AddLike                func(childComplexity int, input *model.NewLike) int
-		AddPlaylist            func(childComplexity int, input *model.NewPlaylistVideo) int
-		AddReplyCount          func(childComplexity int, commentID string) int
-		CreateChannel          func(childComplexity int, input *model.NewChannel) int
-		CreatePlaylist         func(childComplexity int, input *model.NewPlaylist) int
-		CreateVideo            func(childComplexity int, input *model.NewVideo) int
-		DecreaseCommentDislike func(childComplexity int, commentID string) int
-		DecreaseCommentLike    func(childComplexity int, commentID string) int
-		DecreaseDislike        func(childComplexity int, videoID string) int
-		DecreaseLike           func(childComplexity int, videoID string) int
-		DislikeVideo           func(childComplexity int, videoID string) int
-		IncreaseCommentDislike func(childComplexity int, commentID string) int
-		IncreaseCommentLike    func(childComplexity int, commentID string) int
-		LikeVideo              func(childComplexity int, videoID string) int
-		RegisterCommentDislike func(childComplexity int, input *model.NewCommentDislike) int
-		RegisterCommentLike    func(childComplexity int, input *model.NewCommentLike) int
-		RemoveCommentDislike   func(childComplexity int, commentID int, channelEmail string) int
-		RemoveCommentLike      func(childComplexity int, commentID int, channelEmail string) int
-		RemoveDislike          func(childComplexity int, channelID int, videoID int) int
-		RemoveLike             func(childComplexity int, channelID int, videoID int) int
-		RemovePlaylistVideo    func(childComplexity int, playlistID int, videoID int) int
-		WatchVideo             func(childComplexity int, videoID string) int
+		AddComment               func(childComplexity int, input *model.NewComment) int
+		AddDislike               func(childComplexity int, input *model.NewDislike) int
+		AddLike                  func(childComplexity int, input *model.NewLike) int
+		AddPlaylist              func(childComplexity int, input *model.NewPlaylistVideo) int
+		AddReplyCount            func(childComplexity int, commentID string) int
+		ChangePlaylistDesc       func(childComplexity int, playlistID string, playlistDescription string) int
+		ChangePlaylistName       func(childComplexity int, playlistID string, playlistName string) int
+		ChangePlaylistVisibility func(childComplexity int, playlistID string, visibility string) int
+		CreateChannel            func(childComplexity int, input *model.NewChannel) int
+		CreatePlaylist           func(childComplexity int, input *model.NewPlaylist) int
+		CreateVideo              func(childComplexity int, input *model.NewVideo) int
+		DecreaseCommentDislike   func(childComplexity int, commentID string) int
+		DecreaseCommentLike      func(childComplexity int, commentID string) int
+		DecreaseDislike          func(childComplexity int, videoID string) int
+		DecreaseLike             func(childComplexity int, videoID string) int
+		DislikeVideo             func(childComplexity int, videoID string) int
+		IncreaseCommentDislike   func(childComplexity int, commentID string) int
+		IncreaseCommentLike      func(childComplexity int, commentID string) int
+		LikeVideo                func(childComplexity int, videoID string) int
+		RegisterCommentDislike   func(childComplexity int, input *model.NewCommentDislike) int
+		RegisterCommentLike      func(childComplexity int, input *model.NewCommentLike) int
+		RemoveCommentDislike     func(childComplexity int, commentID int, channelEmail string) int
+		RemoveCommentLike        func(childComplexity int, commentID int, channelEmail string) int
+		RemoveDislike            func(childComplexity int, channelID int, videoID int) int
+		RemoveLike               func(childComplexity int, channelID int, videoID int) int
+		RemovePlaylistVideo      func(childComplexity int, playlistID int, videoID int) int
+		UpdatePlaylistUpdate     func(childComplexity int, playlistID string, lastDate int, lastMonth int, lastYear int) int
+		WatchVideo               func(childComplexity int, videoID string) int
 	}
 
 	Playlist struct {
@@ -155,6 +159,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		AllPlaylists       func(childComplexity int) int
 		Channels           func(childComplexity int) int
 		Comments           func(childComplexity int, videoID int) int
 		FindChannel        func(childComplexity int, email string) int
@@ -218,6 +223,10 @@ type MutationResolver interface {
 	CreatePlaylist(ctx context.Context, input *model.NewPlaylist) (*model.Playlist, error)
 	AddPlaylist(ctx context.Context, input *model.NewPlaylistVideo) (*model.PlaylistVideo, error)
 	RemovePlaylistVideo(ctx context.Context, playlistID int, videoID int) (bool, error)
+	ChangePlaylistName(ctx context.Context, playlistID string, playlistName string) (bool, error)
+	ChangePlaylistDesc(ctx context.Context, playlistID string, playlistDescription string) (bool, error)
+	ChangePlaylistVisibility(ctx context.Context, playlistID string, visibility string) (bool, error)
+	UpdatePlaylistUpdate(ctx context.Context, playlistID string, lastDate int, lastMonth int, lastYear int) (bool, error)
 }
 type QueryResolver interface {
 	Channels(ctx context.Context) ([]*model.Channel, error)
@@ -225,6 +234,7 @@ type QueryResolver interface {
 	PublicVideos(ctx context.Context) ([]*model.Video, error)
 	Likes(ctx context.Context) ([]*model.Like, error)
 	Comments(ctx context.Context, videoID int) ([]*model.Comment, error)
+	AllPlaylists(ctx context.Context) ([]*model.Playlist, error)
 	Playlists(ctx context.Context, channelEmail string) ([]*model.Playlist, error)
 	PlaylistVideos(ctx context.Context, channelEmail string) ([]*model.PlaylistVideo, error)
 	FindVideo(ctx context.Context, videoID string) ([]*model.Video, error)
@@ -599,6 +609,42 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.AddReplyCount(childComplexity, args["commentId"].(string)), true
 
+	case "Mutation.changePlaylistDesc":
+		if e.complexity.Mutation.ChangePlaylistDesc == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changePlaylistDesc_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangePlaylistDesc(childComplexity, args["playlistId"].(string), args["playlistDescription"].(string)), true
+
+	case "Mutation.changePlaylistName":
+		if e.complexity.Mutation.ChangePlaylistName == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changePlaylistName_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangePlaylistName(childComplexity, args["playlistId"].(string), args["playlistName"].(string)), true
+
+	case "Mutation.changePlaylistVisibility":
+		if e.complexity.Mutation.ChangePlaylistVisibility == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changePlaylistVisibility_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangePlaylistVisibility(childComplexity, args["playlistId"].(string), args["visibility"].(string)), true
+
 	case "Mutation.createChannel":
 		if e.complexity.Mutation.CreateChannel == nil {
 			break
@@ -815,6 +861,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.RemovePlaylistVideo(childComplexity, args["playlistId"].(int), args["videoId"].(int)), true
 
+	case "Mutation.updatePlaylistUpdate":
+		if e.complexity.Mutation.UpdatePlaylistUpdate == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updatePlaylistUpdate_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdatePlaylistUpdate(childComplexity, args["playlistId"].(string), args["lastDate"].(int), args["lastMonth"].(int), args["lastYear"].(int)), true
+
 	case "Mutation.watchVideo":
 		if e.complexity.Mutation.WatchVideo == nil {
 			break
@@ -959,6 +1017,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PlaylistVideo.VideoURL(childComplexity), true
+
+	case "Query.allPlaylists":
+		if e.complexity.Query.AllPlaylists == nil {
+			break
+		}
+
+		return e.complexity.Query.AllPlaylists(childComplexity), true
 
 	case "Query.channels":
 		if e.complexity.Query.Channels == nil {
@@ -1508,6 +1573,7 @@ type Query {
   publicVideos: [Video!]!
   likes: [Like!]!
   comments(videoId: Int!): [Comment!]!
+  allPlaylists: [Playlist!]!
   playlists(channelEmail: String!): [Playlist!]!
   playlistVideos(channelEmail: String!): [PlaylistVideo!]!
   findVideo(videoId: ID!): [Video!]!
@@ -1545,6 +1611,10 @@ type Mutation {
   createPlaylist(input: newPlaylist): Playlist!
   addPlaylist(input: newPlaylistVideo): PlaylistVideo!
   removePlaylistVideo(playlistId: Int!, videoId: Int!): Boolean!
+  changePlaylistName(playlistId: ID!, playlistName: String!): Boolean!
+  changePlaylistDesc(playlistId: ID!, playlistDescription: String!): Boolean!
+  changePlaylistVisibility(playlistId: ID!, visibility: String!): Boolean!
+  updatePlaylistUpdate(playlistId: ID!, lastDate: Int!, lastMonth: Int!, lastYear: Int!): Boolean!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -1620,6 +1690,72 @@ func (ec *executionContext) field_Mutation_addReplyCount_args(ctx context.Contex
 		}
 	}
 	args["commentId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_changePlaylistDesc_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["playlistId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["playlistId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["playlistDescription"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["playlistDescription"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_changePlaylistName_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["playlistId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["playlistId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["playlistName"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["playlistName"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_changePlaylistVisibility_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["playlistId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["playlistId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["visibility"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["visibility"] = arg1
 	return args, nil
 }
 
@@ -1912,6 +2048,44 @@ func (ec *executionContext) field_Mutation_removePlaylistVideo_args(ctx context.
 		}
 	}
 	args["videoId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updatePlaylistUpdate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["playlistId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["playlistId"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["lastDate"]; ok {
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["lastDate"] = arg1
+	var arg2 int
+	if tmp, ok := rawArgs["lastMonth"]; ok {
+		arg2, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["lastMonth"] = arg2
+	var arg3 int
+	if tmp, ok := rawArgs["lastYear"]; ok {
+		arg3, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["lastYear"] = arg3
 	return args, nil
 }
 
@@ -4551,6 +4725,170 @@ func (ec *executionContext) _Mutation_removePlaylistVideo(ctx context.Context, f
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_changePlaylistName(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changePlaylistName_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangePlaylistName(rctx, args["playlistId"].(string), args["playlistName"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_changePlaylistDesc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changePlaylistDesc_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangePlaylistDesc(rctx, args["playlistId"].(string), args["playlistDescription"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_changePlaylistVisibility(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changePlaylistVisibility_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangePlaylistVisibility(rctx, args["playlistId"].(string), args["visibility"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updatePlaylistUpdate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updatePlaylistUpdate_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdatePlaylistUpdate(rctx, args["playlistId"].(string), args["lastDate"].(int), args["lastMonth"].(int), args["lastYear"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Playlist_playlistId(ctx context.Context, field graphql.CollectedField, obj *model.Playlist) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -5372,6 +5710,40 @@ func (ec *executionContext) _Query_comments(ctx context.Context, field graphql.C
 	res := resTmp.([]*model.Comment)
 	fc.Result = res
 	return ec.marshalNComment2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐCommentᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_allPlaylists(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AllPlaylists(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Playlist)
+	fc.Result = res
+	return ec.marshalNPlaylist2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐPlaylistᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_playlists(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -8482,6 +8854,26 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "changePlaylistName":
+			out.Values[i] = ec._Mutation_changePlaylistName(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changePlaylistDesc":
+			out.Values[i] = ec._Mutation_changePlaylistDesc(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changePlaylistVisibility":
+			out.Values[i] = ec._Mutation_changePlaylistVisibility(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updatePlaylistUpdate":
+			out.Values[i] = ec._Mutation_updatePlaylistUpdate(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8712,6 +9104,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_comments(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "allPlaylists":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_allPlaylists(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}

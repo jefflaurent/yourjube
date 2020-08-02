@@ -64,7 +64,6 @@ export class VideoPageComponent implements OnInit {
   post : string
 
   ngOnInit(): void {
-    // this.data.currentPlaylist.subscribe( playlist => this.playlists = playlist)
     this.dummyId = 'vid' + this.video.videoId
     this.dummyId2 = 'play' + this.video.videoId
     this.time = new Date()
@@ -116,20 +115,18 @@ export class VideoPageComponent implements OnInit {
   showModal(): void {
     var query = '#' + this.dummyId
     var x = document.querySelector(query)
-    this.playlistData.ngOnInit();
     x.classList.remove('hidden')
   }
 
   hideModal(): void {
     var query = '#' + this.dummyId
     var x = document.querySelector(query)
-    
     x.classList.add('hidden')
   }
 
   showPlaylist(): void {
+    this.hideModal()
     this.data.changeVideo(this.video.videoId)
-    this.data.ngOnInit()
     this.status.changeStatus(true)
   }
 }

@@ -539,6 +539,88 @@ func (r *mutationResolver) RemovePlaylistVideo(ctx context.Context, playlistID i
 	return true, nil
 }
 
+func (r *mutationResolver) ChangePlaylistName(ctx context.Context, playlistID string, playlistName string) (bool, error) {
+	var playlist model.Playlist
+
+	err := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	playlist.PlaylistName = playlistName
+
+	_, updateErr := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) ChangePlaylistDesc(ctx context.Context, playlistID string, playlistDescription string) (bool, error) {
+	var playlist model.Playlist
+
+	err := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	playlist.PlaylistDescription = playlistDescription
+
+	_, updateErr := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) ChangePlaylistVisibility(ctx context.Context, playlistID string, visibility string) (bool, error) {
+	var playlist model.Playlist
+
+	err := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	playlist.Visibility = visibility
+
+	_, updateErr := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) UpdatePlaylistUpdate(ctx context.Context, playlistID string, lastDate int, lastMonth int, lastYear int) (bool, error) {
+	var playlist model.Playlist
+
+	err := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	playlist.LastDate = lastDate
+	playlist.LastMonth = lastMonth
+	playlist.LastYear = lastYear
+
+	_, updateErr := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
 func (r *queryResolver) Channels(ctx context.Context) ([]*model.Channel, error) {
 	var channels []*model.Channel
 
@@ -598,6 +680,18 @@ func (r *queryResolver) Comments(ctx context.Context, videoID int) ([]*model.Com
 	}
 
 	return comments, nil
+}
+
+func (r *queryResolver) AllPlaylists(ctx context.Context) ([]*model.Playlist, error) {
+	var playlists []*model.Playlist
+
+	err := r.DB.Model(&playlists).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return playlists, nil
 }
 
 func (r *queryResolver) Playlists(ctx context.Context, channelEmail string) ([]*model.Playlist, error) {

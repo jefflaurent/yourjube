@@ -37,6 +37,7 @@ import { PlaylistService } from './data-service/playlist-data';
 import { PlaylistModalInfo } from './data-service/playlist-modal-service';
 import { PlaylistVideoService } from './data-service/playlist-video-service';
 import { PlaylistHeaderComponent } from './playlist-header/playlist-header.component';
+import { VideoService } from './data-service/video-service';
  
 @NgModule({
   declarations: [
@@ -88,6 +89,8 @@ import { PlaylistHeaderComponent } from './playlist-header/playlist-header.compo
     PlaylistService,
     PlaylistModalInfo,
     PlaylistVideoService,
+    VideoService
+
   ],
   bootstrap: [AppComponent],
 })

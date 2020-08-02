@@ -456,7 +456,6 @@ export class VideoPlayComponent implements OnInit {
       query: this.getVideoQuery
     }).valueChanges.subscribe(result => {
       this.videos = result.data.videos
-      
       this.activatedRoute.paramMap.subscribe(params => {
         this.id = params.get('id');
         this.currVid = this.videos.find( v => v.videoId == this.id)
@@ -475,8 +474,6 @@ export class VideoPlayComponent implements OnInit {
        videoId: this.id
      }
    }).valueChanges.subscribe(result => {
-     console.log('jalan')
-     console.log(result)
      this.comments = result.data.comments
      this.commentQty = result.data.comments.length
      this.processComments()

@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { BehaviorSubject } from 'rxjs';
 import { PlaylistVideos } from '../model/playlist-video';
@@ -6,7 +6,7 @@ import { Videos } from '../model/video';
 import gql from 'graphql-tag';
 
 @Injectable()
-export class PlaylistVideoService implements OnInit{
+export class PlaylistVideoService{
 
     private messageSource = new BehaviorSubject<PlaylistVideos[]>([])
     currentPlaylistVideo = this.messageSource.asObservable()
@@ -17,11 +17,6 @@ export class PlaylistVideoService implements OnInit{
     videoId: any
 
     constructor(private apollo: Apollo) {}
-
-    ngOnInit(): void {
-      this.user = JSON.parse(localStorage.getItem('users'))
-      this.fetchPlaylistVideos()
-    }
 
     changePlaylist(newPlaylistVideo: PlaylistVideos[]): void {
       this.messageSource.next(newPlaylistVideo)
@@ -42,24 +37,17 @@ export class PlaylistVideoService implements OnInit{
         }
     `;
 
-    fetchPlaylistVideos(): void {
-        this.apollo.watchQuery<any>({
-            query: this.fetchPlaylistVideoQuery, 
-            variables: {
-                channelEmail: this.user.email
-            }
-        }).valueChanges.subscribe( result => {
-            console.log(result)
-            this.changePlaylist(result.data.playlistVideos)
-        })
+    fetchPlaylistVideos(email: string) {
+      return this.apollo.watchQuery<any>({
+        query: this.fetchPlaylistVideoQuery,
+        variables: {
+          channelEmail: email
+        }
+      })
     }
 
-    initiateAddPlaylistVideo(playlistId: BigInteger, video: Videos): void{
-        this.playlistId = playlistId;
-        this.video = video;
-        console.log(this.playlistId)
-        console.log(this.video)
-        this.addPlaylistVideo();
+    initiateAddPlaylistVideo(playlistId: any, video: Videos): void{
+      this.addPlaylistVideo(playlistId+1, video);
     }
 
     initiateRemovePlaylistVideo(playlistId: BigInteger, videoId: BigInteger): void {
@@ -68,79 +56,81 @@ export class PlaylistVideoService implements OnInit{
         this.removePlaylistVideo();
     }
 
-    addPlaylistVideo(): void {
-        this.apollo.mutate({
-            mutation: gql`
-              mutation addPlaylist(
-                  $playlistId: Int!,
-                  $videoId: Int!,
-                  $videoName: String!,
-                  $videoThumbnail: String!,
-                  $videoURL: String!,
-                  $channelName: String!,
-                  $channelEmail: String!,
-              ) {
-                addPlaylist(input:{
-                  playlistId: $playlistId,
-                  videoId: $videoId,
-                  videoName: $videoName,
-                  videoThumbnail: $videoThumbnail,
-                  videoURL: $videoURL,
-                  channelName: $channelName,
-                  channelEmail: $channelEmail,
-                }){
-                  id,
-                  playlistId,
-                  videoId,
-                  videoName,
-                  videoThumbnail,
-                  videoURL,
-                  channelName,
-                  channelEmail,
-                }
+    addPlaylistVideo(playlistId: any, video: Videos): void {
+      var x = JSON.parse(localStorage.getItem('users'))
+      this.apollo.mutate({
+          mutation: gql`
+            mutation addPlaylist(
+                $playlistId: Int!,
+                $videoId: Int!,
+                $videoName: String!,
+                $videoThumbnail: String!,
+                $videoURL: String!,
+                $channelName: String!,
+                $channelEmail: String!,
+            ) {
+              addPlaylist(input:{
+                playlistId: $playlistId,
+                videoId: $videoId,
+                videoName: $videoName,
+                videoThumbnail: $videoThumbnail,
+                videoURL: $videoURL,
+                channelName: $channelName,
+                channelEmail: $channelEmail,
+              }){
+                id,
+                playlistId,
+                videoId,
+                videoName,
+                videoThumbnail,
+                videoURL,
+                channelName,
+                channelEmail,
               }
-            `,
-            variables: {
-              playlistId: this.playlistId,
-              videoId: this.video.videoId,
-              videoName: this.video.videoTitle,
-              videoThumbnail: this.video.videoThumbnail,
-              videoURL: this.video.videoURL,
-              channelName: this.video.channelName,
-              channelEmail: this.video.channelEmail,
-            },
-            refetchQueries: [{
-                query: this.fetchPlaylistVideoQuery,
-                variables: {
-                    channelEmail: this.user.email
-                }
-            }]
-        }).subscribe()
+            }
+          `,
+          variables: {
+            playlistId: playlistId,
+            videoId: video.videoId,
+            videoName: video.videoTitle,
+            videoThumbnail: video.videoThumbnail,
+            videoURL: video.videoURL,
+            channelName: video.channelName,
+            channelEmail: video.channelEmail,
+          },
+          refetchQueries: [{
+              query: this.fetchPlaylistVideoQuery,
+              variables: {
+                  channelEmail: x.email
+              }
+          }]
+      }).subscribe()
     }
 
     removePlaylistVideo(): void {
-        this.apollo.mutate({
-            mutation: gql`
-              mutation removeVideo(
-                $videoId: Int!,
-                $playlistId: Int!,
-              ) {
-                removePlaylistVideo(
-                  videoId: $videoId,
-                  playlistId: $playlistId,
-                )
+      var x = JSON.parse(localStorage.getItem('users'))
+      this.apollo.mutate({
+          mutation: gql`
+            mutation removeVideo(
+              $videoId: Int!,
+              $playlistId: Int!,
+            ) {
+              removePlaylistVideo(
+                videoId: $videoId,
+                playlistId: $playlistId,
+              )
+            }
+          `,
+          variables: {
+            videoId: this.videoId,
+            playlistId: this.playlistId
+          },
+          refetchQueries: [{
+              query: this.fetchPlaylistVideoQuery,
+              variables: {
+                  channelEmail: x.email
               }
-            `,
-            variables: {
-              videoId: this.videoId,
-              playlistId: this.playlistId
-            },
-            refetchQueries: [{
-                query: this.fetchPlaylistVideoQuery,
-                variables: {
-                    channelEmail: this.user.email
-                }
-            }]
-        }).subscribe()
+          }]
+      }).subscribe()
     }
 }

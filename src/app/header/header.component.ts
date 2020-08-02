@@ -25,20 +25,21 @@ export class HeaderComponent implements OnInit {
   constructor(private authService: SocialAuthService, private apollo: Apollo, private data: PlaylistService, private videoData: PlaylistVideoService) { }
   
   ngOnInit(): void {
-    this.videoData.ngOnInit();
-    this.data.ngOnInit();
-    this.data.currentPlaylist.subscribe( playlist => this.playlists = playlist)
-    var btnOn = document.querySelector('#toggleOn');
-    var btnClose = document.querySelector('#toggleClose');
-    btnOn.addEventListener('click', this.toggleOn);
-    btnClose.addEventListener('click', this.toggleOff);
-
     if(localStorage.getItem('users') == null) {
       this.user = null
     }
     else {
       this.getUser();
     }
+
+    this.data.fetchPlaylist(this.user.email).valueChanges.subscribe( playlist => {
+      this.playlists = playlist.data.playlists
+    })
+    
+    var btnOn = document.querySelector('#toggleOn');
+    var btnClose = document.querySelector('#toggleClose');
+    btnOn.addEventListener('click', this.toggleOn);
+    btnClose.addEventListener('click', this.toggleOff);
   }
 
   signInWithGoogle(): void {

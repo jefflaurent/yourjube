@@ -1,21 +1,25 @@
-import { Injectable, OnInit } from '@angular/core';
-import { Apollo } from 'apollo-angular';
 import { BehaviorSubject } from 'rxjs';
+import { Injectable } from '@angular/core';
 import { Playlists } from '../model/playlist';
+import { PlaylistVideoService } from '../data-service/playlist-video-service';
+import { Videos } from '../model/video';
+import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 
 @Injectable()
-export class PlaylistService implements OnInit{
+export class PlaylistService{
     
     user: any
     date: any
+    playlistTemp: Playlists[]
     playlistName: string
     visibility: string
     private messageSource = new BehaviorSubject<Playlists[]>([]);
     private messageSource2 = new BehaviorSubject<BigInteger>(new Uint8Array);
     currentPlaylist = this.messageSource.asObservable();
     currentVideo = this.messageSource2.asObservable();
-    constructor(private apollo: Apollo) {}
+
+    constructor(private apollo: Apollo, private playlistVideoService: PlaylistVideoService) {}
 
     fetchPlaylistQuery = gql`
         query getPlaylist($channelEmail: String!){
@@ -35,6 +39,24 @@ export class PlaylistService implements OnInit{
         }
     `;
 
+    fetchAllPlaylistQuery = gql`
+      query allPlaylists{
+          allPlaylists{
+              playlistId,
+              playlistName,
+              playlistThumbnail,
+              playlistDescription,
+              channelEmail,
+              lastDate,
+              lastMonth,
+              lastYear,
+              videoCount,
+              views,
+              visibility
+          }
+      }
+  `;
+
     changeMessage(newPlaylist: Playlists[]) {
         this.messageSource.next(newPlaylist)
     }
@@ -43,31 +65,31 @@ export class PlaylistService implements OnInit{
         this.messageSource2.next(newVideo)
     }
 
-    ngOnInit(): void {
-        this.user = JSON.parse(localStorage.getItem('users'))
-        this.fetchPlaylist()
+    fetchPlaylist(email: String): any{
+      return this.apollo.watchQuery<any>({
+          query: this.fetchPlaylistQuery,
+          variables: {
+              channelEmail: email
+          }
+      })
     }
 
-    fetchPlaylist(): void{
-        this.apollo.watchQuery<any>({
-            query: this.fetchPlaylistQuery,
-            variables: {
-                channelEmail: this.user.email
-            }
-        }).valueChanges.subscribe( playlist => {
-            console.log(playlist)
-            this.changeMessage(playlist.data.playlists)
-        })
+    fetchAllPlaylist(): any {
+      return this.apollo.watchQuery<any>({
+        query: this.fetchAllPlaylistQuery,
+      })
     }
 
-    initiateCreatePlaylist(playlistName: string, visibility: string): void {
+    initiateCreatePlaylist(playlistName: string, visibility: string, video: Videos): void {
+        var x = JSON.parse(localStorage.getItem('users'))
         this.date = new Date()
         this.playlistName = playlistName
         this.visibility = visibility
-        this.createPlaylist();
+        console.log(video)
+        this.createPlaylist(x.email, video);
     }
 
-    createPlaylist(): void {
+    createPlaylist(email: string, video: Videos): void {
         this.apollo.mutate({
           mutation: gql`
             mutation createPlaylist(
@@ -110,22 +132,114 @@ export class PlaylistService implements OnInit{
           `,
           variables: {
             playlistName: this.playlistName,
-            playlistThumbnail: "",
+            playlistThumbnail: video[0].videoThumbnail,
             playlistDescription: "No Description",
-            channelEmail: this.user.email,
+            channelEmail: email,
             lastDate: this.date.getDate(),
             lastMonth: this.date.getMonth(),
             lastYear: this.date.getFullYear(),
-            videoCount: 0,
+            videoCount: 1,
             views: 0,
             visibility: this.visibility,
           },
             refetchQueries: [{
                 query: this.fetchPlaylistQuery,
                 variables: {
-                    channelEmail: this.user.email
+                  channelEmail: email
                 }
             }],
         }).subscribe()
+    }
+
+    changePlaylistName(id: string, name: string): void {
+      this.lastUpdated(id)
+      var x = JSON.parse(localStorage.getItem('users'))
+      this.apollo.mutate({
+        mutation: gql`
+          mutation changeName($playlistId: ID!, $playlistName: String!) {
+              changePlaylistName(playlistId: $playlistId, playlistName: $playlistName)
+          }
+        `,
+        variables: {
+          playlistId: id,
+          playlistName: name,
+        },
+        refetchQueries: [{
+          query: this.fetchPlaylistQuery,
+          variables: {
+            channelEmail: x.email
+          }
+        }]
+      }).subscribe()
+    }
+
+    changePlaylistDesc(id: string, desc: string): void {
+      this.lastUpdated(id)
+      var x = JSON.parse(localStorage.getItem('users'))
+      this.apollo.mutate({
+        mutation: gql`
+          mutation changeDesc($playlistId: ID!, $playlistDescription: String!) {
+              changePlaylistDesc(playlistId: $playlistId, playlistDescription: $playlistDescription)
+          }
+        `,
+        variables: {
+          playlistId: id,
+          playlistDescription: desc,
+        },
+        refetchQueries: [{
+          query: this.fetchPlaylistQuery,
+          variables: {
+            channelEmail: x.email
+          }
+        }]
+      }).subscribe()
+    }
+
+    changePlaylistVisibility(id: string, visibility: string): void {
+      this.lastUpdated(id)
+      var x = JSON.parse(localStorage.getItem('users'))
+      this.apollo.mutate({
+        mutation: gql`
+          mutation changeVisibility($playlistId: ID!, $visibility: String!) {
+              changePlaylistVisibility(playlistId: $playlistId, visibility: $visibility)
+          }
+        `,
+        variables: {
+          playlistId: id,
+          visibility: visibility,
+        },
+        refetchQueries: [{
+          query: this.fetchPlaylistQuery,
+          variables: {
+            channelEmail: x.email
+          }
+        }]
+      }).subscribe()
+    }
+
+    lastUpdated(playlistId: string): void {
+      var x = JSON.parse(localStorage.getItem('users'))
+      var date = new Date()
+      this.apollo.mutate({
+        mutation: gql`
+          mutation update($playlistId: ID!, $lastDate: Int!, $lastMonth: Int!, $lastYear: Int!) {
+            updatePlaylistUpdate(playlistId: $playlistId, lastDate: $lastDate, lastMonth: $lastMonth, lastYear: $lastYear)
+          }
+        `,
+        variables: {
+          playlistId: playlistId,
+          lastDate: date.getDate(),
+          lastMonth: date.getMonth(),
+          lastYear: date.getFullYear(),
+        },
+        refetchQueries: [{
+          query: this.fetchPlaylistQuery,
+          variables: {
+            channelEmail: x.email
+          }
+        }]
+      }).subscribe( result => {
+        console.log(result)
+      })
     }
 }
