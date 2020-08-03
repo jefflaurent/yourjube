@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Apollo } from 'apollo-angular';
 import { Playlists } from '../model/playlist';
+import { Videos } from '../model/video';
 import { PlaylistVideoService } from '../data-service/playlist-video-service';
 import { PlaylistVideos } from '../model/playlist-video';
 import { PlaylistService } from '../data-service/playlist-data';
+import { VideoService } from '../data-service/video-service';
 import gql from 'graphql-tag';
 
 @Component({
@@ -16,10 +18,13 @@ export class PlaylistPageComponent implements OnInit {
 
   channel: any
   playlistCreator: any
-  playlistTemp: any
 
-  playlistVideosTemp: PlaylistVideos[] = []
+  allVideos: Videos [] = []
+  videoTemp: Videos [] = []
+
   playlistVideos: PlaylistVideos[] = []
+  playlistVideosTemp: PlaylistVideos[] = []
+  playlistVideosPushTemp: PlaylistVideos[] = []
 
   currPlaylist: Playlists
   playlists: Playlists[] = []
@@ -34,37 +39,44 @@ export class PlaylistPageComponent implements OnInit {
   m: any
   y: any
 
-  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private data: PlaylistVideoService, private currData: PlaylistService) { }
+  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private data: PlaylistVideoService, private currData: PlaylistService, private videoService: VideoService) { }
 
   ngOnInit(): void {
 
     this.activatedRoute.paramMap.subscribe(params => {
+      
       this.playlistId = params.get('id');
       this.channel = JSON.parse(localStorage.getItem('users'))
 
       this.data.fetchPlaylistVideos(this.channel.email).valueChanges.subscribe( playlistVideo => {
-        this.playlistTemp = playlistVideo
-        this.playlistVideosTemp = this.playlistTemp.data.playlistVideos
+        this.playlistVideosTemp = playlistVideo.data.playlistVideos
         this.filterVideos();
       })
-  
-      this.currData.fetchPlaylist(this.channel.email).valueChanges.subscribe( playlist => {
-        this.playlists = playlist.data.playlists
-        this.currPlaylist = this.playlists.find( p => p.playlistId == this.playlistId)
-        this.playlistName = this.currPlaylist.playlistName
-        this.playlistDescription = this.currPlaylist.playlistDescription
-        this.visibility = this.currPlaylist.visibility
-        if(this.visibility == 'public')
-          this.visibility = "Public"
-        else
-          this.visibility = "Private"
-        this.processDate()
-        this.fetchCreator()
+
+      this.videoService.fetchAllVideos().valueChanges.subscribe( allVideos => {
+        this.allVideos = allVideos.data.videos
+
+        this.currData.fetchAllPlaylist().valueChanges.subscribe( playlist => {
+          this.playlists = playlist.data.allPlaylists
+          this.currPlaylist = this.playlists.find( p => p.playlistId == this.playlistId)
+          this.playlistName = this.currPlaylist.playlistName
+          this.playlistDescription = this.currPlaylist.playlistDescription
+          this.visibility = this.currPlaylist.visibility
+          if(this.visibility == 'public')
+            this.visibility = "Public"
+          else
+            this.visibility = "Private"
+          this.processDate()
+          this.fetchCreator()
+          this.processVideo()
+          this.parseDate()
+        })
       })
     })
   }
 
   filterVideos(): void {
+    this.playlistVideos = []
     let j = 0;
     for(let i = 0; i < this.playlistVideosTemp.length; i++){
       if(this.playlistVideosTemp[i].playlistId == this.playlistId) {
@@ -122,6 +134,11 @@ export class PlaylistPageComponent implements OnInit {
     y.classList.remove('hidden')
     z.classList.remove('hidden')
     a.classList.add('hidden')
+  }
+
+  showModal(): void {
+    var x = document.querySelector('.modal')
+    x.classList.toggle('hidden') 
   }
 
   changePlaylistName(): void {
@@ -198,5 +215,44 @@ export class PlaylistPageComponent implements OnInit {
     }).valueChanges.subscribe( result => {
        this.playlistCreator = result.data.findChannel[0]
     })
+  }
+
+  processVideo(): void {
+    for(let i = 0; i < this.playlistVideos.length; i++) {
+      this.videoTemp[i] = this.allVideos.find( v => v.videoId == this.playlistVideos[i].videoId)
+    }
+  }
+
+  sortVideoViewsDesc(): void {
+    this.data.clearPlaylist(this.playlistId)
+    this.sortVideoByViews();
+    setTimeout( () => {
+      this.currData.updateThumbnail(this.playlistId, this.videoTemp[0].videoThumbnail)
+      this.pushNewVideos();
+    }, 1500)
+  }
+
+  sortVideoByViews(): void {
+    this.videoTemp.sort((a,b) => (a.views > b.views) ? -1 : 1)
+  }
+
+  pushNewVideos(): void {
+    for(let i = 0; i < this.videoTemp.length; i++) {
+      this.data.addPlaylistVideo(this.playlistId, this.videoTemp[i])
+    }
+  }
+
+  parseDate(): void {
+    let d;
+    let m;
+    let y;
+    var date;
+    for(let i = 0; i < this.playlistVideos.length; i++) {
+      d = this.playlistVideos[i].day
+      m = this.playlistVideos[i].month
+      y = this.playlistVideos[i].year
+      date = new Date(y + '-' + m + '-' + d)
+      console.log(date)
+    }
   }
 }

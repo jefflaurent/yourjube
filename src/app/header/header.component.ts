@@ -32,8 +32,8 @@ export class HeaderComponent implements OnInit {
       this.getUser();
     }
 
-    this.data.fetchPlaylist(this.user.email).valueChanges.subscribe( playlist => {
-      this.playlists = playlist.data.playlists
+    this.data.fetchAllPlaylist().valueChanges.subscribe( playlist => {
+      this.playlists = playlist.data.allPlaylists
     })
     
     var btnOn = document.querySelector('#toggleOn');

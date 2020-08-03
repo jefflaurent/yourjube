@@ -89,8 +89,7 @@ import { VideoService } from './data-service/video-service';
     PlaylistService,
     PlaylistModalInfo,
     PlaylistVideoService,
-    VideoService
-
+    VideoService,
   ],
   bootstrap: [AppComponent],
 })

@@ -1,18 +1,22 @@
 .container
 {
     font-family: Roboto, sans-serif;
-    display: flex;
-    justify-content: flex-start;
     padding-left: 10px;
-    padding-top: 10px;
+    padding-top: 15px;
     padding-right: 10px;
     box-sizing: border-box;
+}
+
+.container:hover
+{
+    background-color: lightgrey;
 }
 
 .inner-container
 {
     display: flex;
     justify-content: flex-start;
+    padding-bottom: 15px;
 }
 
 .left-most
@@ -37,7 +41,7 @@
 
 .right
 {
-    width: 85%;
+    width: 80%;
     margin-left: 10px;
     display: flex;
     flex-direction: column;
@@ -71,6 +75,74 @@
 
 .line hr 
 {
+    margin: 0;
     border: 1px solid lightgrey;
+    border-top: none;
+    color: rgba(76, 67, 67, 1);
+}
+
+.right-most
+{
+    width: 5%;
+    color: rgba(76, 67, 67, 1);
+}
+
+.right-most:hover
+{
+    cursor: pointer;
+}
+
+.modal
+{
+    position: absolute;
+    right: 1%;
+    font-size: 14px;
+    width: 18%;
+}
+
+.modal.hidden
+{
+    display: none;
+}
+
+.modal-container
+{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    justify-content: flex-start;
+}
+
+.flex-start
+{
+    padding: 10px;
+    padding-top: 15px;
+    padding-left: 20px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.flex-start:hover
+{
+    background-color: lightgrey;
+    cursor: pointer;
+}
+
+.modal-left
+{
+    width: 15%;
+}
+
+.modal-right
+{
+    width: 85%;
+}
+
+hr
+{
+    margin: 0;
+    border: 1px solid lightgrey;
+    border-top: none;
     color: rgba(76, 67, 67, 1);
 }

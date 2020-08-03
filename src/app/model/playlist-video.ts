@@ -7,4 +7,7 @@ export class PlaylistVideos {
 	videoURL: string
 	channelName: string
 	channelEmail: string
+	day: number
+	month: number
+	year: number
 }

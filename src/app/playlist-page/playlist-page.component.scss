@@ -8,7 +8,6 @@
 {
     display: flex;
     justify-content: center;
-    // align-items: center;
     width: 35%;
     box-sizing: border-box;
     background-color:#ffffff8f;
@@ -29,13 +28,13 @@
 .thumbnail
 {
     margin: 0;
-    margin-bottom: -52px;
+    margin-bottom: -51px;
 }
 
 .overlap
 {
     position: relative;
-    top: -52px;
+    top: -51px;
 }
 
 .overlap-container
@@ -167,6 +166,11 @@
     padding-bottom: 20px;
 }
 
+.sort:hover 
+{
+    cursor: pointer;
+}
+
 .editTitle.none
 {
     display : none;
@@ -278,4 +282,34 @@
 .visibility:hover
 {
     cursor: pointer;
+}
+
+.modal 
+{
+    position: absolute;
+    background-color: white;
+    font-size: 14px;
+    font-weight: 400;
+    width: 14%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    left: 37%;
+}
+
+.modal.hidden
+{
+    display: none;
+}
+
+.choice 
+{
+    padding: 15px;
+    padding-top: 15px;
+    padding-left: 20px;
+}
+
+.choice:hover
+{
+    cursor: pointer;
+    background-color: lightgrey;
 }

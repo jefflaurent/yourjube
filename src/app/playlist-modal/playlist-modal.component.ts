@@ -14,7 +14,7 @@ import { Videos } from '../model/video';
 export class PlaylistModalComponent implements OnInit {
 
   video: Videos
-  videoId: any
+  videoId: number
   newId: any
   playlistName: string = ''
   visibility: string
@@ -27,9 +27,9 @@ export class PlaylistModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.channel = JSON.parse(localStorage.getItem('users'))
-    this.data.fetchPlaylist(this.channel.email).valueChanges.subscribe( playlist => this.playlists = playlist.data.playlists)
+    // this.data.fetchPlaylist(this.channel.email).valueChanges.subscribe( playlist => this.playlists = playlist.data.playlists)
     this.data.currentVideo.subscribe( videoId => {
-      this.videoId = videoId
+      this.videoId = parseInt(videoId.toString())
       this.videoService.findVideo(this.videoId).valueChanges.subscribe( video => {
         this.video = video.data.findVideo
       })
@@ -37,7 +37,7 @@ export class PlaylistModalComponent implements OnInit {
 
     this.data.fetchAllPlaylist().valueChanges.subscribe( allPlaylists => {
       this.allPlaylists = allPlaylists.data.allPlaylists
-      this.getNewId()
+      this.processPlaylist()
     })
  
     this.state.currentStatus.subscribe( status => this.status = status)
@@ -52,7 +52,14 @@ export class PlaylistModalComponent implements OnInit {
     var x = (<HTMLSelectElement>document.getElementById('visibilityOption'))
     this.visibility = x.options[x.selectedIndex].value;
     this.data.initiateCreatePlaylist(this.playlistName, this.visibility, this.video)
-    this.playlistVideoService.initiateAddPlaylistVideo(this.newId, this.video[0])
+
+    setTimeout(() => {
+      this.data.fetchAllPlaylist().valueChanges.subscribe( allPlaylists => {
+        this.allPlaylists = allPlaylists.data.allPlaylists
+        this.getNewId()
+        this.playlistVideoService.initiateAddPlaylistVideo(this.newId, this.video[0])
+      })
+    },2000)
   }
 
   openCreate(): void {
@@ -62,9 +69,17 @@ export class PlaylistModalComponent implements OnInit {
 
   getNewId(): void {
     this.newId = 0
+    var len = this.allPlaylists.length
+    this.newId = this.allPlaylists[len-1].playlistId
+  }
+
+  processPlaylist(): void { 
+    let j = 0
     for(let i = 0; i < this.allPlaylists.length; i++) {
-      if(this.newId < this.allPlaylists[i].playlistId)
-        this.newId = this.allPlaylists[i].playlistId
+      if(this.allPlaylists[i].channelEmail == this.channel.email) {
+        this.playlists[j] = this.allPlaylists[i]
+        j++
+      }
     }
   }
 }

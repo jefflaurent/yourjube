@@ -84,6 +84,9 @@ type PlaylistVideo struct {
 	VideoURL       string `json:"videoURL"`
 	ChannelName    string `json:"channelName"`
 	ChannelEmail   string `json:"channelEmail"`
+	Day            int    `json:"day"`
+	Month          int    `json:"month"`
+	Year           int    `json:"year"`
 }
 
 type Video struct {
@@ -180,6 +183,9 @@ type NewPlaylistVideo struct {
 	VideoURL       string `json:"videoURL"`
 	ChannelName    string `json:"channelName"`
 	ChannelEmail   string `json:"channelEmail"`
+	Day            int    `json:"day"`
+	Month          int    `json:"month"`
+	Year           int    `json:"year"`
 }
 
 type NewVideo struct {

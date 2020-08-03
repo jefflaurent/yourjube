@@ -100,6 +100,9 @@ type PlaylistVideo {
   videoURL: String!
   channelName: String!
   channelEmail: String!
+  day: Int!
+  month: Int!
+  year: Int!
 }
 
 input newVideo {
@@ -195,6 +198,9 @@ input newPlaylistVideo {
   videoURL: String!
   channelName: String!
   channelEmail: String!
+  day: Int!
+  month: Int!
+  year: Int!
 }
 
 type Query {
@@ -228,6 +234,7 @@ type Mutation {
   removeDislike(channelId: Int!, videoId: Int!): Boolean!
   decreaseLike(videoId: ID!): Boolean!
   decreaseDislike(videoId: ID!): Boolean!
+  
   addComment(input: newComment): Comment!
   addReplyCount(commentId: ID!): Boolean!
   increaseCommentLike(commentId: ID!): Boolean!
@@ -238,6 +245,7 @@ type Mutation {
   registerCommentDislike(input: newCommentDislike): CommentDislike!
   removeCommentLike(commentId: Int!, channelEmail: String!): Boolean!
   removeCommentDislike(commentId: Int!, channelEmail: String!): Boolean!
+  
   createPlaylist(input: newPlaylist): Playlist!
   addPlaylist(input: newPlaylistVideo): PlaylistVideo!
   removePlaylistVideo(playlistId: Int!, videoId: Int!): Boolean!
@@ -245,4 +253,8 @@ type Mutation {
   changePlaylistDesc(playlistId: ID!, playlistDescription: String!): Boolean!
   changePlaylistVisibility(playlistId: ID!, visibility: String!): Boolean!
   updatePlaylistUpdate(playlistId: ID!, lastDate: Int!, lastMonth: Int!, lastYear: Int!): Boolean!
+  addVideoCount(playlistId: ID!): Boolean!
+  decreaseVideoCount(playlistId: ID!): Boolean!
+  clearPlaylist(playlistId: Int!): Boolean!
+  updateThumbnail(playlistId: Int!, playlistThumbnail: String!): Boolean!
 }

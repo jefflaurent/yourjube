@@ -510,6 +510,9 @@ func (r *mutationResolver) AddPlaylist(ctx context.Context, input *model.NewPlay
 		VideoURL:       input.VideoURL,
 		ChannelName:    input.ChannelName,
 		ChannelEmail:   input.ChannelEmail,
+		Day:            input.Day,
+		Month:          input.Month,
+		Year:           input.Year,
 	}
 
 	_, err := r.DB.Model(&playlistVideo).Insert()
@@ -611,6 +614,96 @@ func (r *mutationResolver) UpdatePlaylistUpdate(ctx context.Context, playlistID 
 	playlist.LastDate = lastDate
 	playlist.LastMonth = lastMonth
 	playlist.LastYear = lastYear
+
+	_, updateErr := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) AddVideoCount(ctx context.Context, playlistID string) (bool, error) {
+	var playlist model.Playlist
+	var temp int
+
+	err := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = playlist.VideoCount
+	temp++
+
+	playlist.VideoCount = temp
+
+	_, updateErr := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) DecreaseVideoCount(ctx context.Context, playlistID string) (bool, error) {
+	var playlist model.Playlist
+	var temp int
+
+	err := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = playlist.VideoCount
+	temp--
+
+	if temp < 0 {
+		temp = 0
+	}
+
+	playlist.VideoCount = temp
+
+	_, updateErr := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) ClearPlaylist(ctx context.Context, playlistID int) (bool, error) {
+	var playlistVideos []*model.PlaylistVideo
+
+	err := r.DB.Model(&playlistVideos).Where("playlist_id = ?", playlistID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	_, deleteErr := r.DB.Model(&playlistVideos).Where("playlist_id = ?", playlistID).Delete()
+
+	if deleteErr != nil {
+		return false, deleteErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) UpdateThumbnail(ctx context.Context, playlistID int, playlistThumbnail string) (bool, error) {
+	var playlist model.Playlist
+
+	err := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	playlist.PlaylistThumbnail = playlistThumbnail
 
 	_, updateErr := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Update()
 

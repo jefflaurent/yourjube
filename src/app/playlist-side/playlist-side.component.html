@@ -22,8 +22,60 @@
                 </div>
             </div>
         </div>
+        <div class="right-most" (click)="toggleModal()">
+            <div>
+                <i class="fa fa-ellipsis-v fa-lg"></i>
+            </div>
+
+            <div class="modal hidden" [id]="dummyId">
+                <div class="modal-container">
+                    <div class="flex-start" (click)="addQueue()">
+                        <div class="modal-left">
+                            <i class="fa fa-align-justify"></i>
+                        </div>
+                        <div class="modal-right">
+                            Add to queue
+                        </div>
+                    </div>
+                    <div class="flex-start" (click)="addPlaylist()">
+                        <div class="modal-left">
+                            <i class="fa fa-plus"></i>
+                        </div>
+                        <div class="modal-right">
+                            Save to playlist
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="flex-start" *ngIf="currPlaylist" (click)="removeVideo()">
+                        <div class="modal-left">
+                            <i class="fa fa-trash"></i>
+                        </div>
+                        <div class="modal-right">
+                            Remove from {{ currPlaylist.playlistName }}
+                        </div>
+                    </div>
+                    <div class="flex-start">
+                        <div class="modal-left">
+                            <i class="fa fa-arrow-up"></i>
+                        </div>
+                        <div class="modal-right">
+                            Move to top
+                        </div>
+                    </div>
+                    <div class="flex-start">
+                        <div class="modal-left">
+                            <i class="fa fa-arrow-down"></i>
+                        </div>
+                        <div class="modal-right">
+                            Move to bottom
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="line">
+        <hr>
     </div>
 </div>
-<div class="line">
-    <hr>
-</div>
+

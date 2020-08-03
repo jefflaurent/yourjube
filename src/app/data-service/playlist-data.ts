@@ -11,8 +11,10 @@ export class PlaylistService{
     
     user: any
     date: any
+    newId: any
     playlistTemp: Playlists[]
     playlistName: string
+    allPlaylists: Playlists[] = []
     visibility: string
     private messageSource = new BehaviorSubject<Playlists[]>([]);
     private messageSource2 = new BehaviorSubject<BigInteger>(new Uint8Array);
@@ -41,21 +43,21 @@ export class PlaylistService{
 
     fetchAllPlaylistQuery = gql`
       query allPlaylists{
-          allPlaylists{
-              playlistId,
-              playlistName,
-              playlistThumbnail,
-              playlistDescription,
-              channelEmail,
-              lastDate,
-              lastMonth,
-              lastYear,
-              videoCount,
-              views,
-              visibility
-          }
+        allPlaylists{
+            playlistId,
+            playlistName,
+            playlistThumbnail,
+            playlistDescription,
+            channelEmail,
+            lastDate,
+            lastMonth,
+            lastYear,
+            videoCount,
+            views,
+            visibility
+        }
       }
-  `;
+    `;
 
     changeMessage(newPlaylist: Playlists[]) {
         this.messageSource.next(newPlaylist)
@@ -85,7 +87,6 @@ export class PlaylistService{
         this.date = new Date()
         this.playlistName = playlistName
         this.visibility = visibility
-        console.log(video)
         this.createPlaylist(x.email, video);
     }
 
@@ -143,17 +144,13 @@ export class PlaylistService{
             visibility: this.visibility,
           },
             refetchQueries: [{
-                query: this.fetchPlaylistQuery,
-                variables: {
-                  channelEmail: email
-                }
+                query: this.fetchAllPlaylistQuery
             }],
         }).subscribe()
     }
 
     changePlaylistName(id: string, name: string): void {
       this.lastUpdated(id)
-      var x = JSON.parse(localStorage.getItem('users'))
       this.apollo.mutate({
         mutation: gql`
           mutation changeName($playlistId: ID!, $playlistName: String!) {
@@ -165,17 +162,13 @@ export class PlaylistService{
           playlistName: name,
         },
         refetchQueries: [{
-          query: this.fetchPlaylistQuery,
-          variables: {
-            channelEmail: x.email
-          }
+          query: this.fetchAllPlaylistQuery,
         }]
       }).subscribe()
     }
 
     changePlaylistDesc(id: string, desc: string): void {
       this.lastUpdated(id)
-      var x = JSON.parse(localStorage.getItem('users'))
       this.apollo.mutate({
         mutation: gql`
           mutation changeDesc($playlistId: ID!, $playlistDescription: String!) {
@@ -187,17 +180,13 @@ export class PlaylistService{
           playlistDescription: desc,
         },
         refetchQueries: [{
-          query: this.fetchPlaylistQuery,
-          variables: {
-            channelEmail: x.email
-          }
+          query: this.fetchAllPlaylistQuery,
         }]
       }).subscribe()
     }
 
     changePlaylistVisibility(id: string, visibility: string): void {
       this.lastUpdated(id)
-      var x = JSON.parse(localStorage.getItem('users'))
       this.apollo.mutate({
         mutation: gql`
           mutation changeVisibility($playlistId: ID!, $visibility: String!) {
@@ -209,16 +198,12 @@ export class PlaylistService{
           visibility: visibility,
         },
         refetchQueries: [{
-          query: this.fetchPlaylistQuery,
-          variables: {
-            channelEmail: x.email
-          }
+          query: this.fetchAllPlaylistQuery,
         }]
       }).subscribe()
     }
 
     lastUpdated(playlistId: string): void {
-      var x = JSON.parse(localStorage.getItem('users'))
       var date = new Date()
       this.apollo.mutate({
         mutation: gql`
@@ -233,13 +218,58 @@ export class PlaylistService{
           lastYear: date.getFullYear(),
         },
         refetchQueries: [{
-          query: this.fetchPlaylistQuery,
-          variables: {
-            channelEmail: x.email
-          }
+          query: this.fetchAllPlaylistQuery,
         }]
-      }).subscribe( result => {
-        console.log(result)
+      }).subscribe()
+    }
+
+    addVideoCount(id: any): void{ 
+      this.apollo.mutate({
+        mutation: gql`
+          mutation addVideoCount($playlistId: ID!) {
+            addVideoCount(playlistId: $playlistId)
+          }
+        `,
+        variables: {
+          playlistId: id
+        },
+        refetchQueries: [{
+          query: this.fetchAllPlaylistQuery,
+        }]
+      }).subscribe()
+    }
+
+    decreaseVideoCount(playlistId: any): void{ 
+      this.apollo.mutate({
+        mutation: gql`
+          mutation decreaseVideoCount($playlistId: ID!) {
+            decreaseVideoCount(playlistId: $playlistId)
+          }
+        `,
+        variables: {
+          playlistId: playlistId
+        },
+        refetchQueries: [{
+          query: this.fetchAllPlaylistQuery,
+        }]
+      }).subscribe()
+    }
+
+    updateThumbnail(playlistId: any, playlistThumbnail: string) {
+      var x = JSON.parse(localStorage.getItem('users'))
+      this.apollo.mutate({
+        mutation: gql`
+          mutation updateThumbnail($playlistId: Int!, $playlistThumbnail: String!) {
+            updateThumbnail(playlistId: $playlistId, playlistThumbnail: $playlistThumbnail)
+          }
+        `,
+        variables: {
+          playlistId: playlistId,
+          playlistThumbnail: playlistThumbnail
+        },
+        refetchQueries: [{
+          query: this.fetchAllPlaylistQuery,
+        }]
       })
     }
 }

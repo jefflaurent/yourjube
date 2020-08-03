@@ -60,6 +60,7 @@ export class PlaylistChoiceComponent implements OnInit {
   }
 
   addVideo(): void{
+    this.data.addVideoCount(this.playlist.playlistId)
     this.playlistData.initiateAddPlaylistVideo(this.playlist.playlistId, this.video[0])
   }
 
