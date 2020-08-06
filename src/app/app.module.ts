@@ -31,14 +31,17 @@ import { PlaylistDropdownComponent } from './playlist-dropdown/playlist-dropdown
 import { PlaylistPageComponent } from './playlist-page/playlist-page.component';
 import { PlaylistSideComponent } from './playlist-side/playlist-side.component';
 import { PlaylistChoiceComponent } from './playlist-choice/playlist-choice.component';
+import { PlaylistHeaderComponent } from './playlist-header/playlist-header.component';
 import { PlaylistModalComponent } from './playlist-modal/playlist-modal.component';
+import { TrendingPageComponent } from './trending-page/trending-page.component';
+import { TrendingBottomComponent } from './trending-bottom/trending-bottom.component';
 
 import { PlaylistService } from './data-service/playlist-data';
 import { PlaylistModalInfo } from './data-service/playlist-modal-service';
 import { PlaylistVideoService } from './data-service/playlist-video-service';
-import { PlaylistHeaderComponent } from './playlist-header/playlist-header.component';
 import { VideoService } from './data-service/video-service';
- 
+import { CommentService } from './data-service/comment-service';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -56,7 +59,9 @@ import { VideoService } from './data-service/video-service';
     PlaylistSideComponent,
     PlaylistChoiceComponent,
     PlaylistModalComponent,
-    PlaylistHeaderComponent
+    PlaylistHeaderComponent,
+    TrendingPageComponent,
+    TrendingBottomComponent
   ],
   imports: [
     HttpModule,
@@ -90,6 +95,7 @@ import { VideoService } from './data-service/video-service';
     PlaylistModalInfo,
     PlaylistVideoService,
     VideoService,
+    CommentService,
   ],
   bootstrap: [AppComponent],
 })

@@ -35,6 +35,7 @@ export class PlaylistChoiceComponent implements OnInit {
   empty: any = " "
   clicked: boolean
   videoId: any
+  videoPlace: any
 
   constructor(private data: PlaylistService, private apollo: Apollo, private playlistData: PlaylistVideoService) {  }
 
@@ -44,6 +45,7 @@ export class PlaylistChoiceComponent implements OnInit {
     this.data.currentVideo.subscribe( videoId => this.videoId = videoId)
     this.playlistData.fetchPlaylistVideos(this.user.email).valueChanges.subscribe( playlistVideos => {
       this.playlistVideos = playlistVideos.data.playlistVideos
+      this.getVideoPlace()
       this.validateVideo()
     })
     this.findVideo()
@@ -60,12 +62,23 @@ export class PlaylistChoiceComponent implements OnInit {
   }
 
   addVideo(): void{
+    var date
     this.data.addVideoCount(this.playlist.playlistId)
-    this.playlistData.initiateAddPlaylistVideo(this.playlist.playlistId, this.video[0])
+    date = new Date()
+    this.playlistData.addPlaylistVideo(this.playlist.playlistId, this.video[0], date.getTime(), this.videoPlace)
   }
 
   removeVideo(): void {
-    this.playlistData.initiateRemovePlaylistVideo(this.playlist.playlistId, this.videoId)
+    this.playlistData.removePlaylistVideo(this.playlist.playlistId, this.videoId)
+  }
+
+  getVideoPlace(): void {
+    this.videoPlace = 1
+    for(let i = 0; i < this.playlistVideos.length; i++) {
+      if(parseInt(this.playlistVideos[i].playlistId.toString()) == parseInt(this.playlist.playlistId.toString())) {
+        this.videoPlace++;
+      }
+    }
   }
 
   validateVideo(): void {

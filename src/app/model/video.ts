@@ -16,4 +16,5 @@ export class Videos {
     channelName: string
     channelPhotoURL: string
     channelEmail: string
+    time: number
 }

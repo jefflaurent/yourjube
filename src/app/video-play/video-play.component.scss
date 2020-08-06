@@ -26,6 +26,7 @@
 
 .video-title
 {
+    font-size: 14px;
     margin-top: 20px;
     display: flex;
     flex-direction: column;
@@ -146,7 +147,7 @@
 
 .desc-bot.limited
 {
-    font-size: 14px;
+    font-size: 13px;
     margin-left: 55px;
     height: 42px;
     overflow: hidden;
@@ -155,7 +156,7 @@
 
 .desc-bot
 {
-    font-size: 14px;
+    font-size: 13px;
     width: 80%;
     margin-left: 55px;
 }

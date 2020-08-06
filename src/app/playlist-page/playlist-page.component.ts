@@ -18,6 +18,7 @@ export class PlaylistPageComponent implements OnInit {
 
   channel: any
   playlistCreator: any
+  shuffle: any
 
   allVideos: Videos [] = []
   videoTemp: Videos [] = []
@@ -32,6 +33,7 @@ export class PlaylistPageComponent implements OnInit {
   visibility: string 
   playlistName: string
   playlistDescription: string
+  playlistThumbnail: string
   post: string
   
   playlistId: any
@@ -44,7 +46,7 @@ export class PlaylistPageComponent implements OnInit {
   ngOnInit(): void {
 
     this.activatedRoute.paramMap.subscribe(params => {
-      
+      this.playlistVideos = []
       this.playlistId = params.get('id');
       this.channel = JSON.parse(localStorage.getItem('users'))
 
@@ -62,6 +64,7 @@ export class PlaylistPageComponent implements OnInit {
           this.playlistName = this.currPlaylist.playlistName
           this.playlistDescription = this.currPlaylist.playlistDescription
           this.visibility = this.currPlaylist.visibility
+          this.playlistThumbnail = this.currPlaylist.playlistThumbnail
           if(this.visibility == 'public')
             this.visibility = "Public"
           else
@@ -69,7 +72,6 @@ export class PlaylistPageComponent implements OnInit {
           this.processDate()
           this.fetchCreator()
           this.processVideo()
-          this.parseDate()
         })
       })
     })
@@ -84,6 +86,8 @@ export class PlaylistPageComponent implements OnInit {
         j++;
       }
     }
+    this.shufflePlay()
+    this.playlistVideos.sort((a,b) => (a.place < b.place) ? -1 : 1)
   }
 
   hidePencil(): void {
@@ -218,41 +222,52 @@ export class PlaylistPageComponent implements OnInit {
   }
 
   processVideo(): void {
+    this.videoTemp = []
     for(let i = 0; i < this.playlistVideos.length; i++) {
       this.videoTemp[i] = this.allVideos.find( v => v.videoId == this.playlistVideos[i].videoId)
     }
   }
 
   sortVideoViewsDesc(): void {
-    this.data.clearPlaylist(this.playlistId)
     this.sortVideoByViews();
-    setTimeout( () => {
-      this.currData.updateThumbnail(this.playlistId, this.videoTemp[0].videoThumbnail)
-      this.pushNewVideos();
-    }, 1500)
+    this.currData.updateThumbnail(this.playlistId, this.videoTemp[0].videoThumbnail)
+    for(let i = 0; i < this.videoTemp.length; i++) {
+      this.data.updatePlace(this.playlistId, this.videoTemp[i].videoId, i+1)
+    }
+  }
+
+  sortVideoDate(): void {
+    this.sortVideoByDateAdded();
+    this.currData.updateThumbnail(this.playlistId, this.playlistVideos[0].videoThumbnail)
+    for(let i = 0; i < this.playlistVideos.length; i++) {
+      this.data.updatePlace(this.playlistId, this.playlistVideos[i].videoId, i+1)
+    }
+  }
+
+  sortVideoDateDesc(): void {
+    this.sortVideoByDateAdded();
+    this.currData.updateThumbnail(this.playlistId, this.playlistVideos[this.playlistVideos.length-1].videoThumbnail)
+    let j = 1
+    for(let i = this.playlistVideos.length-1; i >= 0; i--) {
+      this.data.updatePlace(this.playlistId, this.playlistVideos[i].videoId, j)
+      j++
+    }
   }
 
   sortVideoByViews(): void {
     this.videoTemp.sort((a,b) => (a.views > b.views) ? -1 : 1)
   }
 
-  pushNewVideos(): void {
-    for(let i = 0; i < this.videoTemp.length; i++) {
-      this.data.addPlaylistVideo(this.playlistId, this.videoTemp[i])
-    }
+  sortVideoByDateAdded(): void {
+    this.playlistVideos.sort((a,b) => (a.time < b.time) ? -1 : 1)
   }
 
-  parseDate(): void {
-    let d;
-    let m;
-    let y;
-    var date;
-    for(let i = 0; i < this.playlistVideos.length; i++) {
-      d = this.playlistVideos[i].day
-      m = this.playlistVideos[i].month
-      y = this.playlistVideos[i].year
-      date = new Date(y + '-' + m + '-' + d)
-      console.log(date)
-    }
+  sortVideoByUploadDate(): void {
+    this.videoTemp.sort((a,b) => (a.time > b.time) ? -1 : 1)
+  }
+
+  shufflePlay(): void {
+    this.shuffle = Math.random() * (this.playlistVideos.length - 0) + 0
+    this.shuffle = Math.floor(this.shuffle)
   }
 }

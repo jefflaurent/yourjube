@@ -27,6 +27,7 @@ type Comment struct {
 	Month           int    `json:"month"`
 	Year            int    `json:"year"`
 	Replies         int    `json:"replies"`
+	Time            int    `json:"time"`
 }
 
 type CommentDislike struct {
@@ -84,9 +85,8 @@ type PlaylistVideo struct {
 	VideoURL       string `json:"videoURL"`
 	ChannelName    string `json:"channelName"`
 	ChannelEmail   string `json:"channelEmail"`
-	Day            int    `json:"day"`
-	Month          int    `json:"month"`
-	Year           int    `json:"year"`
+	Time           int    `json:"time"`
+	Place          int    `json:"place"`
 }
 
 type Video struct {
@@ -107,6 +107,7 @@ type Video struct {
 	ChannelName     string `json:"channelName"`
 	ChannelPhotoURL string `json:"channelPhotoURL"`
 	ChannelEmail    string `json:"channelEmail"`
+	Time            int    `json:"time"`
 }
 
 type NewChannel struct {
@@ -132,6 +133,7 @@ type NewComment struct {
 	Month           int    `json:"month"`
 	Year            int    `json:"year"`
 	Replies         int    `json:"replies"`
+	Time            int    `json:"time"`
 }
 
 type NewCommentDislike struct {
@@ -183,9 +185,8 @@ type NewPlaylistVideo struct {
 	VideoURL       string `json:"videoURL"`
 	ChannelName    string `json:"channelName"`
 	ChannelEmail   string `json:"channelEmail"`
-	Day            int    `json:"day"`
-	Month          int    `json:"month"`
-	Year           int    `json:"year"`
+	Time           int    `json:"time"`
+	Place          int    `json:"place"`
 }
 
 type NewVideo struct {
@@ -205,4 +206,5 @@ type NewVideo struct {
 	ChannelName     string `json:"channelName"`
 	ChannelPhotoURL string `json:"channelPhotoURL"`
 	ChannelEmail    string `json:"channelEmail"`
+	Time            int    `json:"time"`
 }

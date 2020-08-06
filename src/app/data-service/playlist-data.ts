@@ -270,6 +270,6 @@ export class PlaylistService{
         refetchQueries: [{
           query: this.fetchAllPlaylistQuery,
         }]
-      })
+      }).subscribe()
     }
 }

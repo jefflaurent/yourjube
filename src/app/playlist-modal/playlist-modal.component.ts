@@ -49,6 +49,7 @@ export class PlaylistModalComponent implements OnInit {
   }
 
   createPlaylist(): void {
+    var date;
     var x = (<HTMLSelectElement>document.getElementById('visibilityOption'))
     this.visibility = x.options[x.selectedIndex].value;
     this.data.initiateCreatePlaylist(this.playlistName, this.visibility, this.video)
@@ -57,7 +58,8 @@ export class PlaylistModalComponent implements OnInit {
       this.data.fetchAllPlaylist().valueChanges.subscribe( allPlaylists => {
         this.allPlaylists = allPlaylists.data.allPlaylists
         this.getNewId()
-        this.playlistVideoService.initiateAddPlaylistVideo(this.newId, this.video[0])
+        date = new Date()
+        this.playlistVideoService.addPlaylistVideo(this.newId, this.video[0], date.getTime(), 1)
       })
     },2000)
   }

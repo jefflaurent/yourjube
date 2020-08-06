@@ -33,9 +33,8 @@ export class PlaylistVideoService{
                 videoURL,
                 channelName,
                 channelEmail,
-                day,
-                month,
-                year,
+                time,
+                place,
             }
         }
     `;
@@ -49,11 +48,71 @@ export class PlaylistVideoService{
       })
     }
 
-    initiateAddPlaylistVideo(playlistId: any, video: Videos): void{
-      this.addPlaylistVideo(playlistId, video);
+    initiateAddPlaylistVideo(playlistId: any, video: Videos, time: any, place: any): void{
+      this.addPlaylistVideo(playlistId, video, time, place);
     }
 
-    addPlaylistVideo(playlistId: any, video: Videos): void {
+    addPlaylistVideo(playlistId: any, video: Videos, time: any, place: any): void {
+      var x = JSON.parse(localStorage.getItem('users'))
+      var date = new Date()
+      this.apollo.mutate({
+          mutation: gql`
+            mutation addPlaylist(
+                $playlistId: Int!,
+                $videoId: Int!,
+                $videoName: String!,
+                $videoThumbnail: String!,
+                $videoURL: String!,
+                $channelName: String!,
+                $channelEmail: String!,
+                $time: Int!,
+                $place: Int!
+            ) {
+              addPlaylist(input:{
+                playlistId: $playlistId,
+                videoId: $videoId,
+                videoName: $videoName,
+                videoThumbnail: $videoThumbnail,
+                videoURL: $videoURL,
+                channelName: $channelName,
+                channelEmail: $channelEmail,
+                time: $time,
+                place: $place,
+              }){
+                id,
+                playlistId,
+                videoId,
+                videoName,
+                videoThumbnail,
+                videoURL,
+                channelName,
+                channelEmail,
+                time,
+                place,
+              }
+            }
+          `,
+          variables: {
+            playlistId: playlistId,
+            videoId: video.videoId,
+            videoName: video.videoTitle,
+            videoThumbnail: video.videoThumbnail,
+            videoURL: video.videoURL,
+            channelName: video.channelName,
+            channelEmail: video.channelEmail,
+            time: time,
+            place: place,
+          },
+          refetchQueries: [{
+              query: this.fetchPlaylistVideoQuery,
+              variables: {
+                  channelEmail: x.email
+              }
+          }]
+      }).subscribe()
+    }
+
+    addPlaylistVideo2(playlistId: any, playlistVideo: PlaylistVideos, place: any) {
       var x = JSON.parse(localStorage.getItem('users'))
       var date = new Date()
       this.apollo.mutate({
@@ -69,6 +128,7 @@ export class PlaylistVideoService{
                 $day: Int!,
                 $month: Int!,
                 $year: Int!,
+                $time: Int!,
             ) {
               addPlaylist(input:{
                 playlistId: $playlistId,
@@ -78,9 +138,8 @@ export class PlaylistVideoService{
                 videoURL: $videoURL,
                 channelName: $channelName,
                 channelEmail: $channelEmail,
-                day: $day,
-                month: $month,
-                year: $year,
+                time: $time,
+                place: $place,
               }){
                 id,
                 playlistId,
@@ -90,23 +149,21 @@ export class PlaylistVideoService{
                 videoURL,
                 channelName,
                 channelEmail,
-                day,
-                month,
-                year,
+                time,
+                place,
               }
             }
           `,
           variables: {
             playlistId: playlistId,
-            videoId: video.videoId,
-            videoName: video.videoTitle,
-            videoThumbnail: video.videoThumbnail,
-            videoURL: video.videoURL,
-            channelName: video.channelName,
-            channelEmail: video.channelEmail,
-            day: date.getDate(),
-            month: date.getMonth(),
-            year: date.getFullYear(),
+            videoId: playlistVideo.videoId,
+            videoName: playlistVideo.videoName,
+            videoThumbnail: playlistVideo.videoThumbnail,
+            videoURL: playlistVideo.videoURL,
+            channelName: playlistVideo.channelName,
+            channelEmail: playlistVideo.channelEmail,
+            time: playlistVideo.time,
+            place: place
           },
           refetchQueries: [{
               query: this.fetchPlaylistVideoQuery,
@@ -114,9 +171,7 @@ export class PlaylistVideoService{
                   channelEmail: x.email
               }
           }]
-      }).subscribe( result=> {
-        console.log(result)
-      })
+      }).subscribe()
     }
 
     removePlaylistVideo(playlistId: any, videoId: any): void {
@@ -156,13 +211,29 @@ export class PlaylistVideoService{
         `,
         variables: {
           playlistId: playlistId
-        },
-        refetchQueries: [{
-          query: this.fetchPlaylistVideoQuery,
-          variables: {
-            channelEmail: x.email
+        }
+      }).subscribe()
+    }
+
+    updatePlace(playlistId: any, videoId: any, place: any) {
+      var x = JSON.parse(localStorage.getItem('users'))
+      this.apollo.mutate({
+         mutation: gql`
+          mutation updatePlaylistPlace($playlistId: Int!, $videoId: Int!, $place: Int!) {
+            updatePlaylistPlace(playlistId: $playlistId, videoId: $videoId, place: $place)
           }
-        }]
+         `,
+         variables: {
+           playlistId: playlistId,
+           videoId: videoId,
+           place: place
+         },
+         refetchQueries: [{
+             query: this.fetchPlaylistVideoQuery,
+             variables: {
+               channelEmail: x.email
+             }
+         }]
       }).subscribe()
     }
 }

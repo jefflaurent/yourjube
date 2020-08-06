@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { Comments } from '../model/comment';
+import { CommentService } from '../data-service/comment-service';
 import gql from 'graphql-tag';
 
 @Component({
@@ -84,7 +85,7 @@ getCommentQuery = gql`
   m: any
   y: any
 
-  constructor(private apollo: Apollo) { }
+  constructor(private apollo: Apollo, private commentService: CommentService) { }
 
   ngOnInit(): void {
     this.dummyId = "id" + this.comment.commentId
@@ -101,12 +102,8 @@ getCommentQuery = gql`
   }
 
   addComment(): void {
-    var date = new Date()
-    this.d = date.getDate()
-    this.m = date.getMonth()
-    this.y = date.getFullYear()
-    this.addReplyCount()
-    this.addCommentQuery()
+    this.commentService.addReplyCount(this.comment.commentId, this.comment.videoId)
+    this.commentService.addComment(this.comment.videoId, this.channel, this.content, this.comment.commentId)
     this.content = ""
   }
 
@@ -169,7 +166,7 @@ getCommentQuery = gql`
             photoURL,
             bannerURL,
             subscriber,
-            isPremium
+            isPremium,
           }
         }
       `,
@@ -177,94 +174,8 @@ getCommentQuery = gql`
         email: this.user.email
       },
     }).subscribe( channel => {
-      this.channel = channel;
+      this.channel = channel.data.findChannel[0];
     })
-  }
-
-  addCommentQuery(): void {
-    this.apollo.mutate({
-      mutation: gql`
-        mutation createComment(
-          $videoId: Int!, 
-          $channelId: Int!,
-          $channelName: String!,
-          $channelEmail: String!,
-          $channelPhotoURL: String!,
-          $content: String!,
-          $replyTo: Int!,
-          $likes: Int!,
-          $dislikes: Int!,
-          $day: Int!,
-          $month: Int!,
-          $year: Int!,
-          $replies: Int!,
-        ) {
-          addComment(input: {
-            videoId: $videoId,
-            channelId: $channelId,
-            channelName: $channelName,
-            channelEmail: $channelEmail,
-            channelPhotoURL: $channelPhotoURL,
-            content: $content,
-            replyTo: $replyTo,
-            likes: $likes,
-            dislikes: $dislikes,
-            day: $day,
-            month: $month,
-            year: $year,
-            replies: $replies,
-          }) {
-            videoId,
-            channelId,
-            channelName,
-            channelEmail,
-            channelPhotoURL,
-            content,
-            replyTo,
-            likes,
-            dislikes,
-            day,
-            month,
-            year,
-            replies,
-          }
-        }
-      `,
-      variables: {
-        videoId: this.comment.videoId,
-        channelId: this.channel.data.findChannel[0].id,
-        channelName: this.user.name,
-        channelEmail: this.user.email,
-        channelPhotoURL: this.user.photoUrl,
-        content: this.content,
-        replyTo: this.comment.commentId,
-        likes: 0,
-        dislikes: 0,
-        day: this.d,
-        month: this.m,
-        year: this.y,
-        replies: 0
-      },
-      refetchQueries: [{
-        query: this.getCommentQuery,
-        variables: {
-          videoId: this.comment.videoId
-        }
-      }],
-    }).subscribe()
-  }
-
-  addReplyCount(): void {
-    this.apollo.mutate({
-      mutation: gql`
-        mutation addCount($commentId: ID!){
-          addReplyCount(commentId: $commentId)
-        }
-      `,
-      variables: {
-        commentId: this.comment.commentId
-      }
-    }).subscribe()
   }
 
   fetchComments(): void {

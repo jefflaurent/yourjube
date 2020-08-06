@@ -12,5 +12,6 @@ export class Comments {
 	day: number     
 	month: number     
 	year: number     
-	replies: number     
+	replies: number   
+	time: number  
 }

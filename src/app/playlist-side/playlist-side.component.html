@@ -54,7 +54,7 @@
                             Remove from {{ currPlaylist.playlistName }}
                         </div>
                     </div>
-                    <div class="flex-start">
+                    <div class="flex-start" (click)="moveToTop()">
                         <div class="modal-left">
                             <i class="fa fa-arrow-up"></i>
                         </div>
@@ -62,7 +62,7 @@
                             Move to top
                         </div>
                     </div>
-                    <div class="flex-start">
+                    <div class="flex-start" (click)="moveToBot()">
                         <div class="modal-left">
                             <i class="fa fa-arrow-down"></i>
                         </div>

@@ -47,6 +47,7 @@ func (r *mutationResolver) CreateVideo(ctx context.Context, input *model.NewVide
 		ChannelName:     input.ChannelName,
 		ChannelPhotoURL: input.ChannelPhotoURL,
 		ChannelEmail:    input.ChannelEmail,
+		Time:            input.Time,
 	}
 
 	_, err := r.DB.Model(&video).Insert()
@@ -271,6 +272,7 @@ func (r *mutationResolver) AddComment(ctx context.Context, input *model.NewComme
 		Month:           input.Month,
 		Year:            input.Year,
 		Replies:         input.Replies,
+		Time:            input.Time,
 	}
 
 	_, err := r.DB.Model(&comment).Insert()
@@ -510,9 +512,8 @@ func (r *mutationResolver) AddPlaylist(ctx context.Context, input *model.NewPlay
 		VideoURL:       input.VideoURL,
 		ChannelName:    input.ChannelName,
 		ChannelEmail:   input.ChannelEmail,
-		Day:            input.Day,
-		Month:          input.Month,
-		Year:           input.Year,
+		Time:           input.Time,
+		Place:          input.Place,
 	}
 
 	_, err := r.DB.Model(&playlistVideo).Insert()
@@ -706,6 +707,26 @@ func (r *mutationResolver) UpdateThumbnail(ctx context.Context, playlistID int, 
 	playlist.PlaylistThumbnail = playlistThumbnail
 
 	_, updateErr := r.DB.Model(&playlist).Where("playlist_id = ?", playlistID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) UpdatePlaylistPlace(ctx context.Context, playlistID int, videoID int, place int) (bool, error) {
+	var playlistVideos model.PlaylistVideo
+
+	err := r.DB.Model(&playlistVideos).Where("video_id = ? AND playlist_id = ?", videoID, playlistID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	playlistVideos.Place = place
+
+	_, updateErr := r.DB.Model(&playlistVideos).Where("video_id = ? AND playlist_id = ?", videoID, playlistID).Update()
 
 	if updateErr != nil {
 		return false, updateErr

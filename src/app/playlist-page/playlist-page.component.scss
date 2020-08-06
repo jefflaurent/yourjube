@@ -25,6 +25,16 @@
     color:#7a7a52;
 }
 
+.left a
+{
+    text-decoration: none;
+}
+
+.inner-container:hover
+{
+    cursor: pointer;
+}
+
 .thumbnail
 {
     margin: 0;
@@ -312,4 +322,9 @@
 {
     cursor: pointer;
     background-color: lightgrey;
+}
+
+.shufflePlay:hover
+{
+    cursor: pointer
 }

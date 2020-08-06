@@ -42,15 +42,15 @@
 .time
 {
     margin-left: 5px;
-    font-size: 12px;
+    font-size: 13px;
     color: rgba(76, 67, 67, 1);  
 }
 
 .middle
 {
-    margin-top: 2px;
+    margin-top: .8%;
     margin-bottom: 5px;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .items
@@ -173,3 +173,7 @@
     cursor: pointer;
 }
 
+.bottom
+{
+    margin-top: 1%;
+}
