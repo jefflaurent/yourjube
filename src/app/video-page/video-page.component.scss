@@ -83,12 +83,12 @@
 .modal
 {
     display: flex;
+    position: absolute;
     justify-content: flex-end;
-    margin-right: 10px;
-    margin-top: -120px;
     z-index: 69;
-    color: rgba(76, 67, 67, 1);
     font-size: 14px;
+    width: 20%;
+    color: rgba(76, 67, 67, 1);
 }
 
 .modal-container
@@ -122,41 +122,6 @@
 .modal-right
 {
     width: 85%;
-}
-
-// .playlist
-// {
-//     position: absolute;
-//     padding: 5px;
-//     background-color: white;
-//     top: 0px;
-//     left: 0px;
-//     bottom: 0px;
-//     right: 0px;
-//     width: 15%;
-//     height: 30%;
-//     margin: auto;
-//     overflow-y: auto;
-// }
-
-.playlist
-{
-    position: relative;
-    padding: 5px;
-    background-color: white;
-    // top: 0px;
-    // left: 0px;
-    // bottom: 0px;
-    // right: 0px;
-    width: 300px;
-    height: 500px;
-    margin: auto;
-    overflow-y: auto;
-}
-
-.playlist.hidden
-{
-    display: none;
 }
 
 .flex-between

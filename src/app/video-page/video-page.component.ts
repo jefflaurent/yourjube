@@ -112,20 +112,14 @@ export class VideoPageComponent implements OnInit {
     }
   }
 
-  showModal(): void {
+  toggleModal(): void {
     var query = '#' + this.dummyId
     var x = document.querySelector(query)
-    x.classList.remove('hidden')
-  }
-
-  hideModal(): void {
-    var query = '#' + this.dummyId
-    var x = document.querySelector(query)
-    x.classList.add('hidden')
+    x.classList.toggle('hidden')
   }
 
   showPlaylist(): void {
-    this.hideModal()
+    this.toggleModal()
     this.data.changeVideo(this.video.videoId)
     this.status.changeStatus(true)
   }

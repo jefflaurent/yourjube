@@ -2,24 +2,24 @@
     <div class="left">
         <img [src]="comment.channelPhotoURL" alt="">
     </div>
-    <div class="right">
+    <div class="right" *ngIf="currComment">
         <div class="inner-container">
             <div class="name">
-                {{ comment.channelName }}
+                {{ currComment.channelName }}
             </div>
             <div class="time">
                 1 day ago
             </div>
         </div>
         <div class="middle">
-            {{ comment.content }}
+            {{ currComment.content }}
         </div>
         <div class="inner-container bottom">
-            <div class="items">
-                <i class="fa fa-thumbs-up"></i> {{ comment.likes }}
+            <div class="items" [id]="dummyId5" (click)="initiateLike()">
+                <i class="fa fa-thumbs-up"></i> {{ currComment.likes }}
             </div>
-            <div class="items">
-                <i class="fa fa-thumbs-down"></i> {{ comment.dislikes }}
+            <div class="items" [id]="dummyId6" (click)="initiateDislike()">
+                <i class="fa fa-thumbs-down"></i> {{ currComment.dislikes }}
             </div>
             <div class="items rep" style="font-weight: 550;" (click)="openReply()">
                 REPLY
@@ -52,8 +52,8 @@
         <div class="view closed" *ngIf="howMany != undefined" (click)="hideReply()" [id]="dummyId4" >
             <i class="fa fa-caret-up" style="margin-right: 10px;"></i> Hide {{ howMany }} replies
         </div>
-        <div class="hide closed" *ngIf="replies" [id]="dummyId2"> 
-            <app-nested-comment *ngFor="let reply of replies" [com]="reply"></app-nested-comment>
+        <div class="hide closed" *ngIf="passComments" [id]="dummyId2"> 
+            <app-nested-comment *ngFor="let reply of passComments" [com]="reply"></app-nested-comment>
         </div>
         <div style="height: 23px"></div>
     </div>

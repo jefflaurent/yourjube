@@ -892,7 +892,7 @@ func (r *queryResolver) FindReply(ctx context.Context, replyTo int) ([]*model.Co
 	return replies, nil
 }
 
-func (r *queryResolver) FindCommentLike(ctx context.Context, channelEmail string, commentID string) ([]*model.CommentLike, error) {
+func (r *queryResolver) FindCommentLike(ctx context.Context, channelEmail string, commentID int) ([]*model.CommentLike, error) {
 	var commentLike []*model.CommentLike
 
 	err := r.DB.Model(&commentLike).Where("channel_email =  ? AND comment_id = ?", channelEmail, commentID).Select()
@@ -904,7 +904,7 @@ func (r *queryResolver) FindCommentLike(ctx context.Context, channelEmail string
 	return commentLike, nil
 }
 
-func (r *queryResolver) FindCommentDislike(ctx context.Context, channelEmail string, commentID string) ([]*model.CommentDislike, error) {
+func (r *queryResolver) FindCommentDislike(ctx context.Context, channelEmail string, commentID int) ([]*model.CommentDislike, error) {
 	var commentDislike []*model.CommentDislike
 
 	err := r.DB.Model(&commentDislike).Where("channel_email =  ? AND comment_id = ?", channelEmail, commentID).Select()

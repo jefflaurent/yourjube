@@ -67,7 +67,7 @@
 .profile-name
 {
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .profile-subs
@@ -147,7 +147,7 @@
 
 .desc-bot.limited
 {
-    font-size: 13px;
+    font-size: 14px;
     margin-left: 55px;
     height: 42px;
     overflow: hidden;
@@ -156,7 +156,7 @@
 
 .desc-bot
 {
-    font-size: 13px;
+    font-size: 14px;
     width: 80%;
     margin-left: 55px;
 }
@@ -302,15 +302,46 @@
 .clickables:hover
 {
     cursor: pointer;
-    // color: white;
-    // background-color: blue;
-    // font-weight: 400;
-    // font-size: 13px;
-    // padding: 8px;
-    // padding-left: 15px;
-    // padding-right: 15px;
-    // margin-left: 10px;
-    // border-radius: 2px;
+}
+
+.sort-container
+{
+    position: absolute;
+    left: 11.2%;
+    width: 9.5%;
+}
+
+.sort-container.hidden
+{
+    display: none;
+}
+
+.sort-modal
+{
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    color: black;
+    font-weight: 400;
+    background-color: white;
+    padding-top: 5%;
+    padding-bottom: 5%;
+}
+
+.choices
+{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 5%;
+    padding-left: 10%;
+    height: 30px;
+}
+
+.choices:hover
+{
+    background-color: rgb(233, 233, 233);
+    cursor: pointer;
 }
 
 

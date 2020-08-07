@@ -51,9 +51,6 @@ export class VideoPlayComponent implements OnInit {
   user: any
   content: string = ""
   declare: any
-  d: number
-  m: number
-  y: number
 
   constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private videoService: VideoService, private commentService: CommentService) { }
 
@@ -67,11 +64,15 @@ export class VideoPlayComponent implements OnInit {
       this.videoService.checkLiked(this.id, this.user.email).valueChanges.subscribe( result => {
         if(result.data.findLike.length > 0) {
             this.isLiked = true
-            this.paintBlue('.like')
+            setTimeout( ()=> {
+              this.paintBlue('.like')
+            }, 2000)
         }
         else {
             this.isLiked = false
-            this.paintGrey('.like')
+            setTimeout( ()=> {
+              this.paintGrey('.like')
+            }, 2000)
         }
       })
 
@@ -123,6 +124,11 @@ export class VideoPlayComponent implements OnInit {
 
     field.classList.add('limited')
     this.isLimited = true
+  }
+
+  showSortModal(): void {
+    var btn = document.querySelector('.sort-container')
+    btn.classList.toggle('hidden')
   }
 
   paintBlue(whichClass): void {
@@ -272,5 +278,13 @@ export class VideoPlayComponent implements OnInit {
         j++
       }
     }
+  }
+
+  sortByLikes(): void {
+    this.showComments.sort((a,b) => (a.likes > b.likes) ? -1 : 1)
+  }
+
+  sortByNewest(): void {
+    this.showComments.sort((a,b) => (a.time > b.time) ? -1 : 1)
   }
 }

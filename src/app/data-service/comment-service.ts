@@ -134,4 +134,202 @@ export class CommentService {
       }]
     }).subscribe()
   }
+
+  increaseCommentLike(commentId: any, videoId: any) : void {
+    this.apollo.mutate({
+      mutation: gql`
+        mutation increaseCommentLike($commentId: ID!) {
+          increaseCommentLike(commentId: $commentId)
+        }
+      `,
+      variables: {
+        commentId: commentId
+      },
+      refetchQueries:[{
+        query: this.getCommentQuery,
+        variables: {
+          videoId: videoId
+        }
+      }]
+    }).subscribe()
+  }
+
+  decreaseCommentLike(commentId: any, videoId: any) : void {
+    this.apollo.mutate({
+      mutation: gql`
+        mutation decreaseCommentLike($commentId: ID!) {
+          decreaseCommentLike(commentId: $commentId)
+        }
+      `,
+      variables: {
+        commentId: commentId
+      },
+      refetchQueries:[{
+        query: this.getCommentQuery,
+        variables: {
+          videoId: videoId
+        }
+      }]
+    }).subscribe()
+  }
+  
+  increaseCommentDislike(commentId: any, videoId: any): void {
+    this.apollo.mutate({
+      mutation: gql`
+        mutation increaseDislikeCount($commentId: ID!) {
+          increaseCommentDislike(commentId: $commentId)
+        }
+      `,
+      variables: {
+        commentId: commentId
+      },
+      refetchQueries:[{
+        query: this.getCommentQuery,
+        variables: {
+          videoId: videoId
+        }
+      }]
+    }).subscribe()
+  }
+
+  decreaseCommentDislike(commentId: any, videoId: any) : void {
+    this.apollo.mutate({
+      mutation: gql`
+        mutation decreaseCommentDislike($commentId: ID!) {
+          decreaseCommentDislike(commentId: $commentId)
+        }
+      `,
+      variables: {
+        commentId: commentId
+      },
+      refetchQueries:[{
+        query: this.getCommentQuery,
+        variables: {
+          videoId: videoId
+        }
+      }]
+    }).subscribe()
+  }
+
+  registerCommentLike(commentId: any, channelId: any, channelEmail: any): void {
+    this.apollo.mutate({
+      mutation: gql`
+        mutation registerCommentLike(
+          $commentId: Int!,
+          $channelId: Int!,
+          $channelEmail: String!,
+        ) {
+          registerCommentLike(input:{
+            commentId: $commentId,
+            channelId: $channelId,
+            channelEmail: $channelEmail,
+          }) {
+            commentLikeId,
+            commentId,
+            channelId,
+            channelEmail,
+          }
+        }
+      `,
+      variables: {
+        commentId: commentId,
+        channelId: channelId,
+        channelEmail: channelEmail,
+      }
+    }).subscribe()
+  }
+
+  registerCommentDislike(commentId: any, channelId: any, channelEmail: any): void {
+    this.apollo.mutate({
+      mutation: gql`
+        mutation registerCommentDislike(
+          $commentId: Int!,
+          $channelId: Int!,
+          $channelEmail: String!,
+        ) {
+          registerCommentDislike( input:{
+            commentId: $commentId,
+            channelId: $channelId,
+            channelEmail: $channelEmail,
+          }) {
+            commentDislikeId,
+            commentId,
+            channelId,
+            channelEmail,
+          }
+        }
+      `,
+      variables: {
+        commentId: commentId,
+        channelId: channelId,
+        channelEmail: channelEmail,
+      }
+    }).subscribe()
+  }
+
+  removeCommentLike(commentId: any, channelEmail: any): void {
+    this.apollo.mutate({
+      mutation: gql`
+        mutation removeCommentLike($commentId: Int!, $channelEmail: String!) {
+          removeCommentLike(commentId: $commentId, channelEmail: $channelEmail)
+        }
+      `,
+      variables: {
+        commentId: commentId,
+        channelEmail: channelEmail,
+      }
+    }).subscribe()
+  }
+
+  removeCommentDislike(commentId: any, channelEmail: any): void {
+    this.apollo.mutate({
+      mutation: gql`
+        mutation removeCommentDislike($commentId: Int!, $channelEmail: String!) {
+          removeCommentDislike(commentId: $commentId, channelEmail: $channelEmail)
+        }
+      `,
+      variables: {
+        commentId: commentId,
+        channelEmail: channelEmail,
+      }
+    }).subscribe()
+  }
+
+  findCommentLike(commentId: any, channelEmail: any): any {
+    return this.apollo.query({
+      query: gql`
+        query findCommentLike($channelEmail: String!, $commentId: Int!) {
+          findCommentLike(channelEmail: $channelEmail, commentId: $commentId) {
+            commentLikeId,
+            commentId,
+            channelId,
+            channelEmail,
+          }
+        }
+      `,
+      variables: {
+        channelEmail: channelEmail,
+        commentId: commentId,
+      }
+    })
+  }
+
+  findCommentDislike(commentId: any, channelEmail: any): any {
+    return this.apollo.query({
+      query: gql`
+        query findCommentDislike($channelEmail: String!, $commentId: Int!) {
+          findCommentDislike(channelEmail: $channelEmail, commentId: $commentId) {
+            commentDislikeId,
+            commentId,
+            channelId,
+            channelEmail,
+          }
+        }
+      `,
+      variables: {
+        channelEmail: channelEmail,
+        commentId: commentId,
+      }
+    })
+  }
 }

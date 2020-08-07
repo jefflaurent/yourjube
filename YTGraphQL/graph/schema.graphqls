@@ -219,8 +219,8 @@ type Query {
   findDislike(email: String!, videoId: Int!): [Dislike!]!
   findChannel(email: String!): [Channel!]!
   findReply(replyTo: Int!): [Comment!]!
-  findCommentLike(channelEmail: String!, commentId: ID!): [CommentLike!]!
-  findCommentDislike(channelEmail: String!, commentId: ID!): [CommentDislike!]!
+  findCommentLike(channelEmail: String!, commentId: Int!): [CommentLike!]!
+  findCommentDislike(channelEmail: String!, commentId: Int!): [CommentDislike!]!
   findVideoPlaylist(playlistId: Int!, videoId: Int!): [PlaylistVideo!]!
 }
 

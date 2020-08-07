@@ -3,23 +3,23 @@
         <img [src]="comment.channelPhotoURL" alt="">
     </div>
     <div class="right">
-        <div class="inner-container">
+        <div class="inner-container" *ngIf="currComment">
             <div class="name">
-                {{ comment.channelName }}
+                {{ currComment.channelName }}
             </div>
             <div class="time">
                 1 day ago
             </div>
         </div>
-        <div class="middle">
-            {{ comment.content }}
+        <div class="middle" *ngIf="currComment">
+            {{ currComment.content }}
         </div>
-        <div class="inner-container">
-            <div class="items">
-                <i class="fa fa-thumbs-up"></i> {{ comment.likes }}
+        <div class="inner-container" *ngIf="currComment">
+            <div class="items" [id]="dummyId10" (click)="initiateLike()">
+                <i class="fa fa-thumbs-up"></i> {{ currComment.likes }}
             </div>
-            <div class="items">
-                <i class="fa fa-thumbs-down"></i> {{ comment.dislikes }}
+            <div class="items" [id]="dummyId11" (click)="initiateDislike()">
+                <i class="fa fa-thumbs-down"></i> {{ currComment.dislikes }}
             </div>
             <div class="items rep" style="font-weight: 550;" (click)="openReply()">
                 REPLY
@@ -27,8 +27,8 @@
         </div>
         <div class="reply closed" [id]="dummyId">
             <div class="inner-container" style="margin-top: 10px;">
-                <div class="comment-left">
-                    <img [src]="user.photoUrl" alt="">
+                <div class="comment-left" *ngIf="channel">
+                    <img [src]="channel.photoURL" alt="">
                 </div>
                 <div class="comment-right">
                     <input type="text" placeholder="Add a public reply..." [value]="template" (input)="template = $event.target.value">

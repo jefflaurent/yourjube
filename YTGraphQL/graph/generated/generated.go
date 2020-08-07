@@ -171,8 +171,8 @@ type ComplexityRoot struct {
 		Channels           func(childComplexity int) int
 		Comments           func(childComplexity int, videoID int) int
 		FindChannel        func(childComplexity int, email string) int
-		FindCommentDislike func(childComplexity int, channelEmail string, commentID string) int
-		FindCommentLike    func(childComplexity int, channelEmail string, commentID string) int
+		FindCommentDislike func(childComplexity int, channelEmail string, commentID int) int
+		FindCommentLike    func(childComplexity int, channelEmail string, commentID int) int
 		FindDislike        func(childComplexity int, email string, videoID int) int
 		FindLike           func(childComplexity int, email string, videoID int) int
 		FindReply          func(childComplexity int, replyTo int) int
@@ -256,8 +256,8 @@ type QueryResolver interface {
 	FindDislike(ctx context.Context, email string, videoID int) ([]*model.Dislike, error)
 	FindChannel(ctx context.Context, email string) ([]*model.Channel, error)
 	FindReply(ctx context.Context, replyTo int) ([]*model.Comment, error)
-	FindCommentLike(ctx context.Context, channelEmail string, commentID string) ([]*model.CommentLike, error)
-	FindCommentDislike(ctx context.Context, channelEmail string, commentID string) ([]*model.CommentDislike, error)
+	FindCommentLike(ctx context.Context, channelEmail string, commentID int) ([]*model.CommentLike, error)
+	FindCommentDislike(ctx context.Context, channelEmail string, commentID int) ([]*model.CommentDislike, error)
 	FindVideoPlaylist(ctx context.Context, playlistID int, videoID int) ([]*model.PlaylistVideo, error)
 }
 
@@ -1161,7 +1161,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.FindCommentDislike(childComplexity, args["channelEmail"].(string), args["commentId"].(string)), true
+		return e.complexity.Query.FindCommentDislike(childComplexity, args["channelEmail"].(string), args["commentId"].(int)), true
 
 	case "Query.findCommentLike":
 		if e.complexity.Query.FindCommentLike == nil {
@@ -1173,7 +1173,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.FindCommentLike(childComplexity, args["channelEmail"].(string), args["commentId"].(string)), true
+		return e.complexity.Query.FindCommentLike(childComplexity, args["channelEmail"].(string), args["commentId"].(int)), true
 
 	case "Query.findDislike":
 		if e.complexity.Query.FindDislike == nil {
@@ -1691,8 +1691,8 @@ type Query {
   findDislike(email: String!, videoId: Int!): [Dislike!]!
   findChannel(email: String!): [Channel!]!
   findReply(replyTo: Int!): [Comment!]!
-  findCommentLike(channelEmail: String!, commentId: ID!): [CommentLike!]!
-  findCommentDislike(channelEmail: String!, commentId: ID!): [CommentDislike!]!
+  findCommentLike(channelEmail: String!, commentId: Int!): [CommentLike!]!
+  findCommentDislike(channelEmail: String!, commentId: Int!): [CommentDislike!]!
   findVideoPlaylist(playlistId: Int!, videoId: Int!): [PlaylistVideo!]!
 }
 
@@ -2367,9 +2367,9 @@ func (ec *executionContext) field_Query_findCommentDislike_args(ctx context.Cont
 		}
 	}
 	args["channelEmail"] = arg0
-	var arg1 string
+	var arg1 int
 	if tmp, ok := rawArgs["commentId"]; ok {
-		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2389,9 +2389,9 @@ func (ec *executionContext) field_Query_findCommentLike_args(ctx context.Context
 		}
 	}
 	args["channelEmail"] = arg0
-	var arg1 string
+	var arg1 int
 	if tmp, ok := rawArgs["commentId"]; ok {
-		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -6575,7 +6575,7 @@ func (ec *executionContext) _Query_findCommentLike(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().FindCommentLike(rctx, args["channelEmail"].(string), args["commentId"].(string))
+		return ec.resolvers.Query().FindCommentLike(rctx, args["channelEmail"].(string), args["commentId"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6616,7 +6616,7 @@ func (ec *executionContext) _Query_findCommentDislike(ctx context.Context, field
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().FindCommentDislike(rctx, args["channelEmail"].(string), args["commentId"].(string))
+		return ec.resolvers.Query().FindCommentDislike(rctx, args["channelEmail"].(string), args["commentId"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

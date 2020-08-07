@@ -15,7 +15,7 @@
                     {{ currVid.views}} views • {{ post }}
                 </div>
             </div>
-            <div class="misc">
+            <div class="misc" *ngIf="currVid">
                 <div class="like icon" *ngIf="currVid" (click)="initiateLike()">
                     {{ currVid.likes }} <i class="fa fa-thumbs-up fa-lg"></i>
                 </div>
@@ -83,14 +83,24 @@
         <div class="comment-box">
             <div class="same-container top-section">
                 <div class="qty" *ngIf="comments">
-                    {{ commentQty }} Comments
+                    {{ comments.length }} Comments
                 </div>
                 <div class="same-container sort-section">
                     <div style="margin-right: 10px;">
                         <i class="fa fa-sort-amount-desc fa-lg"></i>
                     </div>
-                    <div>
+                    <div (click)="showSortModal()">
                         SORT BY
+                        <div class="sort-container hidden">
+                            <div class="sort-modal">
+                                <div class="choices" (click)="sortByLikes()">
+                                    Top comments
+                                </div>
+                                <div class="choices" (click)="sortByNewest()">
+                                    Newest first
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

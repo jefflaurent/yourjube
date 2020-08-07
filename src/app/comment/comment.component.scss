@@ -60,6 +60,16 @@
     color: rgba(76, 67, 67, 1);  
 }
 
+.items.clicked
+{
+    color: blue;
+}
+
+.items:hover
+{
+    cursor: pointer;
+}
+
 .rep
 {
     font-size: 12px;
@@ -137,7 +147,7 @@
     background-color: blue;
     font-weight: 400;
     font-size: 12px;
-    padding: 5px;
+    padding: 7px;
     padding-left: 20px;
     padding-right: 20px;
     margin-left: 10px;
@@ -151,8 +161,8 @@
 
 .view
 {
-    margin-top: 7px;
-    margin-bottom: 7px;
+    margin-top: 2%;
+    margin-bottom: 2%;
     font-size: 13px;
     color: blue;
     font-weight: 600;
