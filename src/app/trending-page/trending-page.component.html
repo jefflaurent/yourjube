@@ -1,6 +1,6 @@
 <div class="container">
     <div class="top">
-        <div class="icon-container">
+        <div class="icon-container music" (click)="changeToMusic()">
             <div class="icon">
                 <img src="../../assets/trending/music.png" alt="">
             </div>
@@ -8,7 +8,7 @@
                 Music
             </div>
         </div>
-        <div class="icon-container">
+        <div class="icon-container gaming" (click)="changeToGaming()">
             <div class="icon">
                 <img src="../../assets/trending/gaming.png" alt="">
             </div>
@@ -16,7 +16,7 @@
                 Gaming
             </div>
         </div>
-        <div class="icon-container">
+        <div class="icon-container news" (click)="changeToNews()">
             <div class="icon">
                 <img src="../../assets/trending/news.png" alt="">
             </div>
@@ -24,7 +24,7 @@
                 News
             </div>
         </div>
-        <div class="icon-container">
+        <div class="icon-container entertainment" (click)="changeToEnt()">
             <div class="icon">
                 <img src="../../assets/trending/entertainment.png" alt="">
             </div>
@@ -32,7 +32,7 @@
                 Entertainment
             </div>
         </div>
-        <div class="icon-container">
+        <div class="icon-container sport" (click)="changeToSport()">
             <div class="icon">
                 <img src="../../assets/trending/sport.jpg" alt="">
             </div>
@@ -40,7 +40,7 @@
                 Sport
             </div>
         </div>
-        <div class="icon-container">
+        <div class="icon-container travel" (click)="changeToTravel()">
             <div class="icon">
                 <img src="../../assets/trending/plane.png" alt="">
             </div>
@@ -53,6 +53,6 @@
         <hr>
     </div>
     <div class="bottom">
-        <app-trending-bottom></app-trending-bottom>
+        <app-trending-bottom *ngFor="let video of showVideos" [vid]="(video)"></app-trending-bottom>
     </div>
 </div>

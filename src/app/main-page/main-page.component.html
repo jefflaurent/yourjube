@@ -1,3 +1,12 @@
-<div class="container">
-    <app-video-page *ngFor="let video of videos" [vid]="(video)"></app-video-page>
+<div class="outer">
+    <div class="main">
+        <div class="video-container">
+            <div *ngFor="let video of videos, let i = index" class="video">
+                <app-video-page *ngIf="i<(videoCount)" [vid]="(video)"></app-video-page>
+            </div>
+        </div>
+    </div>
+    <div class="footer"></div>
 </div>
+
+

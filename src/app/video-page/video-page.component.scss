@@ -1,7 +1,6 @@
 .container
 {
-    margin: 8px;
-    width: 320px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -11,7 +10,13 @@
 .thumbnail
 {
     width: 100%;
+    box-sizing: border-box;
     margin-bottom: 13px;
+}
+
+.thumbnail img
+{
+    width: 100%;
 }
 
 .top
@@ -34,8 +39,14 @@
     justify-content: center;
 }
 
+.left img
+{
+    width: 90%;
+}
+
 .title
 {
+    box-sizing: border-box;
     font-family: 'Roboto';
     font-weight: 500;
     font-size: 14px;
@@ -61,13 +72,15 @@
 
 .bottom
 {
-    margin-top: 5px;
+   
     font-size: 14px;
     width: 100%;
     display: flex;
     flex-direction: column;
     color: rgba(76, 67, 67, 1);
-    margin-left: 53px;
+    margin-top: 2%;
+    margin-left: 17%;
+    box-sizing: border-box;
 }
 
 .empty

@@ -41,6 +41,7 @@ import { PlaylistModalInfo } from './data-service/playlist-modal-service';
 import { PlaylistVideoService } from './data-service/playlist-video-service';
 import { VideoService } from './data-service/video-service';
 import { CommentService } from './data-service/comment-service';
+import { ChannelPageComponent } from './channel-page/channel-page.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { CommentService } from './data-service/comment-service';
     PlaylistModalComponent,
     PlaylistHeaderComponent,
     TrendingPageComponent,
-    TrendingBottomComponent
+    TrendingBottomComponent,
+    ChannelPageComponent
   ],
   imports: [
     HttpModule,

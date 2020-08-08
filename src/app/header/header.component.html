@@ -1,12 +1,12 @@
 <div class="head">
     <div class="container">
         <div class="menu" id="toggleOn">
-            <img src="../../assets/navIcon/menu.png" width="15px" height="15px">
+            <img src="../../assets/navIcon/menu.png">
         </div>
     
         <div class="icon">
             <a href="#">
-                <img src="../../assets/navIcon/logo1.jpg" width="85px" height="40px">
+                <img src="../../assets/navIcon/logo1.jpg">
             </a>
         </div>
     </div>
@@ -21,22 +21,22 @@
     </div>
 
     <div class="containerRight">
-        <div>
-            <a href="#">
-                <img src="../../assets/navIcon/film.png" width="25px" height="25px">
-            </a>
+        <div class="miscIcon">
+            <div>
+                <img src="../../assets/navIcon/film.png">
+            </div>
         </div>
 
-        <div>
-            <a href="#">
-                <img src="../../assets/navIcon/menu2.png" width="20px" height="20px">
-            </a>
+        <div class="miscIcon" style="width: 7%">
+            <div>
+                <img src="../../assets/navIcon/menu2.png">
+            </div>
         </div>
     
-        <div>
-            <a href="#">
-                <img src="../../assets/navIcon/bell.png" width="25px" height="25px">
-            </a>
+        <div class="miscIcon">
+            <div>
+                <img src="../../assets/navIcon/bell.png">
+            </div>
         </div>
 
         <div class="signContainer" *ngIf="user == null" (click)="signInWithGoogle()">
@@ -50,8 +50,8 @@
             </div>
         </div>
 
-        <div *ngIf="user">
-            <img src="{{ user.photoUrl }}" alt="" width="32px" height="32px" style="border-radius: 50%;">
+        <div *ngIf="user" class="miscIcon" style="width: 12%;">
+            <img src="{{ user.photoUrl }}" alt="" style="border-radius: 50%;">
         </div>
     </div>
 </div>
@@ -59,12 +59,12 @@
 <div class="nav">
     <div class="top">
         <div class="menu" id="toggleClose">
-            <img src="../../assets/navIcon/menu.png" width="15px" height="15px">
+            <img src="../../assets/navIcon/menu.png">
         </div>
     
         <div class="icon">
             <a href="#">
-                <img src="../../assets/navIcon/logo1.jpg" width="85px" height="40px">
+                <img src="../../assets/navIcon/logo1.jpg">
             </a>
         </div>
     </div>
@@ -79,16 +79,18 @@
             <a href="#"><p>Home</p></a>
         </div>
     </div>
-    <div class="item">
-        <div class="item-content-l">
-            <div>
-                <a href="#"><img src="../../assets/navItem/fire.png" alt="" width="20px" height="20px"></a>
+    <a [routerLink]="['/trending']">
+        <div class="item">
+            <div class="item-content-l">
+                <div>
+                    <img src="../../assets/navItem/fire.png" alt="" width="20px" height="20px">
+                </div>
+            </div>
+            <div class="item-content">
+                <p>Trending</p>
             </div>
         </div>
-        <div class="item-content">
-            <a href="#"><p>Trending</p></a>
-        </div>
-    </div>
+    </a>
     <div class="item">
         <div class="item-content-l">
             <div>

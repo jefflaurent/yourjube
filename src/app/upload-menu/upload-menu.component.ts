@@ -126,13 +126,14 @@ export class UploadMenuComponent implements OnInit {
     this.imgTask.snapshotChanges().pipe(
       finalize(() => {
         ref.getDownloadURL().subscribe(url => {
-          this.imgDownloadURL = url;
+          this.imgDownloadURL = url
         });
       })
     ).subscribe();
   }
 
   uploadToDB(): void {
+    var date = new Date()
     this.apollo.mutate({
       mutation: gql`
        mutation insertVideo (
@@ -152,6 +153,7 @@ export class UploadMenuComponent implements OnInit {
           $channelName: String!, 
           $channelPhotoURL: String!,
           $channelEmail: String!,
+          $time: Int!
         ) {
           createVideo(input:{
             videoTitle: $videoTitle, 
@@ -170,6 +172,7 @@ export class UploadMenuComponent implements OnInit {
             channelName: $channelName, 
             channelPhotoURL: $channelPhotoURL,
             channelEmail: $channelEmail,
+            time: $time
           }) {
             videoTitle,
             videoURL,
@@ -194,9 +197,8 @@ export class UploadMenuComponent implements OnInit {
         channelName: this.user.name.toString(),
         channelPhotoURL: this.user.photoUrl.toString(),
         channelEmail: this.user.email.toString(),
+        time: date.getTime(),
       }
-    }).subscribe( result => {
-      console.log(result)
-    })
+    }).subscribe()
   }  
 }
