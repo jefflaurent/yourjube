@@ -1,0 +1,40 @@
+<div class="container">
+    <div class="top">
+        <div class="top-left">
+            <div class="uploads">
+                Uploads
+            </div>
+            <div class="play-all">
+                PLAY ALL
+            </div>
+        </div>
+        <div class="top-right" (click)="toggleModal()">
+            <div class="icon">
+                <i class="fa fa-sort-amount-desc"></i>
+            </div>
+            <div class="sort-by">
+                SORT BY
+            </div>
+
+            <div class="modal hidden">
+                <div class="items" (click)="sortByViews()">
+                    Most popular
+                </div>
+                <div class="items" (click)="sortByDateDesc()">
+                    Date added (newest)
+                </div>
+                <div class="items" (click)="sortByDateAsc()">
+                    Date added (oldest)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom" *ngIf="videos">
+        <div class="video-container">
+            <div *ngFor="let video of videos, let i = index" class="video">
+                <app-video-page *ngIf="i < (videoCount)" [vid]="(video)"></app-video-page>
+            </div>
+        </div>
+    </div>
+    <div class="footer"></div>
+</div>

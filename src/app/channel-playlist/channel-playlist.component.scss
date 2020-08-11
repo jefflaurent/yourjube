@@ -1,0 +1,68 @@
+.container
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    
+    .thumbnail
+    {
+        position: relative;
+
+        img
+        {
+            width: 100%;
+        }
+
+        .overlap
+        {
+            position: absolute;
+            background-color: black;
+            opacity: 85%;
+            top: 0;
+            right: 0;
+            height: 97%;
+            width: 40%;
+
+            .inner-container
+            {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                height: 100%;
+                color: white;
+            }
+        }
+    }
+
+
+    .desc
+    {
+        display: flex;
+        justify-content: flex-start;
+        flex-direction: column;
+        font-size: 14px;
+
+        .title
+        {
+            color: black;
+            font-weight: 500;
+            margin-top: 2%;
+        }
+
+        .updated
+        {
+            margin-top: 3%;
+            font-size: 13px;
+            color: rgba(76, 67, 67, 1);
+        }
+        
+        .view
+        {
+            margin-top: 2%;
+            font-size: 13px;
+            color: rgba(76, 67, 67, 1);
+            font-weight: 500;
+        }
+    }
+}

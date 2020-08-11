@@ -1,0 +1,124 @@
+.container
+{
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+
+    .top
+    {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 3%;
+
+        .top-left
+        {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            width: 50%;
+
+            .uploads
+            {
+                font-size: 17px;
+                font-weight: 500;
+                color: black;
+            }
+
+            .play-all
+            {
+                margin-left: 3%;
+                font-size: 14px;
+                font-weight: 500;
+                color: rgba(76, 67, 67, 1);
+            }
+        }
+
+        .top-right
+        {
+            position: relative;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            width: 50%;
+            color: rgba(76, 67, 67, 1);
+
+            .sort-by
+            {
+                margin-left: 2%;
+                font-weight: 500;
+                font-size: 14px;
+            }
+
+            .modal
+            {
+                top: 150%;
+                width: 30%;
+                font-size: .9em;
+                padding-top: 2%;
+                padding-bottom: 2%;
+                
+                position: absolute;
+                display: flex;
+                justify-content: space-evenly;
+                flex-direction: column;
+                background-color: white;
+
+                .items
+                {
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    padding-left: 4%;
+                    padding-right: 4%;
+                    height: 40px;
+                }
+
+                .items:hover
+                {
+                    cursor: pointer;
+                    background-color: lightgrey;
+                }
+            }
+
+            .modal.hidden
+            {
+                display: none;
+            }
+        }
+        
+        .top-right:hover
+        {
+            cursor: pointer;
+        }
+    }
+
+
+    .bottom
+    {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+
+        .video-container
+        {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+
+            .video
+            {
+                width: 20%;
+                box-sizing: border-box;
+                padding: .2%;
+                margin-bottom: 1%;
+            }
+        }
+    }
+
+    .footer
+    {
+        height: 1px;
+        margin-top: -1%;
+    }
+}

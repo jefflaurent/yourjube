@@ -1,0 +1,52 @@
+<div class="container">
+    <div class="recent">
+        <div class="recent-top">
+            <div class="recent-desc">
+                Uploads
+            </div>
+            <div class="play-all">
+                <div class="play-icon">
+                    <i class="fa fa-play"></i>
+                </div>
+                <div class="play-txt">
+                    PLAY ALL
+                </div>
+            </div>
+        </div>
+        <div class="recent-bot" *ngFor="let video of videos, let i = index">
+            <app-trending-bottom *ngIf="i < 4" [vid]="(video)"></app-trending-bottom>
+        </div>
+        <div class="show-more">
+            SHOW MORE
+        </div>
+        <div class="line">
+            <hr>
+        </div>
+    </div>
+
+    <div class="random">
+        <div class="random-top">
+            Best of {{ channel.name }}
+        </div>
+        <div class="random-bot" *ngFor="let video of showVideos, let i = index">
+            <app-trending-bottom [vid]="(video)"></app-trending-bottom>
+        </div>
+        <div class="show-more">
+            SHOW MORE
+        </div>
+        <div class="line">
+            <hr>
+        </div>
+    </div>
+
+    <div class="playlist" *ngIf="allPlaylists">
+        <div class="playlist-top">
+            Playlists
+        </div>
+        <div class="playlist-bot">
+            <div class="playlist-view" *ngFor="let playlist of showPlaylists, let i = index">
+                <app-channel-playlist [play]="(playlist)"></app-channel-playlist>
+            </div>
+        </div>
+    </div>
+</div>

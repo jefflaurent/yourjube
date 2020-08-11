@@ -1,0 +1,139 @@
+.container
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    .recent
+    {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+
+        .recent-top
+        {
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+            justify-content: flex-start;
+            margin-bottom: 3%;
+
+            .recent-desc
+            {
+                color:black;
+                font-weight: 500;
+                margin-right: 2%;
+            }
+
+            .play-all
+            {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                font-size: 14px;
+                font-weight: 500;
+                justify-content: flex-start;
+                color: rgba(76, 67, 67, 1);
+
+                .play-icon
+                {
+                    margin-right: .5%;
+                }
+            }
+        }
+
+        .recent-bot
+        {
+            width: 80%;
+        }
+
+        .show-more
+        {
+            margin-top: .5%;
+            margin-bottom: 1%;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(76, 67, 67, 1);
+        }
+
+        .show-more:hover
+        {
+            cursor: pointer;
+        }
+
+        .line hr
+        {
+            border: 1px solid lightgrey;
+            border-bottom: none;
+        }
+    }
+
+    .random
+    {
+        display: flex;
+        justify-content: flex-start;
+        flex-direction: column;
+
+        .random-top
+        {
+            margin-top: 2%;
+            margin-bottom: 3%;
+            font-weight: 500;
+            color: black;
+        }
+
+        .random-bot
+        {
+            width: 80%;
+        }
+
+        .show-more
+        {
+            margin-top: .5%;
+            margin-bottom: 1%;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(76, 67, 67, 1);
+        }
+
+        .show-more:hover
+        {
+            cursor: pointer;
+        }
+
+        .line hr
+        {
+            border: 1px solid lightgrey;
+            border-bottom: none;
+        }
+    }
+}
+
+.playlist
+{
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+
+    .playlist-top
+    {
+        margin-top: 2%;
+        margin-bottom: 3%;
+        font-weight: 500;
+        color: black;
+    }
+
+    .playlist-bot
+    {
+        display: flex;
+        justify-content: flex-start;
+
+        .playlist-view
+        {
+            width: 24%;
+            margin-right: 1%;
+            display: flex;
+            justify-content: flex-start;
+        }
+    }
+}

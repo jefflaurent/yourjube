@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Playlists } from '../model/playlist';
+import { UserService } from '../data-service/user-service';
 import { PlaylistService } from '../data-service/playlist-data';
 import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
 import { PlaylistVideoService } from '../data-service/playlist-video-service';
@@ -50,11 +51,12 @@ export class VideoPageComponent implements OnInit {
     }
   `;
 
-  constructor(private apollo: Apollo, private data: PlaylistService, private status: PlaylistModalInfo, private playlistData: PlaylistVideoService) { }
+  constructor(private apollo: Apollo, private data: PlaylistService, private status: PlaylistModalInfo, private playlistData: PlaylistVideoService, private userService: UserService) { }
 
   playlists: Playlists[] = [];
   dummyId: string = ''
   dummyId2: string = ""
+  channelId: any
   time: Date
   date: any
   month: any
@@ -75,6 +77,10 @@ export class VideoPageComponent implements OnInit {
     this.user = JSON.parse(localStorage.getItem('users'))
     this.processViews()
 
+    this.userService.getUser(this.user.email).valueChanges.subscribe( result => {
+      this.channelId = result.data.findChannel[0].id
+    })
+    
     if(parseInt(this.video.uploadYear) < this.year) {
       let gap = this.year - parseInt(this.video.uploadYear) 
       if(gap == 1) 

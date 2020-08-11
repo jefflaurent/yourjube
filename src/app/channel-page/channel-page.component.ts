@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from '../data-service/user-service';
 
 @Component({
   selector: 'app-channel-page',
@@ -7,9 +8,79 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ChannelPageComponent implements OnInit {
 
-  constructor() { }
+  constructor(private userService: UserService) { }
+
+  user: any
+  channel: any
 
   ngOnInit(): void {
+    if(localStorage.getItem('users') != null) {
+      this.user = JSON.parse(localStorage.getItem('users'))
+    }
+
+    this.userService.getUser(this.user.email).valueChanges.subscribe( result => {
+      this.channel = result.data.findChannel[0]
+      console.log(this.channel)
+    })
   }
 
+  moveToHome(): void {
+    this.hideVideos()
+    this.hidePlaylist()
+    this.showHome()
+  }
+
+  moveToVideos(): void {
+    this.hideHome()
+    this.hidePlaylist()
+    this.showVideos()
+  }
+
+  moveToPlaylist(): void {
+    this.hideHome()
+    this.hideVideos()
+    this.showPlaylist()
+  }
+
+  showHome(): void {
+    var x = document.querySelector('.channel-home')
+    var y = document.querySelector('.home')
+    x.classList.remove('hidden')
+    y.classList.add('selected')
+  }
+
+  hideHome(): void {
+    var x = document.querySelector('.channel-home')
+    var y = document.querySelector('.home')
+    x.classList.add('hidden')
+    y.classList.remove('selected')
+  }
+
+  showVideos(): void {
+    var x = document.querySelector('.channel-videos')
+    var y = document.querySelector('.videos')
+    x.classList.remove('hidden')
+    y.classList.add('selected')
+  }
+
+  hideVideos(): void {
+    var x = document.querySelector('.channel-videos')
+    var y = document.querySelector('.videos')
+    x.classList.add('hidden')
+    y.classList.remove('selected')
+  }
+
+  showPlaylist(): void {
+    var x = document.querySelector('.channel-playlist')
+    var y = document.querySelector('.playlist')
+    x.classList.remove('hidden')
+    y.classList.add('selected')
+  }
+
+  hidePlaylist(): void {
+    var x = document.querySelector('.channel-playlist')
+    var y = document.querySelector('.playlist')
+    x.classList.add('hidden')
+    y.classList.remove('selected')
+  }
 }

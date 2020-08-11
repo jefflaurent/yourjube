@@ -4,15 +4,15 @@
     <div class="profile">
         <div class="profile-container">
             <div class="left">
-                <div class="inner-left">
-                    <img src="../../assets/navIcon/user.png" alt="">
+                <div class="inner-left" *ngIf="channel">
+                    <img [src]="channel.photoURL" alt="">
                 </div>
-                <div class="inner-right">
+                <div class="inner-right" *ngIf="channel">
                     <div class="inner-top">
-                        PewDiePie
+                        {{ user.name }}
                     </div>
                     <div class="inner-bot">
-                        106M subscribers
+                        {{ channel.subscriber }} subscribers
                     </div>
                 </div>
             </div>
@@ -29,13 +29,13 @@
         </div>
     </div>
     <div class="tab">
-        <div class="tab-choice home selected">
+        <div class="tab-choice home selected" (click)="moveToHome()">
             HOME
         </div>
-        <div class="tab-choice videos">
+        <div class="tab-choice videos" (click)="moveToVideos()">
             VIDEOS
         </div>
-        <div class="tab-choice playlist">
+        <div class="tab-choice playlist" (click)="moveToPlaylist()">
             PLAYLISTS
         </div>
         <div class="tab-choice community">
@@ -44,5 +44,17 @@
         <div class="tab-choice about">
             ABOUT
         </div>
+    </div>
+
+    <div class="channel-home" *ngIf="channel">
+        <app-channel-home [chan]="(channel)"></app-channel-home>
+    </div>
+
+    <div class="channel-videos hidden" *ngIf="channel">
+        <app-channel-videos [chan]="(channel)"></app-channel-videos>
+    </div>
+
+    <div class="channel-playlist hidden" *ngIf="channel">
+        <app-channel-playlists [chan]="(channel)"></app-channel-playlists>
     </div>
 </div>

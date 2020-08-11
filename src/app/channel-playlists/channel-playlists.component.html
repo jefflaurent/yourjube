@@ -1,0 +1,10 @@
+<div class="container">
+    <div class="top">
+        Created playlists
+    </div>
+    <div class="bottom" *ngIf="playlists">
+        <div class="playlist-view" *ngFor="let playlist of playlists">
+            <app-channel-playlist [play]="(playlist)"></app-channel-playlist>
+        </div>
+    </div>
+</div>

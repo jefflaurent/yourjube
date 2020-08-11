@@ -35,13 +35,18 @@ import { PlaylistHeaderComponent } from './playlist-header/playlist-header.compo
 import { PlaylistModalComponent } from './playlist-modal/playlist-modal.component';
 import { TrendingPageComponent } from './trending-page/trending-page.component';
 import { TrendingBottomComponent } from './trending-bottom/trending-bottom.component';
+import { ChannelPageComponent } from './channel-page/channel-page.component';
+import { ChannelHomeComponent } from './channel-home/channel-home.component';
+import { ChannelPlaylistComponent } from './channel-playlist/channel-playlist.component';
 
 import { PlaylistService } from './data-service/playlist-data';
 import { PlaylistModalInfo } from './data-service/playlist-modal-service';
 import { PlaylistVideoService } from './data-service/playlist-video-service';
 import { VideoService } from './data-service/video-service';
 import { CommentService } from './data-service/comment-service';
-import { ChannelPageComponent } from './channel-page/channel-page.component';
+import { UserService } from './data-service/user-service';
+import { ChannelVideosComponent } from './channel-videos/channel-videos.component';
+import { ChannelPlaylistsComponent } from './channel-playlists/channel-playlists.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +68,11 @@ import { ChannelPageComponent } from './channel-page/channel-page.component';
     PlaylistHeaderComponent,
     TrendingPageComponent,
     TrendingBottomComponent,
-    ChannelPageComponent
+    ChannelPageComponent,
+    ChannelHomeComponent,
+    ChannelPlaylistComponent,
+    ChannelVideosComponent,
+    ChannelPlaylistsComponent,
   ],
   imports: [
     HttpModule,
@@ -98,6 +107,7 @@ import { ChannelPageComponent } from './channel-page/channel-page.component';
     PlaylistVideoService,
     VideoService,
     CommentService,
+    UserService,
   ],
   bootstrap: [AppComponent],
 })

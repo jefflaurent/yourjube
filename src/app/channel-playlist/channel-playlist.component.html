@@ -1,0 +1,26 @@
+<div class="container">
+    <div class="thumbnail">
+        <img [src]="playlist.playlistThumbnail" alt="">
+        <div class="overlap">
+            <div class="inner-container">
+                <div class="count" style="margin-bottom: 3%;">
+                    {{ playlist.videoCount }}
+                </div>
+                <div class="icon">
+                    <i class="fa fa-align-justify"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="desc">
+        <div class="title">
+            {{ playlist.playlistName }}
+        </div> 
+        <div class="updated">
+            Updated today
+        </div>
+        <div class="view">
+            VIEW FULL PLAYLIST
+        </div>
+    </div>
+</div>

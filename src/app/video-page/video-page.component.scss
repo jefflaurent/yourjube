@@ -37,6 +37,11 @@
     width: 13%;
     display: flex;
     justify-content: center;
+
+    .left:hover
+    {
+        cursor: pointer;
+    }
 }
 
 .left img
@@ -49,7 +54,7 @@
     box-sizing: border-box;
     font-family: 'Roboto';
     font-weight: 500;
-    font-size: 14px;
+    font-size: .8em;
     line-height: 1.4em;
     margin-left: 15px;
     width: 82%;
@@ -79,13 +84,8 @@
     flex-direction: column;
     color: rgba(76, 67, 67, 1);
     margin-top: 2%;
-    margin-left: 17%;
+    margin-left: 18%;
     box-sizing: border-box;
-}
-
-.empty
-{
-    height: 50px;
 }
 
 .modal.hidden
@@ -99,7 +99,7 @@
     position: absolute;
     justify-content: flex-end;
     z-index: 69;
-    font-size: 14px;
+    font-size: .8em;
     width: 20%;
     color: rgba(76, 67, 67, 1);
 }
@@ -149,4 +149,21 @@
     padding: 10px;
     display: flex;
     justify-content: center;
+}
+
+.profile-name a 
+{
+    color: black;
+    font-size: .9em;
+    text-decoration: none;
+}
+
+.profile-name:hover
+{  
+   cursor: pointer; 
+}
+
+.channel-detail
+{
+    font-size: .9em;
 }

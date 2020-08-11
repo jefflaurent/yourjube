@@ -236,6 +236,22 @@ export class PlaylistPageComponent implements OnInit {
     }
   }
 
+  sortUpload():  void {
+    this.sortVideoUpload();
+    this.currData.updateThumbnail(this.playlistId, this.videoTemp[0].videoThumbnail)
+    for(let i = 0; i < this.videoTemp.length; i++) {
+      this.data.updatePlace(this.playlistId, this.videoTemp[i].videoId, i+1)
+    }
+  }
+
+  sortUploadDesc(): void {
+    this.sortVideoUploadDesc()
+    this.currData.updateThumbnail(this.playlistId, this.videoTemp[0].videoThumbnail)
+    for(let i = 0; i < this.videoTemp.length; i++) {
+      this.data.updatePlace(this.playlistId, this.videoTemp[i].videoId, i+1)
+    }
+  }
+
   sortVideoDate(): void {
     this.sortVideoByDateAdded();
     this.currData.updateThumbnail(this.playlistId, this.playlistVideos[0].videoThumbnail)
@@ -252,6 +268,14 @@ export class PlaylistPageComponent implements OnInit {
       this.data.updatePlace(this.playlistId, this.playlistVideos[i].videoId, j)
       j++
     }
+  }
+  
+  sortVideoUpload(): void {
+    this.videoTemp.sort((a,b)=> (a.time < b.time) ? -1 : 1)
+  }
+
+  sortVideoUploadDesc(): void {
+    this.videoTemp.sort((a,b)=> (a.time > b.time) ? -1 : 1)
   }
 
   sortVideoByViews(): void {
