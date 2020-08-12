@@ -7,7 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class VideoSideComponent implements OnInit {
   @Input('vid') video: {
-    videoId: BigInteger,        
+    videoId: number,        
     videoTitle: string,  
     videoDesc: string,
     videoURL: string,
@@ -15,9 +15,9 @@ export class VideoSideComponent implements OnInit {
     uploadDay: string,
     uploadMonth: string,
     uploadYear: string,
-    views: BigInteger,
-    likes: BigInteger,     
-    dislikes: BigInteger,      
+    views: number,
+    likes: number,     
+    dislikes: number,      
     visibility: string,    
     viewer: string,       
     category: string,      
@@ -31,13 +31,15 @@ export class VideoSideComponent implements OnInit {
   date : any
   month : any
   year : any
-
+  views: any
   post : string
 
 
   constructor() { }
 
   ngOnInit(): void {
+    this.processViews()
+
     if(this.video.videoTitle.length >= 60) {
       for(let i = 0; i < 50; i++) {
         this.title += this.video.videoTitle.charAt(i)
@@ -75,6 +77,27 @@ export class VideoSideComponent implements OnInit {
         this.post = gap + ' day ago';
       else
         this.post = gap + ' days ago';
+    }
+  }
+
+  processViews(): void {
+    if(this.video.views >= 1000 && this.video.views < 10000) {
+      var front = Math.floor(this.video.views / 1000) 
+      var rest = this.video.views - front
+      var back = Math.floor(rest / 100)
+      this.views = front + '.' + back + 'K'
+    }
+    else if(this.video.views >= 10000 && this.video.views <= 100000) {
+      this.views = Math.floor(this.video.views / 1000) + 'K'
+    }
+    else if(this.video.views >= 1000000) {
+      var front = Math.floor(this.video.views / 1000000)
+      var rest = this.video.views - front
+      var back = Math.floor(rest / 100000)
+      this.views = front + '.' + back + 'M' 
+    }
+    else {
+      this.views = this.video.views + ''
     }
   }
 }

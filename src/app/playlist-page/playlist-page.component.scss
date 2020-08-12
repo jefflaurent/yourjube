@@ -163,6 +163,9 @@
 .right
 {
     width: 65%;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
 }
 
 .sort

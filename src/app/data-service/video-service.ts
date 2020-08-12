@@ -2,9 +2,17 @@ import { Injectable, inject } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { Videos } from '../model/video'; 
 import gql from 'graphql-tag';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class VideoService {
+    
+    private restrictMode = new BehaviorSubject<boolean>(false)
+    currentStatus = this.restrictMode.asObservable()
+
+    changeStatus(status: boolean): void {
+      this.restrictMode.next(status)
+    }
     
     constructor(private apollo: Apollo) {}
 

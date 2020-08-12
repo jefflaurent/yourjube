@@ -22,98 +22,93 @@ export class TrendingPageComponent implements OnInit {
   }
 
   trendingSort(): void {
+    var date = new Date()
+    var currSecond = date.getTime() - 604800000
     this.videos.sort( (a,b) => (a.views > b.views) ? -1 : 1)
-    for(let i = 0; i < this.videos.length; i++)
-      this.showVideos[i] = this.videos[i]
+    let j = 0
+    for(let i = 0; i < this.videos.length; i++) {
+      if(this.videos[i].time >= currSecond){
+        this.showVideos[j] = this.videos[i]
+        j++
+      }
+    }
   } 
 
   changeToMusic(): void {
+    var date = new Date()
+    var currSecond = date.getTime() - 604800000
     this.showVideos = []
     let j = 0
     for(let i = 0; i < this.videos.length; i++) {
-      if(this.videos[i].category == 'music') {
+      if(this.videos[i].category == 'music' && currSecond <= this.videos[i].time) {
         this.showVideos[j] = this.videos[i]
         j++
       }
     }
-    // var y = document.querySelector('icon-container')
-    // var x = document.querySelector('.music')
-    // y.classList.remove('selected')
-    // x.classList.add('selected')
   }
 
   changeToGaming(): void {
+    var date = new Date()
+    var currSecond = date.getTime() - 604800000
     this.showVideos = []
     let j = 0
     for(let i = 0; i < this.videos.length; i++) {
-      if(this.videos[i].category == 'gaming') {
+      if(this.videos[i].category == 'gaming' && this.videos[i].time >= currSecond) {
         this.showVideos[j] = this.videos[i]
         j++
       }
     }
-    // var y = document.querySelector('icon-container')
-    // var x = document.querySelector('.gaming')
-    // y.classList.remove('selected')
-    // x.classList.add('selected')
   }
 
   changeToNews(): void {
+    var date = new Date()
+    var currSecond = date.getTime() - 604800000
     this.showVideos = []
     let j = 0
     for(let i = 0; i < this.videos.length; i++) {
-      if(this.videos[i].category == 'news') {
+      if(this.videos[i].category == 'news' && this.videos[i].time >= currSecond) {
         this.showVideos[j] = this.videos[i]
         j++
       }
     }
-    // var y = document.querySelector('icon-container')
-    // var x = document.querySelector('.news')
-    // y.classList.remove('selected')
-    // x.classList.add('selected')
   }
 
   changeToEnt(): void {
+    var date = new Date()
+    var currSecond = date.getTime() - 604800000
     this.showVideos = []
     let j = 0
     for(let i = 0; i < this.videos.length; i++) {
-      if(this.videos[i].category == 'entertainment') {
+      if(this.videos[i].category == 'entertainment' && this.videos[i].time >= currSecond) {
         this.showVideos[j] = this.videos[i]
         j++
       }
     }
-    // var y = document.querySelector('icon-container')
-    // var x = document.querySelector('.entertainment')
-    // y.classList.remove('selected')
-    // x.classList.add('selected')
   }
 
   changeToSport(): void {
+    var date = new Date()
+    var currSecond = date.getTime() - 604800000
     this.showVideos = []
     let j = 0
     for(let i = 0; i < this.videos.length; i++) {
-      if(this.videos[i].category == 'sport') {
+      if(this.videos[i].category == 'sport' && this.videos[i].time >= currSecond) {
         this.showVideos[j] = this.videos[i]
         j++
       }
     }
-    // var y = document.querySelector('icon-container')
-    // var x = document.querySelector('.sport')
-    // y.classList.remove('selected')
-    // x.classList.add('selected')
   }
 
   changeToTravel(): void {
+    var date = new Date()
+    var currSecond = date.getTime() - 604800000
     this.showVideos = []
     let j = 0
     for(let i = 0; i < this.videos.length; i++) {
-      if(this.videos[i].category == 'travel') {
+      if(this.videos[i].category == 'travel' && this.videos[i].time >= currSecond) {
         this.showVideos[j] = this.videos[i]
         j++
       }
     }
-    // var y = document.querySelector('icon-container')
-    // var x = document.querySelector('.travel')
-    // y.classList.remove('selected')
-    // x.classList.add('selected')
   }
 }

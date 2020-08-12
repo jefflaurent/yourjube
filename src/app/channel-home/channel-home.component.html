@@ -16,7 +16,7 @@
         <div class="recent-bot" *ngFor="let video of videos, let i = index">
             <app-trending-bottom *ngIf="i < 4" [vid]="(video)"></app-trending-bottom>
         </div>
-        <div class="show-more">
+        <div class="show-more" (click)="moveToVideos()">
             SHOW MORE
         </div>
         <div class="line">
@@ -31,7 +31,7 @@
         <div class="random-bot" *ngFor="let video of showVideos, let i = index">
             <app-trending-bottom [vid]="(video)"></app-trending-bottom>
         </div>
-        <div class="show-more">
+        <div class="show-more" (click)="moveToVideos()">
             SHOW MORE
         </div>
         <div class="line">

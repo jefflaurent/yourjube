@@ -21,7 +21,7 @@
     </div>
 
     <div class="containerRight">
-        <div class="miscIcon">
+        <div class="miscIcon" (click)="toggleUploadModal()">
             <div>
                 <img src="../../assets/navIcon/film.png">
             </div>
@@ -50,8 +50,75 @@
             </div>
         </div>
 
-        <div *ngIf="user" class="miscIcon" style="width: 12%;">
+        <div *ngIf="user" class="miscIcon modal-container" style="width: 12%;" (click)="toggleModal()">
             <img src="{{ user.photoUrl }}" alt="" style="border-radius: 50%;">
+            <div class="modal hidden">
+                <div class="modal-top">
+                    <div class="inner-left">
+                        <img [src]="user.photoUrl" alt="">
+                    </div>
+                    <div class="inner-right">
+                        <div class="profile-name">
+                            {{ user.name }}
+                        </div>
+                        <div class="profile-email">
+                            {{ user.email }}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-bot">
+                    <div>
+                        <hr>
+                    </div>
+                    <div *ngIf="channel != null">
+                        <a [routerLink]="['/channel', channel.id]">
+                            <div class="choice">
+                                <div class="choice-left">
+                                    <i class="fa fa-user fa-lg"></i>
+                                </div>
+                                <div class="choice-right">
+                                    Your channel
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="choice" (click)="toggleMature()" *ngIf="restrictMode != null">
+                        <div class="choice-left" *ngIf="restrictMode == false">
+                            <i class="fa fa-toggle-off fa-lg"></i>
+                        </div>
+                        <div class="choice-left" *ngIf="restrictMode == true" style="color: blue;">
+                            <i class="fa fa-toggle-on fa-lg"></i>
+                        </div>
+                        <div class="choice-right">
+                            Restrict mode
+                        </div>
+                    </div>
+                    <div class="choice">
+                        <div class="choice-left">
+                            <i class="fa fa-globe fa-lg"></i>
+                        </div>
+                        <div class="choice-right">
+                            Location
+                        </div>
+                    </div>
+                    <div class="choice">
+                        <div class="choice-left">
+                            <i class="fa fa-keyboard-o fa-lg"></i>
+                        </div>
+                        <div class="choice-right">
+                            Keyboard shortcuts
+                        </div>
+                    </div>
+                    <div class="choice">
+                        <div class="choice-left">
+                            <i class="fa fa-sign-out fa-lg"></i>
+                        </div>
+                        <div class="choice-right">
+                            Sign out
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -69,42 +136,215 @@
         </div>
     </div>
     <hr>
-    <div class="item">
-        <div class="item-content-l">
-            <div>
-                <a href="#"><img src="../../assets/navItem/home-run.png" alt="" width="20px" height="20px"></a>
-            </div>
-        </div>
-        <div class="item-content">
-            <a href="#"><p>Home</p></a>
-        </div>
-    </div>
-    <a [routerLink]="['/trending']">
-        <div class="item">
-            <div class="item-content-l">
-                <div>
-                    <img src="../../assets/navItem/fire.png" alt="" width="20px" height="20px">
+
+    <div class="nav-contents">
+        <div>
+            <div class="item">
+                <div class="item-content-l">
+                    <div>
+                        <a href="#"><img src="../../assets/navItem/home-run.png" alt="" width="20px" height="20px"></a>
+                    </div>
+                </div>
+                <div class="item-content">
+                    <a href="#"><p>Home</p></a>
                 </div>
             </div>
-            <div class="item-content">
-                <p>Trending</p>
+            <a [routerLink]="['/trending']">
+                <div class="item">
+                    <div class="item-content-l">
+                        <div>
+                            <img src="../../assets/navItem/fire.png" alt="" width="20px" height="20px">
+                        </div>
+                    </div>
+                    <div class="item-content">
+                        <p>Trending</p>
+                    </div>
+                </div>
+            </a>
+            <div class="item">
+                <div class="item-content-l">
+                    <div>
+                        <a href="#"><img src="../../assets/navItem/youtube.png" alt="" width="20px" height="20px"></a>
+                    </div>
+                </div>
+                <div class="item-content">
+                    <a href="#"><p>Subscriptions</p></a>
+                </div>
             </div>
         </div>
-    </a>
-    <div class="item">
-        <div class="item-content-l">
-            <div>
-                <a href="#"><img src="../../assets/navItem/youtube.png" alt="" width="20px" height="20px"></a>
+        
+        <hr>
+        
+        <div class="playlist-box">
+            <div *ngIf="playlists">
+                <div *ngFor="let playlist of playlists, let i = index">
+                    <app-playlist-header *ngIf="i < playlistLimit" [play]="(playlist)"></app-playlist-header>
+                </div>
+            </div>
+            <div *ngIf="showMore" class="item show-more" (click)="expandPlaylist()">
+                <div class="item-content-l">
+                    <i class="fa fa-caret-down"></i>
+                </div>
+                <div class="item-content">
+                    Show more
+                </div>
+            </div>
+            <div *ngIf="showLess" class="item show-less hidden" (click)="shrinkPlaylist()">
+                <div class="item-content-l">
+                    <i class="fa fa-caret-up"></i>
+                </div>
+                <div class="item-content">
+                    Show less
+                </div>
             </div>
         </div>
-        <div class="item-content">
-            <a href="#"><p>Subscriptions</p></a>
-        </div>
-    </div>
-    <hr>
     
-    <div *ngIf="playlists">
-        <app-playlist-header *ngFor="let playlist of playlists" [play]="(playlist)"></app-playlist-header>
-    </div>
+        <hr>
+    
+        <div>
+            <div class="nav-header">
+                SUBSCRIPTIONS
+            </div>
+        </div>
+    
+        <hr>
+    
+        <div class="categories">
+            <div class="nav-header">
+                BEST OF YOURJUBE
+            </div>
+            <a [routerLink]="['/category', 'music']">
+                <div class="item">
+                    <div class="item-content-l">
+                        <div class="item-img">
+                            <img src="../../assets/trending/music.png" alt="">
+                        </div>
+                    </div>
+                    <div class="item-content">
+                        Music
+                    </div>
+                </div>
+            </a>
+            <a [routerLink]="['/category', 'gaming']">
+                <div class="item">
+                    <div class="item-content-l">
+                        <div class="item-img">
+                            <img src="../../assets/trending/gaming.png" alt="">
+                        </div>
+                    </div>
+                    <div class="item-content">
+                        Gaming
+                    </div>
+                </div>
+            </a>
+            <a [routerLink]="['/category', 'news']">
+                <div class="item">
+                    <div class="item-content-l">
+                        <div class="item-img">
+                            <img src="../../assets/trending/news.png" alt="">
+                        </div>
+                    </div>
+                    <div class="item-content">
+                        News
+                    </div>
+                </div>
+            </a>
+            <a [routerLink]="['/category', 'entertainment']">
+                <div class="item">
+                    <div class="item-content-l">
+                        <div class="item-img">
+                            <img src="../../assets/trending/entertainment.png" alt="">
+                        </div>
+                    </div>
+                    <div class="item-content">
+                        Entertainment
+                    </div>
+                </div>
+            </a>
+            <a [routerLink]="['/category', 'sport']">
+                <div class="item">
+                    <div class="item-content-l">
+                        <div class="item-img">
+                            <img src="../../assets/trending/sport.jpg" alt="">
+                        </div>
+                    </div>
+                    <div class="item-content">
+                        Sport
+                    </div>
+                </div>
+            </a>
+            <a [routerLink]="['/category', 'travel']">
+                <div class="item">
+                    <div class="item-content-l">
+                        <div class="item-img">
+                            <img src="../../assets/trending/plane.png" alt="">
+                        </div>
+                    </div>
+                    <div class="item-content">
+                        Travel
+                    </div>
+                </div>
+            </a>
+        </div>
 
+        <hr>
+
+        <div>
+            <div class="nav-header">
+                MORE FROM YOURJUBE
+            </div>
+            <a [routerLink]="['/premium']">
+                <div class="item">
+                    <div class="item-content-l">
+                        <div>
+                            <img src="../../assets/navItem/youtube.png" alt="" width="20px" height="20px">
+                        </div>
+                    </div>
+                    <div class="item-content">
+                        Go Premium
+                    </div>
+                </div>
+            </a>
+            <a href="https://www.youtube.com/howyoutubeworks/policies/community-guidelines/">
+                <div class="item">
+                    <div class="item-content-l">
+                        <i class="fa fa-users fa-lg"></i>
+                    </div>
+                    <div class="item-content">
+                        Community
+                    </div>
+                </div>
+            </a>
+            <a href="https://www.youtube.com/about/" >
+                <div class="item">
+                    <div class="item-content-l">
+                        <i class="fa fa-question-circle fa-lg"></i>
+                    </div>
+                    <div class="item-content">
+                        About us
+                    </div>
+                </div>
+            </a>
+            <a href="https://www.youtube.com/t/terms">
+                <div class="item">
+                    <div class="item-content-l">
+                        <i class="fa fa-info fa-lg"></i>
+                    </div>
+                    <div class="item-content">
+                        Terms & condition
+                    </div>
+                </div>
+            </a>
+            <a href="https://www.youtube.com/howyoutubeworks/policies/copyright/">
+                <div class="item" style="margin-bottom: 30%;">
+                    <div class="item-content-l">
+                        <i class="fa fa-copyright"></i>
+                    </div>
+                    <div class="item-content">
+                        Copyright
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
 </div>

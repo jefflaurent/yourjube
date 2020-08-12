@@ -31,6 +31,7 @@ export class VideoPageComponent implements OnInit {
     channelName: string,
     channelPhotoURL: string,
     channelEmail: string,
+    time: number,
   }
 
   getPlaylistQuery = gql`
@@ -81,42 +82,52 @@ export class VideoPageComponent implements OnInit {
       this.channelId = result.data.findChannel[0].id
     })
     
-    if(parseInt(this.video.uploadYear) < this.year) {
-      let gap = this.year - parseInt(this.video.uploadYear) 
+    this.processPost()
+  }
+
+  processPost(): void {
+    var date = new Date()
+    var currSecond = date.getTime()
+    var count = 0
+    let gap = currSecond - this.video.time
+
+    if(gap < 2678400000) {
+      if(gap < 604800000) {
+        count = gap / 86400000
+        count = Math.floor(count)
+        if(count == 1)
+          this.post = count + ' day ago'
+        else
+          this.post = count + ' days ago'
+      }
+      else if(gap >= 604800000) {
+        if(gap >= 604800000 && gap < 1209600000)
+          this.post = '1 week ago'
+        else if(gap >= 1209600000 && gap < 1814400000)
+          this.post = '2 weeks ago'
+        else if(gap >= 1814400000 && gap < 2419200000)
+          this.post = '3 weeks ago'
+        else if(gap >= 2419200000)
+          this.post = '4 weeks ago'
+      }
+    }
+    else if(gap < 30758400000) {
+      count = gap / 2678400000
+      count = Math.floor(count)
+
+      if(count == 1)
+        this.post = count + ' month ago'
+      else
+        this.post = count + ' months ago'
+    }
+    else {
+      count = gap / 30758400000
+      count = Math.floor(count)
+      
       if(gap == 1) 
         this.post = gap + ' year ago';
       else
         this.post = gap + ' years ago';
-    }
-    else if(parseInt(this.video.uploadYear) == this.year && parseInt(this.video.uploadMonth) < this.month) {
-      let gap = this.month - parseInt(this.video.uploadMonth)
-      if(gap == 1)
-        this.post = gap + ' month ago';
-      else 
-        this.post = gap + ' months ago';
-    }
-    else if(parseInt(this.video.uploadYear) == this.year && parseInt(this.video.uploadMonth) == this.month && parseInt(this.video.uploadDay) <= this.date) {
-      let gap = this.date - parseInt(this.video.uploadDay)
-      if(gap >= 7)
-      {
-        if(gap >= 7 && gap < 14)
-          this.post = '1 week ago'
-        else if(gap >= 14 && gap < 21)
-          this.post = '2 weeks ago'
-        else if(gap >= 21 && gap < 28)
-          this.post = '3 weeks ago'
-        else if(gap >= 28)
-          this.post = '4 weeks ago'
-      }
-      else 
-      {
-        if(gap == 0)
-          this.post = 'Today';
-        else if(gap == 1)
-          this.post = gap + ' day ago';
-        else
-          this.post = gap + ' days ago';
-      }
     }
   }
 

@@ -2,7 +2,7 @@
     <div class="main">
         <div class="video-container">
             <div *ngFor="let video of videos, let i = index" class="video">
-                <app-video-page *ngIf="i<(videoCount)" [vid]="(video)"></app-video-page>
+                <app-video-page *ngIf="i < (videoCount)" [vid]="(video)"></app-video-page>
             </div>
         </div>
     </div>

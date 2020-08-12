@@ -11,6 +11,9 @@
 {
     width: 65%;
     box-sizing: border-box;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
 }
 
 .right
@@ -67,6 +70,13 @@
 .profile-name
 {
     font-size: 14px;
+    font-weight: 500;
+}
+
+.profile-name a 
+{  
+    text-decoration: none;
+    color: black;
     font-weight: 500;
 }
 
@@ -344,5 +354,8 @@
     cursor: pointer;
 }
 
-
+.footer
+{
+    height: 1px;
+}
 

@@ -1,13 +1,18 @@
 <div class="container">
     <div class="left">
-        <img [src]="video.videoThumbnail" alt="">
+        <a [routerLink]="['/video', video.videoId]">
+            <img [src]="video.videoThumbnail" alt="">
+        </a>
     </div>
     <div class="right">
         <div class="top">
             {{ video.videoTitle }}
         </div>
-        <div class="mid" *ngIf="post">
-            {{ video.channelName }} <span style="margin-left: 1%;"></span> {{ views }} views <span>&#8226;</span> {{ post }}
+        <div class="mid" *ngIf="channel">
+            <a [routerLink]="['/channel', channel.id]">
+                {{ video.channelName }}
+            </a>
+             <span style="margin-left: 1%;"></span> {{ views }} views <span>&#8226;</span> {{ post }}
         </div>
         <div class="bot">
             {{ desc }}

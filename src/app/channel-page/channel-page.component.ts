@@ -20,7 +20,6 @@ export class ChannelPageComponent implements OnInit {
 
     this.userService.getUser(this.user.email).valueChanges.subscribe( result => {
       this.channel = result.data.findChannel[0]
-      console.log(this.channel)
     })
   }
 

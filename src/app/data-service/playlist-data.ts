@@ -146,7 +146,11 @@ export class PlaylistService{
             refetchQueries: [{
                 query: this.fetchAllPlaylistQuery
             }],
-        }).subscribe()
+        }).subscribe( result => {
+          var date
+          date = new Date()
+          this.playlistVideoService.addPlaylistVideo(((result as any).data.createPlaylist.playlistId), video[0], date.getTime(), 1)
+        })
     }
 
     changePlaylistName(id: string, name: string): void {

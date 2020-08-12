@@ -17,10 +17,12 @@
             {{ playlist.playlistName }}
         </div> 
         <div class="updated">
-            Updated today
+            {{ updated }}
         </div>
         <div class="view">
-            VIEW FULL PLAYLIST
+            <a [routerLink]="['/playlist', playlist.playlistId]">
+                VIEW FULL PLAYLIST
+            </a>
         </div>
     </div>
 </div>

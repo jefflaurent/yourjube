@@ -1,15 +1,13 @@
 <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
 
-     <div class="container">
+     <div class="upload-container hidden">
         <div class="top">
             <div id="top-title">
                 {{ titleBox }}
             </div>
-            <div class="close">
-                <a href="#">
-                    <img src="../../assets/upload/close.png" alt="" width="13px" height="13px">
-                </a>
+            <div class="close" (click)="closeModal()">
+                <img src="../../assets/upload/close.png" alt="" width="13px" height="13px">
             </div>
         </div>
 

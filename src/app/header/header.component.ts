@@ -4,6 +4,9 @@ import { GoogleLoginProvider } from 'angularx-social-login';
 import { Apollo } from'apollo-angular';
 import { PlaylistService } from '../data-service/playlist-data';
 import { PlaylistVideoService } from '../data-service/playlist-video-service';
+import { VideoService } from '../data-service/video-service';
+import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
+import { UserService } from '../data-service/user-service';
 import { Playlists } from '../model/playlist'
 import gql from 'graphql-tag';
 
@@ -21,10 +24,17 @@ export class HeaderComponent implements OnInit {
   message: string
   selectedVideo: any
   playlists: Playlists[] = []
+  playlistLimit: number
+  restrictMode: boolean = null
+  uploadModal: boolean
+  showMore: boolean
+  showLess: boolean
 
-  constructor(private authService: SocialAuthService, private apollo: Apollo, private data: PlaylistService, private videoData: PlaylistVideoService) { }
+  constructor(private authService: SocialAuthService, private apollo: Apollo, private data: PlaylistService, private videoData: PlaylistVideoService, private videoService: VideoService, private userService: UserService, private modalInfo: PlaylistModalInfo) { }
   
   ngOnInit(): void {
+    this.playlistLimit = 3
+
     if(localStorage.getItem('users') == null) {
       this.user = null
     }
@@ -32,8 +42,30 @@ export class HeaderComponent implements OnInit {
       this.getUser();
     }
 
+    if(localStorage.getItem('restrict') == null) {
+      localStorage.setItem('restrict', JSON.stringify('false'))
+      this.restrictMode = false
+    }
+    else {
+      if(JSON.parse(localStorage.getItem('restrict')) == 'true')
+        this.restrictMode = true
+      else
+        this.restrictMode = false
+    }
+    
+    this.modalInfo.modalStatus.subscribe( status => {
+      this.uploadModal = status
+    })
+
+    this.userService.getUser(this.user.email).valueChanges.subscribe( result => {
+      this.channel = result.data.findChannel[0]
+    })
+
     this.data.fetchAllPlaylist().valueChanges.subscribe( playlist => {
       this.playlists = playlist.data.allPlaylists
+      if(this.playlists.length > 3)
+        this.showMore = true
+        this.showLess = true
     })
     
     var btnOn = document.querySelector('#toggleOn');
@@ -131,7 +163,6 @@ export class HeaderComponent implements OnInit {
     var nav:any;
     isActive = document.querySelector('.active');
     nav = document.querySelector('.nav');
-    
     nav.classList.add('active');
   }
 
@@ -140,7 +171,49 @@ export class HeaderComponent implements OnInit {
     var nav:any;
     isActive = document.querySelector('.active');
     nav = document.querySelector('.nav');
-
     nav.classList.remove('active');
+  }
+
+  toggleModal(): void {
+    var x = document.querySelector('.modal')
+    x.classList.toggle('hidden')
+  }
+
+  toggleMature(): void {
+    if(this.restrictMode == true) {
+      this.videoService.changeStatus(false)
+      localStorage.setItem('restrict', JSON.stringify('false'))
+    }
+    else {
+      this.videoService.changeStatus(true)
+      localStorage.setItem('restrict', JSON.stringify('true'))
+    }
+  }
+
+  toggleUploadModal(): void {
+    if(this.uploadModal == true) {
+      this.uploadModal = false
+      this.modalInfo.changeModal(false)
+    }
+    else {
+      this.uploadModal = true
+      this.modalInfo.changeModal(true)
+    }
+  }
+
+  expandPlaylist(): void { 
+    var showMore = document.querySelector('.show-more')
+    var showLess = document.querySelector('.show-less')
+    showMore.classList.add('hidden')
+    showLess.classList.remove('hidden')
+    this.playlistLimit = this.playlists.length
+  }
+
+  shrinkPlaylist(): void {
+    var showMore = document.querySelector('.show-more')
+    var showLess = document.querySelector('.show-less')
+    showMore.classList.remove('hidden')
+    showLess.classList.add('hidden')
+    this.playlistLimit = 3
   }
 }

@@ -116,8 +116,9 @@
                 </div>
             </div>
         </div>
-        <div *ngIf="playlistVideos != []">
-            <app-playlist-side *ngFor="let playlist of playlistVideos" [play]="(playlist)"></app-playlist-side>
+        <div *ngFor="let playlist of playlistVideos, let i = index" class="side-container">
+            <app-playlist-side *ngIf="i < videoLimit" [play]="(playlist)"></app-playlist-side>
         </div>
+        <div class="footer" style="height: 1px"></div>
     </div>
 </div>

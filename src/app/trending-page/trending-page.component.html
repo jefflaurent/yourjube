@@ -52,7 +52,7 @@
     <div class="line">
         <hr>
     </div>
-    <div class="bottom">
-        <app-trending-bottom *ngFor="let video of showVideos" [vid]="(video)"></app-trending-bottom>
+    <div class="bottom" *ngFor="let video of showVideos, let i = index">
+        <app-trending-bottom *ngIf="i < 20" [vid]="(video)"></app-trending-bottom>
     </div>
 </div>

@@ -47,6 +47,8 @@ import { CommentService } from './data-service/comment-service';
 import { UserService } from './data-service/user-service';
 import { ChannelVideosComponent } from './channel-videos/channel-videos.component';
 import { ChannelPlaylistsComponent } from './channel-playlists/channel-playlists.component';
+import { PremiumPageComponent } from './premium-page/premium-page.component';
+import { CategoryPageComponent } from './category-page/category-page.component';
 
 @NgModule({
   declarations: [
@@ -73,6 +75,8 @@ import { ChannelPlaylistsComponent } from './channel-playlists/channel-playlists
     ChannelPlaylistComponent,
     ChannelVideosComponent,
     ChannelPlaylistsComponent,
+    PremiumPageComponent,
+    CategoryPageComponent,
   ],
   imports: [
     HttpModule,

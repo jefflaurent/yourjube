@@ -64,5 +64,16 @@
             color: rgba(76, 67, 67, 1);
             font-weight: 500;
         }
+
+        .view a
+        {
+            text-decoration: none;
+            color: rgba(76, 67, 67, 1);
+        }
+
+        .view:hover
+        {
+            cursor: pointer;
+        }
     }
 }

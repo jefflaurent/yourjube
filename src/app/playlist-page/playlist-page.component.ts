@@ -35,21 +35,25 @@ export class PlaylistPageComponent implements OnInit {
   playlistDescription: string
   playlistThumbnail: string
   post: string
-  
   playlistId: any
   d: any
   m: any
   y: any
+  observer:any
+  videoLimit: number
+  
 
   constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private data: PlaylistVideoService, private currData: PlaylistService, private videoService: VideoService) { }
 
   ngOnInit(): void {
 
     this.activatedRoute.paramMap.subscribe(params => {
+      this.videoLimit = 7
       this.playlistVideos = []
       this.playlistId = params.get('id');
       this.channel = JSON.parse(localStorage.getItem('users'))
-
+      this.setObserver()
+      
       this.data.fetchPlaylistVideos(this.channel.email).valueChanges.subscribe( playlistVideo => {
         this.playlistVideosTemp = playlistVideo.data.playlistVideos
         this.filterVideos();
@@ -76,6 +80,26 @@ export class PlaylistPageComponent implements OnInit {
       })
     })
   }
+
+  setObserver(): void {
+    this.observer = new IntersectionObserver( (entry) => {
+      if(entry[0].isIntersecting) {
+        setTimeout( ()=> {
+          var container = document.querySelector('.side-container')
+          for(let i = 0; i < 4; i++) {
+            if(this.videoLimit < this.playlistVideos.length) {
+              var video = document.createElement('app-playlist-side')
+              video.setAttribute('play', 'this.playlistVideos[this.videoLimit]')
+              container.appendChild(video)
+              this.videoLimit++
+            }
+          }
+        }, 1500)
+      }
+    })
+    this.observer.observe(document.querySelector('.footer'))
+  }
+
 
   filterVideos(): void {
     this.playlistVideos = []

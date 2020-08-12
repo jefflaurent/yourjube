@@ -4,10 +4,10 @@
     padding: 0;
 }
 
-.container
+.upload-container
 {
     font-family: 'Roboto';
-    position: absolute;
+    position: fixed;
     right: 0;
     left: 0;
     top: 0;
@@ -23,9 +23,19 @@
     box-shadow: 3px 3px 3px 3px gray;
 }
 
+.upload-container.hidden
+{
+    display: none;
+}
+
 .close
 {
     float: right;
+}
+
+.close:hover
+{
+    cursor: pointer;
 }
 
 .top

@@ -1,0 +1,120 @@
+.container
+{
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+
+    .top-container
+    {
+        background-color:#ffffff8f;
+
+        .top
+        {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding-left: 7%;
+            padding-top: 2%;
+            padding-bottom: 2%;
+    
+            .icon
+            {
+                width: 6%;
+                
+                img
+                {
+                    width: 100%;
+                    border-radius: 50%;
+                }
+            }
+    
+            .name
+            {
+                margin-left: 1.5%;
+                width: 90%;
+                font-size: 1.4em;
+                font-weight: 500;
+            }
+        }
+    }
+
+    .bottom
+    {
+        display: flex;
+        justify-content: flex-start;
+        flex-direction: column;
+        padding-left: 7%;
+        padding-top: 2%;
+        width: 85%;
+
+        .filter
+        {
+            position: relative;
+            display: flex;
+            font-weight: 500;
+            font-size: .9em;
+            width: 100%;
+            justify-content: flex-start;
+            margin-bottom: 2%;
+
+            .sort-modal
+            {
+                position: absolute;
+                top: 150%;
+                background-color: white;
+                width: 13%;
+                padding-top: 1%;
+                padding-bottom: 1%;
+
+                .modal
+                {
+                    display: flex;
+                    justify-content: flex-start;
+                    flex-direction: column;
+
+                    .choice
+                    {
+                        display: flex;
+                        padding-left: 13%;
+                        justify-content: center;
+                        flex-direction: column;
+                        font-weight: 400;
+                        height: 50px;
+                    }
+
+                    .choice:hover
+                    {
+                        cursor: pointer;
+                        background-color: lightgrey;
+                    }
+                }
+            }
+
+            .sort-modal.hidden
+            {
+                display: none;
+            }
+        }
+
+        .filter:hover
+        {
+            cursor: pointer;
+        }
+
+        .allVideos
+        {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+
+            .video-container
+            {
+                padding: .5%;
+                box-sizing: border-box;
+                width: 25%;
+            }
+        }
+
+    }
+
+}

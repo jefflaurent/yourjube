@@ -2,8 +2,9 @@ import { Component, Input, OnInit } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { AngularFireStorage, AngularFireUploadTask } from 'angularfire2/storage';
 import { Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators'
-import { Apollo } from'apollo-angular';
+import { finalize } from 'rxjs/operators';
+import { Apollo } from 'apollo-angular';
+import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
 import gql from 'graphql-tag';
 
 @Component({
@@ -14,8 +15,6 @@ import gql from 'graphql-tag';
 export class UploadMenuComponent implements OnInit {
 
   @Input() header: HeaderComponent;
-  
-  ngOnInit(){}
   
   task: AngularFireUploadTask;
   imgTask: AngularFireUploadTask;
@@ -47,8 +46,27 @@ export class UploadMenuComponent implements OnInit {
   yes: any
   no: any
   user: any
+  modalStatus: any
 
-  constructor(private storage: AngularFireStorage, private apollo: Apollo) { }
+  constructor(private storage: AngularFireStorage, private apollo: Apollo, private modalInfo: PlaylistModalInfo) { }
+
+  ngOnInit(){
+    this.modalInfo.modalStatus.subscribe( status => {
+      this.modalStatus = status
+      if(this.modalStatus == true) {
+        var btn = document.querySelector('.upload-container')
+        btn.classList.remove('hidden')
+      }
+      else {
+        var btn = document.querySelector('.upload-container')
+        btn.classList.add('hidden')
+      }
+    })
+  }
+
+  closeModal(): void {
+    this.modalInfo.changeModal(false)
+  }
 
   uploadYt() : void {
     this.user = JSON.parse(localStorage.getItem('users'))   

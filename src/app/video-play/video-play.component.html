@@ -48,11 +48,15 @@
             <div class="desc-top">
                 <div class="profile">
                     <div class="avatar" *ngIf="currVid">
-                        <img [src]="currVid.channelPhotoURL" alt="" width="40px" height="40px">
+                        <a [routerLink]="['/channel', channel.id]">
+                            <img [src]="currVid.channelPhotoURL" alt="" width="40px" height="40px">
+                        </a>
                     </div>
                     <div class="profile-desc" *ngIf="currVid">
                         <div class="profile-name">
-                            {{ currVid.channelName }}
+                            <a [routerLink]="['/channel', channel.id]">
+                                {{ currVid.channelName }}
+                            </a>
                         </div>
                         <div class="profile-subs" *ngIf="channel != null">
                             {{ channel.data.findChannel[0].subscriber }}  subscribers
@@ -121,7 +125,10 @@
                 </div>
             </div>
         </div>
-        <app-comment *ngFor="let comment of showComments" [com]=(comment)></app-comment>
+        <div *ngFor="let comment of showComments, let i = index" class="comment-container">
+            <app-comment *ngIf="i < commentLimit" [com]=(comment)></app-comment>
+        </div>
+        <div class="footer"></div>
     </div>
     <div class="right">
         <div class="header">
@@ -141,6 +148,8 @@
         <div class="special">
             <hr>
         </div>
-        <app-video-side *ngFor="let video of passVideos" [vid]=(video)></app-video-side>
+        <div *ngFor="let video of passVideos, let i = index" class="side-container">
+            <app-video-side *ngIf="i < videoLimit" [vid]=(video)></app-video-side>
+        </div>
     </div>
 </div>

@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { VideoService } from '../data-service/video-service';
 import { CommentService } from '../data-service/comment-service';
+import { UserService } from '../data-service/user-service';
 import { Comments } from '../model/comment';
 import gql from 'graphql-tag';
 
@@ -51,15 +52,22 @@ export class VideoPlayComponent implements OnInit {
   user: any
   content: string = ""
   declare: any
+  videoLimit: number
+  commentLimit: number
+  observer: any
 
-  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private videoService: VideoService, private commentService: CommentService) { }
+  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private videoService: VideoService, private commentService: CommentService, private userService: UserService) { }
 
   ngOnInit(): void {
     
     this.activatedRoute.paramMap.subscribe(params => {
+      this.commentLimit = 3
+      this.videoLimit = 4
       this.id = params.get('id');
       this.user = JSON.parse(localStorage.getItem('users'))
       this.videoService.watchVideo(this.id)
+
+      this.setObserver()
 
       this.videoService.checkLiked(this.id, this.user.email).valueChanges.subscribe( result => {
         if(result.data.findLike.length > 0) {
@@ -97,10 +105,48 @@ export class VideoPlayComponent implements OnInit {
       })
 
       this.commentService.fetchComments(this.id).valueChanges.subscribe( result => {
+        this.comments = []
         this.comments = result.data.comments
         this.processComments()
       })
     })
+  }
+
+  setObserver(): void {
+    this.observer = new IntersectionObserver( (entry) => {
+      if(entry[0].isIntersecting) {
+        setTimeout( ()=> {
+          this.fetchNewSide()
+          this.fetchNewComments()
+        }, 1500)
+      }
+    })
+
+    this.observer.observe(document.querySelector('.footer'))
+  }
+
+  fetchNewSide(): void {
+    var container = document.querySelector('.side-container')
+    for(let i = 0; i < 5; i++) {
+      if(this.videoLimit < this.passVideos.length) {
+        var video = document.createElement('app-video-side')
+        video.setAttribute('vid', 'this.passVideos[this.videoLimit]')
+        container.appendChild(video)
+        this.videoLimit++
+      }
+    }
+  }
+
+  fetchNewComments(): void {
+    var container = document.querySelector('.comment-container')
+    for(let i = 0; i < 3; i++) {
+      if(this.commentLimit < this.showComments.length) {
+        var comment = document.createElement('app-comment')
+        comment.setAttribute('com', 'this.showComments[this.commentLimit]')
+        container.appendChild(comment)
+        this.commentLimit++
+      }
+    }
   }
 
   expandField() : void {
@@ -250,17 +296,18 @@ export class VideoPlayComponent implements OnInit {
     this.videos.sort(function(a,b) {return a.videoId - b.videoId})
   }
 
+
   processVideos(): void {
     var j = 0;
     for(let i = 0; i < this.videos.length; i++) {
-      if(this.videos[i].videoId > this.id) {
+      if(this.videos[i].videoId > this.id && this.videos[i].category == this.currVid.category) {
         this.passVideos[j] = this.videos[i];
         j++;
       }
     }
 
     for(let i = 0; i < this.videos.length; i++) {
-      if(this.videos[i].videoId < this.id) {
+      if(this.videos[i].videoId < this.id && this.videos[i].category == this.currVid.category) {
         this.passVideos[j] = this.videos[i];
         j++;
       }
@@ -271,6 +318,7 @@ export class VideoPlayComponent implements OnInit {
   }
 
   processComments(): void {
+    this.showComments = []
     let j = 0
     for(let i = 0; i < this.comments.length; i++) {
       if(this.comments[i].replyTo == 0) {

@@ -15,7 +15,6 @@ export class PlaylistModalComponent implements OnInit {
 
   video: Videos
   videoId: number
-  newId: any
   playlistName: string = ''
   visibility: string
   playlists: Playlists[] = []
@@ -23,11 +22,11 @@ export class PlaylistModalComponent implements OnInit {
   status: boolean
   date: any
   channel: any
+  
   constructor(private state: PlaylistModalInfo, private data: PlaylistService, private videoService: VideoService, private playlistVideoService: PlaylistVideoService) { }
 
   ngOnInit(): void {
     this.channel = JSON.parse(localStorage.getItem('users'))
-    // this.data.fetchPlaylist(this.channel.email).valueChanges.subscribe( playlist => this.playlists = playlist.data.playlists)
     this.data.currentVideo.subscribe( videoId => {
       this.videoId = parseInt(videoId.toString())
       this.videoService.findVideo(this.videoId).valueChanges.subscribe( video => {
@@ -53,26 +52,11 @@ export class PlaylistModalComponent implements OnInit {
     var x = (<HTMLSelectElement>document.getElementById('visibilityOption'))
     this.visibility = x.options[x.selectedIndex].value;
     this.data.initiateCreatePlaylist(this.playlistName, this.visibility, this.video)
-
-    setTimeout(() => {
-      this.data.fetchAllPlaylist().valueChanges.subscribe( allPlaylists => {
-        this.allPlaylists = allPlaylists.data.allPlaylists
-        this.getNewId()
-        date = new Date()
-        this.playlistVideoService.addPlaylistVideo(this.newId, this.video[0], date.getTime(), 1)
-      })
-    },2000)
   }
 
   openCreate(): void {
     var x = document.querySelector('.common-container')
     x.classList.remove('hidden')
-  }
-
-  getNewId(): void {
-    this.newId = 0
-    var len = this.allPlaylists.length
-    this.newId = this.allPlaylists[len-1].playlistId
   }
 
   processPlaylist(): void { 

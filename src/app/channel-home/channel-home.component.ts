@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { VideoService } from '../data-service/video-service';
 import { PlaylistService } from '../data-service/playlist-data';
 import { UserService } from '../data-service/user-service';
@@ -22,6 +22,9 @@ export class ChannelHomeComponent implements OnInit {
     isPremium: string
   }
 
+  @Output() moveEvent = new EventEmitter<string>();
+
+  moveTo: string
   allVideos: Videos[] = []
   videos: Videos[] = []
   recentVideos: Videos[] = []
@@ -42,6 +45,11 @@ export class ChannelHomeComponent implements OnInit {
       this.allPlaylists = result.data.allPlaylists
       this.filterPlaylist()
     })
+  }
+
+  moveToVideos(): void {
+    this.moveTo = 'videos'
+    this.moveEvent.emit(this.moveTo)
   }
 
   filterVideos(): void {
@@ -80,9 +88,10 @@ export class ChannelHomeComponent implements OnInit {
       check[i] = -1;
     let count = 0;
     let idx = 0;
+    let x = 0
     while(count < 5)
     {
-      if(this.videos.length <= count)
+      if(this.videos.length <= x)
         break;
       idx = this.randomIndex(this.videos.length)
       if(check[idx] == -1) {
@@ -90,6 +99,7 @@ export class ChannelHomeComponent implements OnInit {
         check[idx]++
         count++
       } 
+      x++
     }
   }
 
@@ -102,10 +112,10 @@ export class ChannelHomeComponent implements OnInit {
     let x = 0;
     while(count < 3)
     {
-      if(this.playlists.length <= count)
+      if(this.playlists.length <= x)
         break;
       idx = this.randomIndex(this.playlists.length)
-      if(check[idx] == -1) {
+      if(check[idx] == -1 && (this.playlists[idx].visibility == 'public' || this.playlists[idx].visibility == 'Public')) {
         this.showPlaylists[count] = this.playlists[idx]
         check[idx]++
         count++

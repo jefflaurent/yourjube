@@ -47,7 +47,7 @@
     </div>
 
     <div class="channel-home" *ngIf="channel">
-        <app-channel-home [chan]="(channel)"></app-channel-home>
+        <app-channel-home [chan]="(channel)" (moveEvent)="moveToVideos()"></app-channel-home>
     </div>
 
     <div class="channel-videos hidden" *ngIf="channel">
