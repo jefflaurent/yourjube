@@ -38,6 +38,10 @@ import { TrendingBottomComponent } from './trending-bottom/trending-bottom.compo
 import { ChannelPageComponent } from './channel-page/channel-page.component';
 import { ChannelHomeComponent } from './channel-home/channel-home.component';
 import { ChannelPlaylistComponent } from './channel-playlist/channel-playlist.component';
+import { ChannelVideosComponent } from './channel-videos/channel-videos.component';
+import { ChannelPlaylistsComponent } from './channel-playlists/channel-playlists.component';
+import { PremiumPageComponent } from './premium-page/premium-page.component';
+import { CategoryPageComponent } from './category-page/category-page.component';
 
 import { PlaylistService } from './data-service/playlist-data';
 import { PlaylistModalInfo } from './data-service/playlist-modal-service';
@@ -45,10 +49,12 @@ import { PlaylistVideoService } from './data-service/playlist-video-service';
 import { VideoService } from './data-service/video-service';
 import { CommentService } from './data-service/comment-service';
 import { UserService } from './data-service/user-service';
-import { ChannelVideosComponent } from './channel-videos/channel-videos.component';
-import { ChannelPlaylistsComponent } from './channel-playlists/channel-playlists.component';
-import { PremiumPageComponent } from './premium-page/premium-page.component';
-import { CategoryPageComponent } from './category-page/category-page.component';
+import { SubscriptionService } from './data-service/subscription-service';
+import { SubscriptionPageComponent } from './subscription-page/subscription-page.component';
+import { SubscriptionChoiceComponent } from './subscription-choice/subscription-choice.component';
+import { SearchPageComponent } from './search-page/search-page.component';
+import { PlaylistSearchComponent } from './playlist-search/playlist-search.component';
+import { ChannelSearchComponent } from './channel-search/channel-search.component';
 
 @NgModule({
   declarations: [
@@ -77,6 +83,11 @@ import { CategoryPageComponent } from './category-page/category-page.component';
     ChannelPlaylistsComponent,
     PremiumPageComponent,
     CategoryPageComponent,
+    SubscriptionPageComponent,
+    SubscriptionChoiceComponent,
+    SearchPageComponent,
+    PlaylistSearchComponent,
+    ChannelSearchComponent,
   ],
   imports: [
     HttpModule,
@@ -112,6 +123,7 @@ import { CategoryPageComponent } from './category-page/category-page.component';
     VideoService,
     CommentService,
     UserService,
+    SubscriptionService,
   ],
   bootstrap: [AppComponent],
 })

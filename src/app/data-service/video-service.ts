@@ -287,4 +287,36 @@ export class VideoService {
         }
       }).subscribe()
     }
+
+    searchVideo(videoTitle: string): any {
+      return this.apollo.watchQuery<any>({ 
+        query: gql`
+          query searchVideo($videoTitle: String!) {
+            searchVideo(videoTitle: $videoTitle) {
+              videoId,
+              videoTitle,
+              videoDesc,
+              videoURL,
+              videoThumbnail,
+              uploadDay,
+              uploadMonth,
+              uploadYear,
+              views,
+              likes,
+              dislikes,
+              visibility,
+              viewer,
+              category,
+              channelName,
+              channelPhotoURL,
+              channelEmail,
+              time,
+            }
+          } 
+        `,
+        variables: {
+          videoTitle: videoTitle
+        }
+      })
+    }
 }

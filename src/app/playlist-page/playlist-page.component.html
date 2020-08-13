@@ -1,6 +1,6 @@
 <div class="container" *ngIf="currPlaylist">
     <div class="left">
-        <div class="inner-container">
+        <div class="inner-container" *ngIf="flag">
             <a [routerLink]="['/video', playlistVideos[0].videoId]">
                 <div class="thumbnail">
                     <img [src]="playlistThumbnail" alt="">
@@ -76,12 +76,28 @@
                 </div>
             </div>
             <hr>
-            <div class="channel block" *ngIf="playlistCreator">
-                <div class="photo">
-                    <img [src]="playlistCreator.photoURL" alt="">
-                </div>  
-                <div class="name">
-                    {{ playlistCreator.name }}
+            <div *ngIf="playlistCreator" class="playlist-creator">
+                <div>
+                    <a [routerLink]="['/channel', playlistCreator.id]">
+                        <div class="channel block">
+                            <div class="photo" style="width: 30%;">
+                                <img [src]="playlistCreator.photoURL" style="width: 100%;">
+                            </div>  
+                            <div class="name">
+                                {{ playlistCreator.name }}
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="sub-container" (click)="addSub()" *ngIf="isSubscribed == false">
+                    <div class="sub-button">
+                        SUBSCRIBE
+                    </div>
+                </div>
+                <div class="sub-container" (click)="removeSub()" *ngIf="isSubscribed == true">
+                    <div class="subbed-button">
+                        SUBSCRIBED
+                    </div>
                 </div>
             </div>
         </div>
@@ -119,6 +135,6 @@
         <div *ngFor="let playlist of playlistVideos, let i = index" class="side-container">
             <app-playlist-side *ngIf="i < videoLimit" [play]="(playlist)"></app-playlist-side>
         </div>
-        <div class="footer" style="height: 1px"></div>
+        <div class="footer" style="height: 3px; margin-top: -1%;"></div>
     </div>
 </div>

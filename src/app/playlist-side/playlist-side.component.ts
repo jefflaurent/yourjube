@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { PlaylistService } from '../data-service/playlist-data';
 import { PlaylistVideoService } from '../data-service/playlist-video-service';
 import { PlaylistVideos } from '../model/playlist-video';
+import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
 import { Playlists } from '../model/playlist';
 
 @Component({
@@ -29,7 +30,7 @@ export class PlaylistSideComponent implements OnInit {
   playlistVideosTemp: PlaylistVideos[] = []
   dummyId: any
 
-  constructor(private playlistService: PlaylistService, private playlistVideoService: PlaylistVideoService) { }
+  constructor(private playlistService: PlaylistService, private playlistVideoService: PlaylistVideoService, private playlistModalInfo: PlaylistModalInfo) { }
 
   ngOnInit(): void {
 
@@ -54,7 +55,6 @@ export class PlaylistSideComponent implements OnInit {
       }
     }
     this.playlistVideos.sort((a,b) => (a.place < b.place) ? -1 : 1)
-    console.log(this.playlistVideos)
   }
 
   toggleModal(): void {
@@ -68,7 +68,10 @@ export class PlaylistSideComponent implements OnInit {
   }
   
   addPlaylist(): void {
-    console.log('dia pencet playlist')
+    // this.toggleModal()
+    // var videoId = new Uint8Array(this.playlistVideo.videoId)
+    // this.playlistService.changeVideo(videoId)
+    // this.playlistModalInfo.changeStatus(true)
   }
 
   removeVideo(): void {

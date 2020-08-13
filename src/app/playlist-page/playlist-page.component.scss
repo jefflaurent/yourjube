@@ -143,6 +143,16 @@
     font-weight: 500;
 }
 
+.channel a
+{
+    text-decoration: none;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    color:black;
+    font-weight: 500;
+}
+
 .photo
 {
     width: 10%;
@@ -330,4 +340,44 @@
 .shufflePlay:hover
 {
     cursor: pointer
+}
+
+.sub-container
+{
+    display: flex;
+    align-items: center;
+}
+
+.sub-container:hover
+{
+    cursor: pointer;
+}
+
+.sub-button
+{
+    color: white;
+    background-color: #D51313;
+    font-weight: 400;
+    font-size: 13px;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.subbed-button
+{
+    color: rgba(76, 67, 67, 1);
+    background-color: lightgrey;
+    font-weight: 400;
+    font-size: 13px;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.playlist-creator
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

@@ -93,6 +93,15 @@ type Playlist {
   visibility: String!
 }
 
+type ChannelSubscription {
+  id: ID!
+  clientEmail: String!
+  channelId: Int!
+  channelName: String!
+  channelEmail: String!
+  channelPhotoURL: String!
+}
+
 type PlaylistVideo {
   id: ID!
   playlistId: Int!
@@ -205,7 +214,16 @@ input newPlaylistVideo {
   place: Int!
 }
 
+input newSubscription {
+  clientEmail: String!
+  channelId: Int!
+  channelName: String!
+  channelEmail: String!
+  channelPhotoURL: String!
+}
+
 type Query {
+  subscriptions: [ChannelSubscription!]!
   channels: [Channel!]!
   videos: [Video!]!
   publicVideos: [Video!]!
@@ -222,6 +240,9 @@ type Query {
   findCommentLike(channelEmail: String!, commentId: Int!): [CommentLike!]!
   findCommentDislike(channelEmail: String!, commentId: Int!): [CommentDislike!]!
   findVideoPlaylist(playlistId: Int!, videoId: Int!): [PlaylistVideo!]!
+  searchVideo(videoTitle: String!): [Video!]!
+  searchChannel(channelName: String!): [Channel!]!
+  searchPlaylist(playlistName: String!): [Playlist!]!
 }
 
 type Mutation {
@@ -260,4 +281,9 @@ type Mutation {
   clearPlaylist(playlistId: Int!): Boolean!
   updateThumbnail(playlistId: Int!, playlistThumbnail: String!): Boolean!
   updatePlaylistPlace(playlistId: Int!, videoId: Int!, place: Int!): Boolean!
+
+  addSubscription(input: newSubscription): ChannelSubscription!
+  removeSubscription(clientEmail: String!, channelEmail: String!): Boolean!
+  increaseSubscriber(id: ID!): Boolean!
+  decreaseSubscriber(id: ID!): Boolean!
 }

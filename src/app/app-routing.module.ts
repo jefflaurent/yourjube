@@ -7,6 +7,8 @@ import { TrendingPageComponent } from './trending-page/trending-page.component';
 import { ChannelPageComponent } from './channel-page/channel-page.component';
 import { PremiumPageComponent } from './premium-page/premium-page.component';
 import { CategoryPageComponent } from './category-page/category-page.component';
+import { SubscriptionPageComponent } from './subscription-page/subscription-page.component';
+import { SearchPageComponent } from './search-page/search-page.component';
 
 const routes: Routes = [
   { path:"", redirectTo:"/main-menu", pathMatch:'full' },
@@ -16,7 +18,9 @@ const routes: Routes = [
   { path:"playlist/:id", component: PlaylistPageComponent },
   { path:"channel/:id", component: ChannelPageComponent },
   { path:"premium", component: PremiumPageComponent },
-  { path:"category/:category", component: CategoryPageComponent }
+  { path:"category/:category", component: CategoryPageComponent },
+  { path:"subscriptions", component: SubscriptionPageComponent },
+  { path:"search/:query", component: SearchPageComponent},
 ];
 
 @NgModule({

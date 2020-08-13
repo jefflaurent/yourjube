@@ -47,31 +47,36 @@
         <div class="desc">
             <div class="desc-top">
                 <div class="profile">
-                    <div class="avatar" *ngIf="currVid">
+                    <div class="avatar" *ngIf="channel">
                         <a [routerLink]="['/channel', channel.id]">
                             <img [src]="currVid.channelPhotoURL" alt="" width="40px" height="40px">
                         </a>
                     </div>
-                    <div class="profile-desc" *ngIf="currVid">
+                    <div class="profile-desc" *ngIf="channel">
                         <div class="profile-name">
                             <a [routerLink]="['/channel', channel.id]">
-                                {{ currVid.channelName }}
+                                {{ channel.name }}
                             </a>
                         </div>
-                        <div class="profile-subs" *ngIf="channel != null">
-                            {{ channel.data.findChannel[0].subscriber }}  subscribers
+                        <div class="profile-subs" *ngIf="channel">
+                            {{ channel.subscriber }}  subscribers
                         </div>
                     </div>
                 </div>
-                <div class="sub-container">
+                <div class="sub-container" (click)="addSub()" *ngIf="isSubscribed == false">
                     <div class="sub-button">
                         SUBSCRIBE
+                    </div>
+                </div>
+                <div class="sub-container" (click)="removeSub()" *ngIf="isSubscribed == true">
+                    <div class="subbed-button">
+                        SUBSCRIBED
                     </div>
                 </div>
             </div>
             <div class="desc-bot limited" *ngIf="currVid">
                 <br>
-                {{ currVid.videoDesc }}
+                {{ description }}
                 <div></div>
             </div>
             <div class="controller">

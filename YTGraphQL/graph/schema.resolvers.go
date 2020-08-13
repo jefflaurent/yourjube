@@ -8,6 +8,7 @@ import (
 	"Go_graphql/graph/model"
 	"context"
 	"errors"
+	"strings"
 )
 
 func (r *mutationResolver) CreateChannel(ctx context.Context, input *model.NewChannel) (*model.Channel, error) {
@@ -735,6 +736,105 @@ func (r *mutationResolver) UpdatePlaylistPlace(ctx context.Context, playlistID i
 	return true, nil
 }
 
+func (r *mutationResolver) AddSubscription(ctx context.Context, input *model.NewSubscription) (*model.ChannelSubscription, error) {
+	channelSubscription := model.ChannelSubscription{
+		ClientEmail:     input.ClientEmail,
+		ChannelID:       input.ChannelID,
+		ChannelName:     input.ChannelName,
+		ChannelEmail:    input.ChannelEmail,
+		ChannelPhotoURL: input.ChannelPhotoURL,
+	}
+
+	_, err := r.DB.Model(&channelSubscription).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &channelSubscription, nil
+}
+
+func (r *mutationResolver) RemoveSubscription(ctx context.Context, clientEmail string, channelEmail string) (bool, error) {
+	var channelSubscription model.ChannelSubscription
+
+	err := r.DB.Model(&channelSubscription).Where("client_email = ? AND channel_email = ?", clientEmail, channelEmail).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	_, deleteErr := r.DB.Model(&channelSubscription).Where("client_email = ? AND channel_email = ?", clientEmail, channelEmail).Delete()
+
+	if deleteErr != nil {
+		return false, deleteErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) IncreaseSubscriber(ctx context.Context, id string) (bool, error) {
+	var channel model.Channel
+	var temp int
+
+	err := r.DB.Model(&channel).Where("id = ?", id).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = channel.Subscriber
+	temp++
+
+	channel.Subscriber = temp
+
+	_, updateErr := r.DB.Model(&channel).Where("id = ?", id).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) DecreaseSubscriber(ctx context.Context, id string) (bool, error) {
+	var channel model.Channel
+	var temp int
+
+	err := r.DB.Model(&channel).Where("id = ?", id).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = channel.Subscriber
+	temp--
+	if temp < 0 {
+		temp = 0
+	}
+
+	channel.Subscriber = temp
+
+	_, updateErr := r.DB.Model(&channel).Where("id = ?", id).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *queryResolver) Subscriptions(ctx context.Context) ([]*model.ChannelSubscription, error) {
+	var subscriptions []*model.ChannelSubscription
+
+	err := r.DB.Model(&subscriptions).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return subscriptions, nil
+}
+
 func (r *queryResolver) Channels(ctx context.Context) ([]*model.Channel, error) {
 	var channels []*model.Channel
 
@@ -926,6 +1026,54 @@ func (r *queryResolver) FindVideoPlaylist(ctx context.Context, playlistID int, v
 	}
 
 	return playlistVideo, nil
+}
+
+func (r *queryResolver) SearchVideo(ctx context.Context, videoTitle string) ([]*model.Video, error) {
+	var videos []*model.Video
+
+	var newTitle = "%" + videoTitle + "%"
+
+	newTitle = strings.ToLower(newTitle)
+
+	err := r.DB.Model(&videos).Where("LOWER(video_title) LIKE ?", newTitle).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return videos, nil
+}
+
+func (r *queryResolver) SearchChannel(ctx context.Context, channelName string) ([]*model.Channel, error) {
+	var channels []*model.Channel
+
+	var newTitle = "%" + channelName + "%"
+
+	newTitle = strings.ToLower(newTitle)
+
+	err := r.DB.Model(&channels).Where("LOWER(name) LIKE ?", newTitle).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return channels, nil
+}
+
+func (r *queryResolver) SearchPlaylist(ctx context.Context, playlistName string) ([]*model.Playlist, error) {
+	var playlists []*model.Playlist
+
+	var newTitle = "%" + playlistName + "%"
+
+	newTitle = strings.ToLower(newTitle)
+
+	err := r.DB.Model(&playlists).Where("LOWER(playlist_name) LIKE ?", newTitle).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return playlists, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

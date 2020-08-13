@@ -1,0 +1,11 @@
+<a [routerLink]="['/channel', subscription.channelId]">
+    <div class="container">
+        <div class="left">
+            <img [src]="subscription.channelPhotoURL" alt="">
+        </div>
+        <div class="right">
+            {{ subscription.channelName }}
+        </div>
+    </div>
+</a>
+

@@ -7,6 +7,10 @@ import { PlaylistVideoService } from '../data-service/playlist-video-service';
 import { PlaylistVideos } from '../model/playlist-video';
 import { PlaylistService } from '../data-service/playlist-data';
 import { VideoService } from '../data-service/video-service';
+import { SubscriptionService } from '../data-service/subscription-service';
+import { Subscriptions } from '../model/subscription';
+import { UserService } from '../data-service/user-service';
+import { Channel } from '../model/channel';
 import gql from 'graphql-tag';
 
 @Component({
@@ -17,7 +21,6 @@ import gql from 'graphql-tag';
 export class PlaylistPageComponent implements OnInit {
 
   channel: any
-  playlistCreator: any
   shuffle: any
 
   allVideos: Videos [] = []
@@ -30,6 +33,13 @@ export class PlaylistPageComponent implements OnInit {
   currPlaylist: Playlists
   playlists: Playlists[] = []
 
+  allSubscriptions: Subscriptions[] = []
+  mySubscription: Subscriptions
+
+  allChannel: Channel[]
+  playlistCreator: Channel
+  loggedInAccount: Channel
+  
   visibility: string 
   playlistName: string
   playlistDescription: string
@@ -39,20 +49,22 @@ export class PlaylistPageComponent implements OnInit {
   d: any
   m: any
   y: any
-  observer:any
+  observer: any
   videoLimit: number
+  isSubscribed: boolean
+  flag: boolean
   
 
-  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private data: PlaylistVideoService, private currData: PlaylistService, private videoService: VideoService) { }
+  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private data: PlaylistVideoService, private currData: PlaylistService, private videoService: VideoService, private userService: UserService, private subscriptionService: SubscriptionService) { }
 
   ngOnInit(): void {
 
     this.activatedRoute.paramMap.subscribe(params => {
+      this.flag = false
       this.videoLimit = 7
       this.playlistVideos = []
       this.playlistId = params.get('id');
       this.channel = JSON.parse(localStorage.getItem('users'))
-      this.setObserver()
       
       this.data.fetchPlaylistVideos(this.channel.email).valueChanges.subscribe( playlistVideo => {
         this.playlistVideosTemp = playlistVideo.data.playlistVideos
@@ -73,9 +85,24 @@ export class PlaylistPageComponent implements OnInit {
             this.visibility = "Public"
           else
             this.visibility = "Private"
+
+          this.userService.getAllChannel().valueChanges.subscribe( result => {
+            this.allChannel = result.data.channels
+            this.loggedInAccount = this.allChannel.find( c => c.email == this.channel.email)
+            this.playlistCreator = this.allChannel.find( c => c.email == this.currPlaylist.channelEmail)
+          
+            this.subscriptionService.fetchAllSubs().valueChanges.subscribe( result => {
+              this.allSubscriptions = result.data.subscriptions
+              this.mySubscription = this.allSubscriptions.find( s => s.clientEmail == this.loggedInAccount.email && s.channelEmail == this.playlistCreator.email)
+              if(this.mySubscription == undefined)
+                this.isSubscribed = false
+              else
+                this.isSubscribed = true
+            })
+          })
           this.processDate()
-          this.fetchCreator()
           this.processVideo()
+          this.setObserver()
         })
       })
     })
@@ -100,6 +127,15 @@ export class PlaylistPageComponent implements OnInit {
     this.observer.observe(document.querySelector('.footer'))
   }
 
+  addSub(): void {
+    this.subscriptionService.registerSubs(this.loggedInAccount.email, this.playlistCreator)
+    this.userService.increaseSubscriber(this.channel.id)
+  }
+
+  removeSub(): void {
+    this.subscriptionService.removeSubs(this.loggedInAccount.email, this.playlistCreator.email)
+    this.userService.decreaseSubscriber(this.channel.id)
+  }
 
   filterVideos(): void {
     this.playlistVideos = []
@@ -107,11 +143,12 @@ export class PlaylistPageComponent implements OnInit {
     for(let i = 0; i < this.playlistVideosTemp.length; i++){
       if(this.playlistVideosTemp[i].playlistId == this.playlistId) {
         this.playlistVideos[j] = this.playlistVideosTemp[i];
+        this.playlistVideos.sort((a,b) => (a.place < b.place) ? -1 : 1)
         j++;
       }
     }
+    this.flag = true
     this.shufflePlay()
-    this.playlistVideos.sort((a,b) => (a.place < b.place) ? -1 : 1)
   }
 
   hidePencil(): void {
@@ -220,29 +257,6 @@ export class PlaylistPageComponent implements OnInit {
         this.m = 'Dec'
       this.post = 'Last updated on ' + this.m + ' ' + this.currPlaylist.lastDate + ', ' + this.currPlaylist.lastYear
     }
-  }
-
-  fetchCreator(): void {
-    this.apollo.watchQuery<any>({
-      query: gql`
-        query fetchCreator($email: String!) {
-          findChannel(email: $email) {
-            id,
-            name,
-            email,
-            photoURL,
-            bannerURL,
-            subscriber,
-            isPremium,
-          }
-        }
-      `,
-      variables: {
-        email: this.currPlaylist.channelEmail
-      }
-    }).valueChanges.subscribe( result => {
-       this.playlistCreator = result.data.findChannel[0]
-    })
   }
 
   processVideo(): void {

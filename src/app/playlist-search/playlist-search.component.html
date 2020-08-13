@@ -1,0 +1,30 @@
+<div class="container">
+    <div class="left">
+        <!-- <a [routerLink]="['/video', video.videoId]"> -->
+        <img [src]="playlist.playlistThumbnail" alt="">
+        <!-- </a> -->
+        <div class="overlap">
+            <div class="inner-container">
+                <div class="count" style="margin-bottom: 3%;">
+                    {{ playlist.videoCount }}
+                </div>
+                <div class="icon">
+                    <i class="fa fa-align-justify"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="right">
+        <div class="top">
+            {{ playlist.playlistName }}
+        </div>
+        <div class="mid">
+            {{ playlist.playlistDescription }}
+        </div>
+        <div class="bot">
+            <a [routerLink]="['/playlist', playlist.playlistId]">
+                VIEW FULL PLAYLIST
+            </a>
+        </div>
+    </div>
+</div>

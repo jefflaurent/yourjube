@@ -1,0 +1,34 @@
+<div class="container">
+    <div class="left">
+        <div class="profile-pic">
+            <a [routerLink]="['/channel', channel.id]">
+                <img [src]="channel.photoURL" alt="">
+            </a>
+        </div>
+        <div class="profile">
+            <div class="name">
+                <a [routerLink]="['/channel', channel.id]">
+                    {{ channel.name }}
+                </a>
+            </div>
+            <div class="subs">
+                {{ channel.subscriber }} subcribers
+            </div>
+        </div>
+    </div>
+    <div class="right">
+        <div class="sub-container" (click)="addSub()" *ngIf="isSubscribed == false">
+            <div class="sub-button">
+                SUBSCRIBE
+            </div>
+        </div>
+        <div class="sub-container" (click)="removeSub()" *ngIf="isSubscribed == true">
+            <div class="subbed-button">
+                SUBSCRIBED
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <hr style="border: 1px solid lightgrey; border-top: none">
+</div>

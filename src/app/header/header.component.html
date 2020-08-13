@@ -13,9 +13,11 @@
 
     <div class="middle">
         <div class="search">
-            <input type="text" id="searchBar" placeholder="Search">
+            <input type="text" id="searchBar" placeholder="Search" [value]="(query)" (input)="query = $event.target.value">
             <button type="submit" id="searchIcon">
+                <a [routerLink]="['/search', query]">
                 <img src="../../assets/navIcon/search.png" height="15px">
+                </a>
             </button>
         </div>
     </div>
@@ -161,16 +163,18 @@
                     </div>
                 </div>
             </a>
-            <div class="item">
-                <div class="item-content-l">
-                    <div>
-                        <a href="#"><img src="../../assets/navItem/youtube.png" alt="" width="20px" height="20px"></a>
+            <a [routerLink]="['/subscriptions']">
+                <div class="item">
+                    <div class="item-content-l">
+                        <div>
+                            <img src="../../assets/navItem/youtube.png" alt="" width="20px" height="20px">
+                        </div>
+                    </div>
+                    <div class="item-content">
+                        <p>Subscriptions</p>
                     </div>
                 </div>
-                <div class="item-content">
-                    <a href="#"><p>Subscriptions</p></a>
-                </div>
-            </div>
+            </a>
         </div>
         
         <hr>
@@ -201,9 +205,12 @@
     
         <hr>
     
-        <div>
+        <div *ngIf="mySubscription">
             <div class="nav-header">
                 SUBSCRIPTIONS
+            </div>
+            <div *ngFor="let subscription of mySubscription, let i = index">
+                <app-subscription-choice [subs]="(subscription)"></app-subscription-choice>
             </div>
         </div>
     

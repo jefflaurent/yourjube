@@ -97,10 +97,26 @@
     align-items: center;
 }
 
+.sub-container:hover
+{
+    cursor: pointer;
+}
+
 .sub-button
 {
     color: white;
     background-color: #D51313;
+    font-weight: 400;
+    font-size: 13px;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.subbed-button
+{
+    color: rgba(76, 67, 67, 1);
+    background-color: lightgrey;
     font-weight: 400;
     font-size: 13px;
     padding: 10px;
@@ -155,15 +171,6 @@
     margin-right: 10px;
 }
 
-.desc-bot.limited
-{
-    font-size: 14px;
-    margin-left: 55px;
-    height: 42px;
-    overflow: hidden;
-    width: 80%;
-}
-
 .desc-bot
 {
     font-size: 14px;
@@ -178,6 +185,7 @@
 
 .controller-txt
 {
+    margin-top: 1%;
     font-family: Arial, Helvetica, sans-serif;
     color: rgba(76, 67, 67, 1); 
     margin-left: 55px;

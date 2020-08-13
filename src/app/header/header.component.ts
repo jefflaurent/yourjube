@@ -7,7 +7,9 @@ import { PlaylistVideoService } from '../data-service/playlist-video-service';
 import { VideoService } from '../data-service/video-service';
 import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
 import { UserService } from '../data-service/user-service';
+import { SubscriptionService } from '../data-service/subscription-service';
 import { Playlists } from '../model/playlist'
+import { Subscriptions } from '../model/subscription';
 import gql from 'graphql-tag';
 
 @Component({
@@ -22,17 +24,21 @@ export class HeaderComponent implements OnInit {
   user: SocialUser
   channel: any = null
   message: string
+  query: string
   selectedVideo: any
   playlists: Playlists[] = []
+  allSubscriptions: Subscriptions[] = []
+  mySubscription: Subscriptions[] = []
   playlistLimit: number
   restrictMode: boolean = null
   uploadModal: boolean
   showMore: boolean
   showLess: boolean
 
-  constructor(private authService: SocialAuthService, private apollo: Apollo, private data: PlaylistService, private videoData: PlaylistVideoService, private videoService: VideoService, private userService: UserService, private modalInfo: PlaylistModalInfo) { }
+  constructor(private authService: SocialAuthService, private apollo: Apollo, private data: PlaylistService, private videoData: PlaylistVideoService, private videoService: VideoService, private userService: UserService, private modalInfo: PlaylistModalInfo, private subscriptionService: SubscriptionService) { }
   
   ngOnInit(): void {
+    this.query = ""
     this.playlistLimit = 3
 
     if(localStorage.getItem('users') == null) {
@@ -59,6 +65,11 @@ export class HeaderComponent implements OnInit {
 
     this.userService.getUser(this.user.email).valueChanges.subscribe( result => {
       this.channel = result.data.findChannel[0]
+
+      this.subscriptionService.fetchAllSubs().valueChanges.subscribe( result => {
+        this.allSubscriptions = result.data.subscriptions
+        this.filterSubs()
+      })
     })
 
     this.data.fetchAllPlaylist().valueChanges.subscribe( playlist => {
@@ -83,6 +94,16 @@ export class HeaderComponent implements OnInit {
       this.addStorage(user)
       this.checkExist();
     });
+  }
+
+  filterSubs(): void {
+    let j = 0;
+    for(let i = 0; i < this.allSubscriptions.length; i++) {
+      if(this.allSubscriptions[i].clientEmail == this.channel.email) {
+        this.mySubscription[j] = this.allSubscriptions[i]
+        j++
+      }
+    }
   }
 
   checkExist(): void {
@@ -132,7 +153,9 @@ export class HeaderComponent implements OnInit {
         subscriber: 0,
         isPremium: 'false',
       }
-    }).subscribe()
+    }).subscribe( result => {
+      console.log(result)
+    })
   }
 
   signOut() : void {

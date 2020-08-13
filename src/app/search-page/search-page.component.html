@@ -1,0 +1,58 @@
+<div class="container">
+    <div class="top">
+        <div class="common" (click)="showFilters()">
+            <div style="margin-right: 1%;">
+                <i class="fa fa-filter"></i>
+            </div>
+            <div>
+                FILTER
+            </div>
+        </div>
+        <div class="filter-choice hidden">
+            <div class="filter-container">
+                <div class="header">
+                    UPLOAD DATE
+                </div>
+                <hr>
+                <div class="choices" (click)="filterThisWeek()">
+                    This week
+                </div>
+                <div class="choices" (click)="filterThisMonth()">
+                    This month
+                </div>
+                <div class="choices" (click)="filterThisYear()">
+                    This year
+                </div>
+            </div>
+            <div class="filter-container">
+                <div class="header">
+                    TYPE
+                </div>
+                <hr>
+                <div class="choices" (click)="switchToVideos()">
+                    Video
+                </div>
+                <div class="choices" (click)="switchToPlaylist()">
+                    Playlist
+                </div>
+                <div class="choices" (click)="switchToChannels()">
+                    Channel
+                </div>
+            </div>
+        </div>
+        <div>
+            <hr>
+        </div>
+    </div>
+    <div class="bot">
+        <div *ngIf="showVideos">
+            <app-trending-bottom *ngFor="let video of videos" [vid]="(video)"></app-trending-bottom>
+        </div> 
+        <div *ngIf="showPlaylists">
+            <app-playlist-search *ngFor="let playlist of playlists" [play]="(playlist)"></app-playlist-search>
+        </div>
+        <div *ngIf="showChannels">
+            <app-channel-search *ngFor="let channel of channels" [chan]="channel"></app-channel-search>
+        </div>
+    </div>
+</div>

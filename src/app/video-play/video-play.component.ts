@@ -5,7 +5,10 @@ import { Component, OnInit } from '@angular/core';
 import { VideoService } from '../data-service/video-service';
 import { CommentService } from '../data-service/comment-service';
 import { UserService } from '../data-service/user-service';
+import { SubscriptionService } from '../data-service/subscription-service';
+import { Subscriptions } from '../model/subscription';
 import { Comments } from '../model/comment';
+import { Channel } from '../model/channel';
 import gql from 'graphql-tag';
 
 @Component({
@@ -15,48 +18,39 @@ import gql from 'graphql-tag';
 })
 export class VideoPlayComponent implements OnInit {
 
-  getCommentQuery = gql`
-  query getComments($videoId: Int!){
-      comments(videoId: $videoId) {
-        commentId,
-        videoId,
-        channelId,
-        channelName,
-        channelEmail,
-        channelPhotoURL,
-        content,
-        replyTo,
-        likes,
-        dislikes,
-        day,
-        month,
-        year,
-        replies
-      }
-    }
-  `;
-
   firstVideo: Videos[] = [];
   videos: Videos[] = [];
   passVideos: Videos[] = [];
+  currVid: Videos
+
   showComments: Comments[] = [];
   comments: Comments[] = [];
-  currVid: Videos
+  
+  allChannels: Channel[] = []
+  loggedInChannel: Channel
+  channel: Channel
+  
+  subscriptions: Subscriptions[] = []
+  mySubscription: Subscriptions
+
   id: any
   month: any
   post: string
-  channel: any = null
+
+  isSubscribed: boolean
   isLimited: boolean = true
   isLiked: boolean
   isDisliked: boolean
+
   user: any
   content: string = ""
   declare: any
   videoLimit: number
   commentLimit: number
   observer: any
+  description: any
 
-  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private videoService: VideoService, private commentService: CommentService, private userService: UserService) { }
+  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private videoService: VideoService, private commentService: CommentService, private userService: UserService, private subscriptionService: SubscriptionService) { }
 
   ngOnInit(): void {
     
@@ -98,10 +92,30 @@ export class VideoPlayComponent implements OnInit {
       this.videoService.fetchAllVideos().valueChanges.subscribe( result =>  {
         this.videos = result.data.videos
         this.currVid = this.videos.find( v => v.videoId == this.id)
-        this.convertDate();
-        this.fetchUser();
-        this.sortVideos();
-        this.processVideos();
+        
+        setTimeout( () => {
+          this.userService.getAllChannel().valueChanges.subscribe(result => {
+            this.allChannels = result.data.channels
+            this.channel = this.allChannels.find( c => c.email = this.currVid.channelEmail)
+            this.loggedInChannel = this.allChannels.find( c => c.email = this.user.email)
+          })
+        }, 500)
+
+        setTimeout( ()=> {
+          this.subscriptionService.fetchAllSubs().valueChanges.subscribe( sub => {
+            this.subscriptions = sub.data.subscriptions
+            this.mySubscription = this.subscriptions.find( s => s.channelEmail == this.currVid.channelEmail && s.clientEmail == this.loggedInChannel.email)
+            if(this.mySubscription == null)
+              this.isSubscribed = false
+            else
+              this.isSubscribed = true
+          })
+
+          this.shortenDesc()
+          this.convertDate()
+          this.sortVideos()
+          this.processVideos()
+        }, 500)
       })
 
       this.commentService.fetchComments(this.id).valueChanges.subscribe( result => {
@@ -110,6 +124,20 @@ export class VideoPlayComponent implements OnInit {
         this.processComments()
       })
     })
+  }
+
+  shortenDesc(): void {
+    this.description = ""
+    if(this.currVid.videoDesc.length > 90) {
+      for(let i = 0; i < 90; i ++) {
+        this.description += this.currVid.videoDesc.charAt(i)
+      }
+    }
+  }
+
+  returnDesc(): void {
+    this.description = ""
+    this.description = this.currVid.videoDesc
   }
 
   setObserver(): void {
@@ -150,25 +178,22 @@ export class VideoPlayComponent implements OnInit {
   }
 
   expandField() : void {
-    var field = document.querySelector('.desc-bot')
+    this.returnDesc()
     var btnShrink = document.querySelector('#shrinkBtn')
     var btnExpand = document.querySelector('#expandBtn')
 
     btnShrink.classList.remove('hidden')
     btnExpand.classList.add('hidden')
-    field.classList.remove('limited')
     this.isLimited = false
   }
 
   shrinkField() : void {
-    var field = document.querySelector('.desc-bot')
+    this.shortenDesc()
     var btnShrink = document.querySelector('#shrinkBtn')
     var btnExpand = document.querySelector('#expandBtn')
-
+    
     btnShrink.classList.add('hidden')
     btnExpand.classList.remove('hidden')
-
-    field.classList.add('limited')
     this.isLimited = true
   }
 
@@ -208,59 +233,48 @@ export class VideoPlayComponent implements OnInit {
   }
 
   addComment(): void {
-    this.commentService.addComment(this.id, this.channel.data.findChannel[0], this.content, 0)
+    this.commentService.addComment(this.id, this.loggedInChannel, this.content, 0)
     this.content = " "
   }
 
   like(): void {
-    this.videoService.addLike(this.channel.data.findChannel[0], this.currVid)
+    this.videoService.addLike(this.loggedInChannel, this.currVid)
     this.videoService.increaseLike(this.currVid.videoId)
     this.isLiked = true
     this.paintBlue('.like')
   }
 
   unlike(): void {
-    this.videoService.removeLike(this.channel.data.findChannel[0], this.id)
+    this.videoService.removeLike(this.loggedInChannel, this.id)
     this.videoService.decreaseLike(this.id)
     this.isLiked = false
     this.paintGrey('.like')
   }
 
   dislike(): void {
-    this.videoService.addDislike(this.channel.data.findChannel[0], this.currVid)
+    this.videoService.addDislike(this.loggedInChannel, this.currVid)
     this.videoService.increaseDislike(this.id)
     this.isDisliked = true
     this.paintBlue('.dislike')
   }
 
   undislike(): void {
-    this.videoService.removeDislike(this.channel.data.findChannel[0], this.id)
+    this.videoService.removeDislike(this.loggedInChannel, this.id)
     this.videoService.decreaseDislike(this.id)
     this.isDisliked = false
     this.paintGrey('.dislike')
   }
 
-  fetchUser(): void {
-    this.apollo.query<any>({
-      query: gql`
-        query getUser($email: String!) {
-          findChannel(email: $email) {
-            id,
-            name,
-            email,
-            photoURL,
-            bannerURL,
-            subscriber,
-            isPremium
-          }
-        }
-      `,
-      variables: {
-        email: this.currVid.channelEmail
-      },
-    }).subscribe( channel => {
-        this.channel = channel;
-    })
+  addSub(): void {
+    this.subscriptionService.registerSubs(this.loggedInChannel.email, this.channel)
+    console.log(this.channel.id)
+    this.userService.increaseSubscriber(this.channel.id)
+  }
+
+  removeSub(): void {
+    this.subscriptionService.removeSubs(this.loggedInChannel.email, this.channel.email)
+    console.log(this.channel.id)
+    this.userService.decreaseSubscriber(this.channel.id)
   }
 
   convertDate(): void {
@@ -295,7 +309,6 @@ export class VideoPlayComponent implements OnInit {
   sortVideos(): void {
     this.videos.sort(function(a,b) {return a.videoId - b.videoId})
   }
-
 
   processVideos(): void {
     var j = 0;

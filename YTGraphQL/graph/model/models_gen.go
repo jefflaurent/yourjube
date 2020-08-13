@@ -12,6 +12,15 @@ type Channel struct {
 	IsPremium  string `json:"isPremium"`
 }
 
+type ChannelSubscription struct {
+	ID              string `json:"id"`
+	ClientEmail     string `json:"clientEmail"`
+	ChannelID       int    `json:"channelId"`
+	ChannelName     string `json:"channelName"`
+	ChannelEmail    string `json:"channelEmail"`
+	ChannelPhotoURL string `json:"channelPhotoURL"`
+}
+
 type Comment struct {
 	CommentID       string `json:"commentId"`
 	VideoID         int    `json:"videoId"`
@@ -187,6 +196,14 @@ type NewPlaylistVideo struct {
 	ChannelEmail   string `json:"channelEmail"`
 	Time           int    `json:"time"`
 	Place          int    `json:"place"`
+}
+
+type NewSubscription struct {
+	ClientEmail     string `json:"clientEmail"`
+	ChannelID       int    `json:"channelId"`
+	ChannelName     string `json:"channelName"`
+	ChannelEmail    string `json:"channelEmail"`
+	ChannelPhotoURL string `json:"channelPhotoURL"`
 }
 
 type NewVideo struct {

@@ -1,0 +1,41 @@
+.container
+{
+    padding-left: 7%;
+    width: 85%;
+
+    hr
+    {
+        border: 1px solid lightgrey;
+        border-bottom: none;
+    }
+
+    .common-container
+    {
+        display: flex;
+        justify-content: flex-start;
+        flex-direction: column;
+
+        .header
+        {
+            padding-top: 3%;
+            padding-bottom: 3%;
+            font-weight: 500;
+            font-size: 1em;
+        }
+
+        .videos
+        {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            padding-bottom: 3%;
+
+            .video-container
+            {
+                width: 20%;
+                padding: .2%;
+                box-sizing: border-box;
+            }
+        }
+    }
+}

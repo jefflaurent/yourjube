@@ -276,4 +276,29 @@ export class PlaylistService{
         }]
       }).subscribe()
     }
+
+    searchPlaylist(playlistName: string): any {
+      return this.apollo.watchQuery<any>({
+        query: gql`
+          query searchPlaylist($playlistName: String!) {
+            searchPlaylist(playlistName: $playlistName) {
+              playlistId,
+              playlistName,
+              playlistThumbnail,
+              playlistDescription,
+              channelEmail,
+              lastDate,
+              lastMonth,
+              lastYear,
+              videoCount,
+              views,
+              visibility
+            }
+          }
+        `,
+        variables: {
+          playlistName: playlistName
+        }
+      })
+    }
 }

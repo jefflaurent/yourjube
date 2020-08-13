@@ -1,0 +1,94 @@
+.container
+{
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 2%;
+    margin-bottom: 2%;
+
+    .left
+    {
+        width: 50%;
+        display: flex;
+
+        .profile-pic
+        {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+
+            img
+            {
+                width: 100%;
+                border-radius: 50%;
+            }
+        }
+
+        .profile
+        {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            color: rgba(76, 67, 67, 1);
+
+            .name
+            {
+                font-size: 1.2em;
+                font-weight: 500;
+            }
+
+            .name a 
+            {
+                text-decoration: none;
+                color: black;
+            }
+
+            .subs
+            {
+                font-size: .9em;
+            }
+        }
+    }
+
+    .right
+    {
+        width: 50%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+
+        .sub-container
+        {
+            display: flex;
+            align-items: center;
+        }
+
+        .sub-container:hover
+        {
+            cursor: pointer;
+        }
+
+        .sub-button
+        {
+            color: white;
+            background-color: #D51313;
+            font-weight: 400;
+            font-size: 13px;
+            padding: 10px;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        .subbed-button
+        {
+            color: rgba(76, 67, 67, 1);
+            background-color: lightgrey;
+            font-weight: 400;
+            font-size: 13px;
+            padding: 10px;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    }
+}
+

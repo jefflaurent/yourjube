@@ -1,0 +1,78 @@
+.container
+{
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    padding-top: 3%;
+    padding-left: 7%;
+    width: 65%;
+
+    .top
+    {
+        display: flex;
+        justify-content: flex-start;
+        flex-direction: column;
+        position: relative;
+
+        .common
+        {
+            display: flex;
+            color: black;
+            font-weight: 500;
+            justify-content: flex-start;
+            margin-bottom: 2%; 
+        }
+
+        .common
+        {
+            cursor: pointer;
+        }
+
+        .filter-choice
+        {
+            display: flex;
+            justify-content: flex-start;
+            margin-top: 2%;
+            
+            .filter-container
+            {
+                margin-right: 3%;
+
+                .header
+                {
+                    color: black;
+                    font-weight: 500;
+                    font-size: .9em;
+                }
+
+                .choices
+                {
+                    height: 30px;
+                    font-size: .9em;
+                    color: rgba(76, 67, 67, 1);
+                }
+
+                .choices:hover
+                {
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .filter-choice.hidden
+        {
+            display: none;
+        }
+    }
+
+    hr
+    {
+        border: 1px solid lightgrey;
+        border-top: none;
+    }
+
+    .bot
+    {
+        margin-top: 3%;
+    }
+}
