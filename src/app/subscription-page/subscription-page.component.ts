@@ -31,17 +31,18 @@ export class SubscriptionPageComponent implements OnInit {
     this.userService.getAllChannel().valueChanges.subscribe( result => {
       this.allChannel = result.data.channels
       this.loggedInChannel = this.allChannel.find( c => c.email == this.user.email)
-    })
-
-    this.subscriptionService.fetchAllSubs().valueChanges.subscribe( result => {
-      this.allSubscriptions = result.data.subscriptions
-      this.filterSubs()
-
-      this.videoService.fetchAllVideos().valueChanges.subscribe( result => {
-        this.allVideos = result.data.videos
-        this.filterToday()
-        this.filterWeek()
-        this.filterMonth()
+    
+      this.subscriptionService.fetchAllSubs().valueChanges.subscribe( result => {
+        this.allSubscriptions = result.data.subscriptions
+        this.filterSubs()
+  
+        this.videoService.fetchAllVideos().valueChanges.subscribe( result => {
+          this.allVideos = result.data.videos
+          console.log(this.allVideos)
+          this.filterToday()
+          this.filterWeek()
+          this.filterMonth()
+        })
       })
     })
   }

@@ -198,7 +198,7 @@ export class HeaderComponent implements OnInit {
   }
 
   toggleModal(): void {
-    var x = document.querySelector('.modal')
+    var x = document.querySelector('.profile-modal')
     x.classList.toggle('hidden')
   }
 
