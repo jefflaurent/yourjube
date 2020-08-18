@@ -58,7 +58,7 @@ export class ChannelHomeComponent implements OnInit {
       if(this.allVideos[i].channelEmail == this.channel.email) {
         this.videos[j] = this.allVideos[i];
         j++;
-        this.videos.sort((a,b) => (a.time < b.time) ? -1 : 1)
+        this.videos.sort((a,b) => (a.time > b.time) ? -1 : 1)
       }
     }
     this.getRandomVideos()

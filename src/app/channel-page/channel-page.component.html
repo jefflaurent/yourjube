@@ -41,8 +41,11 @@
         <div class="tab-choice community">
             COMMUNITY
         </div>
-        <div class="tab-choice about">
+        <div class="tab-choice about" (click)="moveToAbout()">
             ABOUT
+        </div>
+        <div class="tab-choice settings" (click)="moveToSettings()">
+            SETTINGS
         </div>
     </div>
 
@@ -56,5 +59,13 @@
 
     <div class="channel-playlist hidden" *ngIf="channel">
         <app-channel-playlists [chan]="(channel)"></app-channel-playlists>
+    </div>
+
+    <div class="channel-about hidden" *ngIf="channel">
+        <app-channel-about></app-channel-about>
+    </div>
+
+    <div class="channel-settings hidden" *ngIf="channel">
+        <app-channel-settings [chan]="(channel)"></app-channel-settings>
     </div>
 </div>

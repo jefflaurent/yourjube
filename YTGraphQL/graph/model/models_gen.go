@@ -3,13 +3,22 @@
 package model
 
 type Channel struct {
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	Email      string `json:"email"`
-	PhotoURL   string `json:"photoURL"`
-	BannerURL  string `json:"bannerURL"`
-	Subscriber int    `json:"subscriber"`
-	IsPremium  string `json:"isPremium"`
+	ID                 string `json:"id"`
+	Name               string `json:"name"`
+	Email              string `json:"email"`
+	PhotoURL           string `json:"photoURL"`
+	BannerURL          string `json:"bannerURL"`
+	Subscriber         int    `json:"subscriber"`
+	IsPremium          string `json:"isPremium"`
+	JoinDate           int    `json:"joinDate"`
+	JoinMonth          int    `json:"joinMonth"`
+	JoinYear           int    `json:"joinYear"`
+	ChannelDescription string `json:"channelDescription"`
+	IsMature           string `json:"isMature"`
+	Twitter            string `json:"twitter"`
+	Facebook           string `json:"facebook"`
+	Instagram          string `json:"instagram"`
+	ValidPremium       int    `json:"validPremium"`
 }
 
 type ChannelSubscription struct {
@@ -120,12 +129,21 @@ type Video struct {
 }
 
 type NewChannel struct {
-	Name       string `json:"name"`
-	Email      string `json:"email"`
-	PhotoURL   string `json:"photoURL"`
-	BannerURL  string `json:"bannerURL"`
-	Subscriber int    `json:"subscriber"`
-	IsPremium  string `json:"isPremium"`
+	Name               string `json:"name"`
+	Email              string `json:"email"`
+	PhotoURL           string `json:"photoURL"`
+	BannerURL          string `json:"bannerURL"`
+	Subscriber         int    `json:"subscriber"`
+	IsPremium          string `json:"isPremium"`
+	JoinDate           int    `json:"joinDate"`
+	JoinMonth          int    `json:"joinMonth"`
+	JoinYear           int    `json:"joinYear"`
+	ChannelDescription string `json:"channelDescription"`
+	IsMature           string `json:"isMature"`
+	Twitter            string `json:"twitter"`
+	Facebook           string `json:"facebook"`
+	Instagram          string `json:"instagram"`
+	ValidPremium       int    `json:"validPremium"`
 }
 
 type NewComment struct {

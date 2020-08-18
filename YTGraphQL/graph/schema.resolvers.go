@@ -13,21 +13,190 @@ import (
 
 func (r *mutationResolver) CreateChannel(ctx context.Context, input *model.NewChannel) (*model.Channel, error) {
 	channel := model.Channel{
-		Name:       input.Name,
-		Email:      input.Email,
-		PhotoURL:   input.PhotoURL,
-		BannerURL:  input.BannerURL,
-		Subscriber: input.Subscriber,
-		IsPremium:  input.IsPremium,
+		Name:               input.Name,
+		Email:              input.Email,
+		PhotoURL:           input.PhotoURL,
+		BannerURL:          input.BannerURL,
+		Subscriber:         input.Subscriber,
+		IsPremium:          input.IsPremium,
+		JoinDate:           input.JoinDate,
+		JoinMonth:          input.JoinMonth,
+		JoinYear:           input.JoinYear,
+		ChannelDescription: input.ChannelDescription,
+		IsMature:           input.IsMature,
+		Twitter:            input.Twitter,
+		Facebook:           input.Facebook,
+		Instagram:          input.Instagram,
+		ValidPremium:       input.ValidPremium,
 	}
 
 	_, err := r.DB.Model(&channel).Insert()
 
 	if err != nil {
-		return nil, errors.New("Something went wrong")
+		return nil, err
 	}
 
 	return &channel, nil
+}
+
+func (r *mutationResolver) ChangeDescription(ctx context.Context, id string, channelDescription string) (bool, error) {
+	var channel model.Channel
+
+	err := r.DB.Model(&channel).Where("id = ?", id).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	channel.ChannelDescription = channelDescription
+
+	_, updateErr := r.DB.Model(&channel).Where("id = ?", id).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) ChangeTwitter(ctx context.Context, id string, twitter string) (bool, error) {
+	var channel model.Channel
+
+	err := r.DB.Model(&channel).Where("id = ?", id).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	channel.Twitter = twitter
+
+	_, updateErr := r.DB.Model(&channel).Where("id = ?", id).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) ChangeFacebook(ctx context.Context, id string, facebook string) (bool, error) {
+	var channel model.Channel
+
+	err := r.DB.Model(&channel).Where("id = ?", id).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	channel.Facebook = facebook
+
+	_, updateErr := r.DB.Model(&channel).Where("id = ?", id).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) ChangeInstagram(ctx context.Context, id string, instagram string) (bool, error) {
+	var channel model.Channel
+
+	err := r.DB.Model(&channel).Where("id = ?", id).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	channel.Instagram = instagram
+
+	_, updateErr := r.DB.Model(&channel).Where("id = ?", id).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) ChangeIcon(ctx context.Context, id string, photoURL string) (bool, error) {
+	var channel model.Channel
+
+	err := r.DB.Model(&channel).Where("id = ?", id).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	channel.PhotoURL = photoURL
+
+	_, updateErr := r.DB.Model(&channel).Where("id = ?", id).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) ChangeBanner(ctx context.Context, id string, bannerURL string) (bool, error) {
+	var channel model.Channel
+
+	err := r.DB.Model(&channel).Where("id = ?", id).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	channel.BannerURL = bannerURL
+
+	_, updateErr := r.DB.Model(&channel).Where("id = ?", id).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) ChangePremium(ctx context.Context, id string, isPremium string) (bool, error) {
+	var channel model.Channel
+
+	err := r.DB.Model(&channel).Where("id = ?", id).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	channel.IsPremium = isPremium
+
+	_, updateErr := r.DB.Model(&channel).Where("id = ?", id).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) ValidPremium(ctx context.Context, id string, validPremium int) (bool, error) {
+	var channel model.Channel
+
+	err := r.DB.Model(&channel).Where("id = ?", id).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	channel.ValidPremium = validPremium
+
+	_, updateErr := r.DB.Model(&channel).Where("id = ?", id).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
 }
 
 func (r *mutationResolver) CreateVideo(ctx context.Context, input *model.NewVideo) (*model.Video, error) {

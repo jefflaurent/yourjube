@@ -1,0 +1,257 @@
+.container
+{
+    background-color: white;
+    padding-top: 3%;
+    padding-bottom: 3%;
+    padding-left: 2%;
+    padding-right: 2%;
+    margin-bottom: 5%;
+    font-size: .9em;
+    box-sizing: border-box;
+    color: rgba(76, 67, 67, 1); 
+
+    input[type='text']:focus
+    {
+        outline-width: 0;
+    }
+
+    input[type='file']:focus
+    {
+        outline-width: 0;
+    }
+
+    .join
+    {
+        margin-bottom: 5%;
+    }
+
+    .sub-title
+    {
+        font-weight: 500;
+        margin-bottom: 2%;
+    }
+
+    .line
+    {
+        margin-bottom: 3%;
+    }
+
+    .description
+    {
+        margin-bottom: 3%;
+        box-sizing: border-box;
+
+        .desc-button
+        {
+            width: 14.5%;
+            padding: .5%;
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+            justify-content: center;
+            border: 1px solid lightgrey;
+        }
+
+        .desc-button:hover
+        {
+            cursor: pointer;
+        }
+
+        .desc-button.hidden
+        {
+            display: none;
+        }
+        
+        input[type='text']
+        {
+            border-left: none;
+            border-top: none;
+            border-right: none;
+            border-bottom: 1px solid rgba(76, 67, 67, 1);
+        }
+
+        .input-desc
+        {
+            display: flex;
+            justify-content: flex-start;
+            flex-direction: column;
+
+            .input-desc-title
+            {
+                font-size: .8em;
+                font-weight: 500;
+                margin-bottom: .5%;
+            }
+            
+            #descTxt
+            {
+                width: 100%;
+                resize: none;
+            }
+
+            textarea
+            {
+                font-family: 'Roboto';
+            }
+
+            textarea:focus
+            {
+                outline: none;
+                font-family: 'Roboto';
+                border: 1px solid blue;
+                box-shadow: 0 0 3px #929496;
+            }
+
+            .input-desc-buttons
+            {
+                display: flex;
+                justify-content: flex-end;
+                margin-top: 1%;
+
+                .cancel-btn
+                {
+                    border: 1px solid lightgrey;
+                    padding-left: 1%;
+                    padding-right: 1%;
+                    padding-top: .5%;
+                    padding-bottom: .5%;
+                    border-radius: 2px;
+                    font-size: .8em;
+                    font-weight: 500;
+                }
+
+                .cancel-btn:hover
+                {
+                    cursor: pointer;
+                }
+
+                .done-btn
+                {
+                    margin-left: 1%;
+                    background-color: blue;
+                    color: white;
+                    padding-left: 1%;
+                    padding-right: 1%;
+                    padding-top: .5%;
+                    padding-bottom: .5%;
+                    border-radius: 2px;
+                    font-size: .8em;
+                    font-weight: 500;
+                }
+
+                .done-btn:hover
+                {
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .input-desc.hidden
+        {
+            display: none;
+        }
+    }
+
+    .links
+    {
+        display: flex;
+        justify-content: flex-start;
+        flex-direction: column;
+
+        .link-toggler.hidden
+        {
+            display: none;
+        }
+
+        .desc-button
+        {
+            width: 7%;
+            padding: .5%;
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+            justify-content: center;
+            border: 1px solid lightgrey;
+        }
+
+        .desc-button:hover
+        {
+            cursor: pointer;
+        }
+
+        .desc-button.hidden
+        {
+            display: none;
+        }
+
+        .links-list
+        {
+            .common
+            {
+                display: flex;
+                justify-content: flex-start;
+                flex-direction: column;
+            }
+    
+            input[type='text']
+            {
+                border-top: none;
+                border-left: none;
+                border-right: none;
+            }
+    
+            input[type='text']:focus
+            {
+                outline-width: 0;
+            }
+
+            .links-list-buttons
+            {
+                display: flex;
+                justify-content: flex-end;
+                margin-top: 1%;
+    
+                .cancel-btn
+                {
+                    border: 1px solid lightgrey;
+                    padding-left: 1%;
+                    padding-right: 1%;
+                    padding-top: .5%;
+                    padding-bottom: .5%;
+                    border-radius: 2px;
+                    font-size: .8em;
+                    font-weight: 500;
+                }
+    
+                .cancel-btn:hover
+                {
+                    cursor: pointer;
+                }
+    
+                .done-btn
+                {
+                    margin-left: 1%;
+                    background-color: blue;
+                    color: white;
+                    padding-left: 1%;
+                    padding-right: 1%;
+                    padding-top: .5%;
+                    padding-bottom: .5%;
+                    border-radius: 2px;
+                    font-size: .8em;
+                    font-weight: 500;
+                }
+    
+                .done-btn:hover
+                {
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .links-list.hidden
+        {   
+            display: none;
+        }
+    }
+}

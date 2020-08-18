@@ -26,19 +26,41 @@ export class ChannelPageComponent implements OnInit {
   moveToHome(): void {
     this.hideVideos()
     this.hidePlaylist()
+    this.hideAbout()
+    this.hideSettings()
     this.showHome()
   }
 
   moveToVideos(): void {
     this.hideHome()
     this.hidePlaylist()
+    this.hideAbout()
+    this.hideSettings()
     this.showVideos()
   }
 
   moveToPlaylist(): void {
     this.hideHome()
     this.hideVideos()
+    this.hideAbout()
+    this.hideSettings()
     this.showPlaylist()
+  }
+
+  moveToAbout(): void {
+    this.hideHome()
+    this.hideVideos()
+    this.hidePlaylist()
+    this.hideSettings()
+    this.showAbout()
+  }
+
+  moveToSettings(): void {
+    this.hideHome()
+    this.hideVideos()
+    this.hidePlaylist()
+    this.hideAbout()
+    this.showSettings()
   }
 
   showHome(): void {
@@ -79,6 +101,34 @@ export class ChannelPageComponent implements OnInit {
   hidePlaylist(): void {
     var x = document.querySelector('.channel-playlist')
     var y = document.querySelector('.playlist')
+    x.classList.add('hidden')
+    y.classList.remove('selected')
+  }
+
+  showAbout(): void {
+    var x = document.querySelector('.channel-about')
+    var y = document.querySelector('.about')
+    x.classList.remove('hidden')
+    y.classList.add('selected')
+  }
+
+  hideAbout(): void {
+    var x = document.querySelector('.channel-about')
+    var y = document.querySelector('.about')
+    x.classList.add('hidden')
+    y.classList.remove('selected')
+  }
+
+  showSettings(): void {
+    var x = document.querySelector('.channel-settings')
+    var y = document.querySelector('.settings')
+    x.classList.remove('hidden')
+    y.classList.add('selected')
+  }
+
+  hideSettings(): void {
+    var x = document.querySelector('.channel-settings')
+    var y = document.querySelector('.settings')
     x.classList.add('hidden')
     y.classList.remove('selected')
   }

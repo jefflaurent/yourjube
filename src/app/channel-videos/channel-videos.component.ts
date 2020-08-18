@@ -80,12 +80,12 @@ export class ChannelVideosComponent implements OnInit {
   }
 
   sortByDateDesc(): void {
-    this.videos.sort( (a,b) => (a.time < b.time) ? -1 : 1)
+    this.videos.sort( (a,b) => (a.time > b.time) ? -1 : 1)
     this.toggleModal()
   }
 
   sortByDateAsc(): void {
-    this.videos.sort( (a,b) => (a.time > b.time) ? -1 : 1)
+    this.videos.sort( (a,b) => (a.time < b.time) ? -1 : 1)
     this.toggleModal()
   }
 }

@@ -1,0 +1,97 @@
+<div class="container">
+    <div class="join">
+        {{ post }}
+    </div>
+    <div class="sub-title">
+        Change Channel Icon
+    </div>
+    <div style="margin-bottom: 3%;">
+        <input type="file" name="" id="">
+    </div>
+    <div class="sub-title">
+        Change Channel Banner
+    </div>
+    <div style="margin-bottom: 3%;">
+        <input type="file" name="" id="">
+    </div>
+    <div class="line">
+        <hr>
+    </div>
+    <div class="description">
+        <div class="sub-title">
+            Description
+        </div>
+        <span class="desc-button" (click)="toggleOnDescBox()">
+            <span style="margin-right: 3%;">
+                <i class="fa fa-plus"></i>
+            </span>
+            <span style="font-weight: 500; font-size: .9em;">
+                Channel description
+            </span>
+        </span>
+        <div class="input-desc hidden">
+            <div class="input-desc-title">
+                CHANNEL DESCRIPTION
+            </div>
+            <textarea id="descTxt" rows="8" [value]="description" (input)="description = $event.target.value"></textarea>
+            <div class="input-desc-buttons">
+                <div class="cancel-btn" (click)="cancelUpdate()">
+                    Cancel
+                </div>
+                <div class="done-btn" (click)="changeDescription()">
+                    Done
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="line">
+        <hr>
+    </div>
+    <div class="links">
+        <div class="sub-title">
+            Links
+        </div>
+        <span class="desc-button link-toggler" (click)="toggleOnLinkBox()">
+            <span style="margin-right: 5%;">
+                <i class="fa fa-plus"></i>
+            </span>
+            <span style="font-weight: 500; font-size: .9em;">
+                Links
+            </span>
+        </span>
+        <div class="links-list hidden">
+            <div class="common">
+                <div>
+                    Twitter
+                </div>
+                <div>
+                    <input type="text" [value]="twitter" (input)="twitter = $event.target.value">
+                </div>
+            </div>
+            <div class="common" style="margin-top: 3%;">
+                <div>
+                    Facebook
+                </div>
+                <div>
+                    <input type="text" [value]="facebook" (input)="facebook = $event.target.value">
+                </div>
+            </div>
+            <div class="common" style="margin-top: 3%;">
+                <div>
+                    Instagram
+                </div>
+                <div>
+                    <input type="text" [value]="instagram" (input)="instagram = $event.target.value">
+                </div>
+            </div>
+            <div class="links-list-buttons">
+                <div class="cancel-btn" (click)="cancelLink()">
+                    Cancel
+                </div>
+                <div class="done-btn" (click)="changeLinks()">
+                    Done
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -55,6 +55,8 @@ import { SubscriptionChoiceComponent } from './subscription-choice/subscription-
 import { SearchPageComponent } from './search-page/search-page.component';
 import { PlaylistSearchComponent } from './playlist-search/playlist-search.component';
 import { ChannelSearchComponent } from './channel-search/channel-search.component';
+import { ChannelAboutComponent } from './channel-about/channel-about.component';
+import { ChannelSettingsComponent } from './channel-settings/channel-settings.component';
 
 @NgModule({
   declarations: [
@@ -88,6 +90,8 @@ import { ChannelSearchComponent } from './channel-search/channel-search.componen
     SearchPageComponent,
     PlaylistSearchComponent,
     ChannelSearchComponent,
+    ChannelAboutComponent,
+    ChannelSettingsComponent,
   ],
   imports: [
     HttpModule,

@@ -44,13 +44,22 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Channel struct {
-		BannerURL  func(childComplexity int) int
-		Email      func(childComplexity int) int
-		ID         func(childComplexity int) int
-		IsPremium  func(childComplexity int) int
-		Name       func(childComplexity int) int
-		PhotoURL   func(childComplexity int) int
-		Subscriber func(childComplexity int) int
+		BannerURL          func(childComplexity int) int
+		ChannelDescription func(childComplexity int) int
+		Email              func(childComplexity int) int
+		Facebook           func(childComplexity int) int
+		ID                 func(childComplexity int) int
+		Instagram          func(childComplexity int) int
+		IsMature           func(childComplexity int) int
+		IsPremium          func(childComplexity int) int
+		JoinDate           func(childComplexity int) int
+		JoinMonth          func(childComplexity int) int
+		JoinYear           func(childComplexity int) int
+		Name               func(childComplexity int) int
+		PhotoURL           func(childComplexity int) int
+		Subscriber         func(childComplexity int) int
+		Twitter            func(childComplexity int) int
+		ValidPremium       func(childComplexity int) int
 	}
 
 	ChannelSubscription struct {
@@ -120,9 +129,16 @@ type ComplexityRoot struct {
 		AddReplyCount            func(childComplexity int, commentID string) int
 		AddSubscription          func(childComplexity int, input *model.NewSubscription) int
 		AddVideoCount            func(childComplexity int, playlistID string) int
+		ChangeBanner             func(childComplexity int, id string, bannerURL string) int
+		ChangeDescription        func(childComplexity int, id string, channelDescription string) int
+		ChangeFacebook           func(childComplexity int, id string, facebook string) int
+		ChangeIcon               func(childComplexity int, id string, photoURL string) int
+		ChangeInstagram          func(childComplexity int, id string, instagram string) int
 		ChangePlaylistDesc       func(childComplexity int, playlistID string, playlistDescription string) int
 		ChangePlaylistName       func(childComplexity int, playlistID string, playlistName string) int
 		ChangePlaylistVisibility func(childComplexity int, playlistID string, visibility string) int
+		ChangePremium            func(childComplexity int, id string, isPremium string) int
+		ChangeTwitter            func(childComplexity int, id string, twitter string) int
 		ClearPlaylist            func(childComplexity int, playlistID int) int
 		CreateChannel            func(childComplexity int, input *model.NewChannel) int
 		CreatePlaylist           func(childComplexity int, input *model.NewPlaylist) int
@@ -149,6 +165,7 @@ type ComplexityRoot struct {
 		UpdatePlaylistPlace      func(childComplexity int, playlistID int, videoID int, place int) int
 		UpdatePlaylistUpdate     func(childComplexity int, playlistID string, lastDate int, lastMonth int, lastYear int) int
 		UpdateThumbnail          func(childComplexity int, playlistID int, playlistThumbnail string) int
+		ValidPremium             func(childComplexity int, id string, validPremium int) int
 		WatchVideo               func(childComplexity int, videoID string) int
 	}
 
@@ -226,6 +243,14 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateChannel(ctx context.Context, input *model.NewChannel) (*model.Channel, error)
+	ChangeDescription(ctx context.Context, id string, channelDescription string) (bool, error)
+	ChangeTwitter(ctx context.Context, id string, twitter string) (bool, error)
+	ChangeFacebook(ctx context.Context, id string, facebook string) (bool, error)
+	ChangeInstagram(ctx context.Context, id string, instagram string) (bool, error)
+	ChangeIcon(ctx context.Context, id string, photoURL string) (bool, error)
+	ChangeBanner(ctx context.Context, id string, bannerURL string) (bool, error)
+	ChangePremium(ctx context.Context, id string, isPremium string) (bool, error)
+	ValidPremium(ctx context.Context, id string, validPremium int) (bool, error)
 	CreateVideo(ctx context.Context, input *model.NewVideo) (*model.Video, error)
 	WatchVideo(ctx context.Context, videoID string) (bool, error)
 	LikeVideo(ctx context.Context, videoID string) (bool, error)
@@ -308,12 +333,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Channel.BannerURL(childComplexity), true
 
+	case "Channel.channelDescription":
+		if e.complexity.Channel.ChannelDescription == nil {
+			break
+		}
+
+		return e.complexity.Channel.ChannelDescription(childComplexity), true
+
 	case "Channel.email":
 		if e.complexity.Channel.Email == nil {
 			break
 		}
 
 		return e.complexity.Channel.Email(childComplexity), true
+
+	case "Channel.facebook":
+		if e.complexity.Channel.Facebook == nil {
+			break
+		}
+
+		return e.complexity.Channel.Facebook(childComplexity), true
 
 	case "Channel.id":
 		if e.complexity.Channel.ID == nil {
@@ -322,12 +361,47 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Channel.ID(childComplexity), true
 
+	case "Channel.instagram":
+		if e.complexity.Channel.Instagram == nil {
+			break
+		}
+
+		return e.complexity.Channel.Instagram(childComplexity), true
+
+	case "Channel.isMature":
+		if e.complexity.Channel.IsMature == nil {
+			break
+		}
+
+		return e.complexity.Channel.IsMature(childComplexity), true
+
 	case "Channel.isPremium":
 		if e.complexity.Channel.IsPremium == nil {
 			break
 		}
 
 		return e.complexity.Channel.IsPremium(childComplexity), true
+
+	case "Channel.joinDate":
+		if e.complexity.Channel.JoinDate == nil {
+			break
+		}
+
+		return e.complexity.Channel.JoinDate(childComplexity), true
+
+	case "Channel.joinMonth":
+		if e.complexity.Channel.JoinMonth == nil {
+			break
+		}
+
+		return e.complexity.Channel.JoinMonth(childComplexity), true
+
+	case "Channel.joinYear":
+		if e.complexity.Channel.JoinYear == nil {
+			break
+		}
+
+		return e.complexity.Channel.JoinYear(childComplexity), true
 
 	case "Channel.name":
 		if e.complexity.Channel.Name == nil {
@@ -349,6 +423,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Channel.Subscriber(childComplexity), true
+
+	case "Channel.twitter":
+		if e.complexity.Channel.Twitter == nil {
+			break
+		}
+
+		return e.complexity.Channel.Twitter(childComplexity), true
+
+	case "Channel.validPremium":
+		if e.complexity.Channel.ValidPremium == nil {
+			break
+		}
+
+		return e.complexity.Channel.ValidPremium(childComplexity), true
 
 	case "ChannelSubscription.channelEmail":
 		if e.complexity.ChannelSubscription.ChannelEmail == nil {
@@ -721,6 +809,66 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.AddVideoCount(childComplexity, args["playlistId"].(string)), true
 
+	case "Mutation.changeBanner":
+		if e.complexity.Mutation.ChangeBanner == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changeBanner_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangeBanner(childComplexity, args["id"].(string), args["bannerURL"].(string)), true
+
+	case "Mutation.changeDescription":
+		if e.complexity.Mutation.ChangeDescription == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changeDescription_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangeDescription(childComplexity, args["id"].(string), args["channelDescription"].(string)), true
+
+	case "Mutation.changeFacebook":
+		if e.complexity.Mutation.ChangeFacebook == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changeFacebook_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangeFacebook(childComplexity, args["id"].(string), args["facebook"].(string)), true
+
+	case "Mutation.changeIcon":
+		if e.complexity.Mutation.ChangeIcon == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changeIcon_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangeIcon(childComplexity, args["id"].(string), args["photoURL"].(string)), true
+
+	case "Mutation.changeInstagram":
+		if e.complexity.Mutation.ChangeInstagram == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changeInstagram_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangeInstagram(childComplexity, args["id"].(string), args["instagram"].(string)), true
+
 	case "Mutation.changePlaylistDesc":
 		if e.complexity.Mutation.ChangePlaylistDesc == nil {
 			break
@@ -756,6 +904,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.ChangePlaylistVisibility(childComplexity, args["playlistId"].(string), args["visibility"].(string)), true
+
+	case "Mutation.changePremium":
+		if e.complexity.Mutation.ChangePremium == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changePremium_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangePremium(childComplexity, args["id"].(string), args["isPremium"].(string)), true
+
+	case "Mutation.changeTwitter":
+		if e.complexity.Mutation.ChangeTwitter == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changeTwitter_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangeTwitter(childComplexity, args["id"].(string), args["twitter"].(string)), true
 
 	case "Mutation.clearPlaylist":
 		if e.complexity.Mutation.ClearPlaylist == nil {
@@ -1068,6 +1240,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateThumbnail(childComplexity, args["playlistId"].(int), args["playlistThumbnail"].(string)), true
+
+	case "Mutation.validPremium":
+		if e.complexity.Mutation.ValidPremium == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_validPremium_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ValidPremium(childComplexity, args["id"].(string), args["validPremium"].(int)), true
 
 	case "Mutation.watchVideo":
 		if e.complexity.Mutation.WatchVideo == nil {
@@ -1636,6 +1820,15 @@ var sources = []*ast.Source{
    bannerURL: String!
    subscriber: Int!
    isPremium: String!
+   joinDate: Int!
+   joinMonth: Int!
+   joinYear: Int!
+   channelDescription: String!
+   isMature: String!
+   twitter: String!
+   facebook: String!
+   instagram: String!
+   validPremium: Int!
 }
 
 type Video {
@@ -1767,11 +1960,20 @@ input newVideo {
 
 input newChannel {
   name: String!
-  email: String!
-  photoURL: String!
-  bannerURL: String!
-  subscriber: Int!
-  isPremium: String!
+   email: String!
+   photoURL: String!
+   bannerURL: String!
+   subscriber: Int!
+   isPremium: String!
+   joinDate: Int!
+   joinMonth: Int!
+   joinYear: Int!
+   channelDescription: String!
+   isMature: String!
+   twitter: String!
+   facebook: String!
+   instagram: String!
+   validPremium: Int!
 }
 
 input newLike {
@@ -1877,6 +2079,14 @@ type Query {
 
 type Mutation {
   createChannel(input: newChannel): Channel!
+  changeDescription(id: ID!, channelDescription: String!): Boolean!
+  changeTwitter(id: ID!, twitter: String!): Boolean!
+  changeFacebook(id: ID!, facebook: String!): Boolean!
+  changeInstagram(id: ID!, instagram: String!): Boolean!
+  changeIcon(id: ID!, photoURL: String!): Boolean!
+  changeBanner(id: ID!, bannerURL: String!): Boolean!
+  changePremium(id: ID!, isPremium: String!): Boolean!
+  validPremium(id: ID!, validPremium: Int!): Boolean!
   createVideo(input: newVideo): Video!
   watchVideo(videoId: ID!): Boolean!
   likeVideo(videoId: ID!): Boolean!
@@ -2022,6 +2232,116 @@ func (ec *executionContext) field_Mutation_addVideoCount_args(ctx context.Contex
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_changeBanner_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["bannerURL"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["bannerURL"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_changeDescription_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["channelDescription"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["channelDescription"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_changeFacebook_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["facebook"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["facebook"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_changeIcon_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["photoURL"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["photoURL"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_changeInstagram_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["instagram"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["instagram"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_changePlaylistDesc_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2085,6 +2405,50 @@ func (ec *executionContext) field_Mutation_changePlaylistVisibility_args(ctx con
 		}
 	}
 	args["visibility"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_changePremium_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["isPremium"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["isPremium"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_changeTwitter_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["twitter"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["twitter"] = arg1
 	return args, nil
 }
 
@@ -2545,6 +2909,28 @@ func (ec *executionContext) field_Mutation_updateThumbnail_args(ctx context.Cont
 		}
 	}
 	args["playlistThumbnail"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_validPremium_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["validPremium"]; ok {
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["validPremium"] = arg1
 	return args, nil
 }
 
@@ -3084,6 +3470,312 @@ func (ec *executionContext) _Channel_isPremium(ctx context.Context, field graphq
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Channel_joinDate(ctx context.Context, field graphql.CollectedField, obj *model.Channel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Channel",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.JoinDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Channel_joinMonth(ctx context.Context, field graphql.CollectedField, obj *model.Channel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Channel",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.JoinMonth, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Channel_joinYear(ctx context.Context, field graphql.CollectedField, obj *model.Channel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Channel",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.JoinYear, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Channel_channelDescription(ctx context.Context, field graphql.CollectedField, obj *model.Channel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Channel",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelDescription, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Channel_isMature(ctx context.Context, field graphql.CollectedField, obj *model.Channel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Channel",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsMature, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Channel_twitter(ctx context.Context, field graphql.CollectedField, obj *model.Channel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Channel",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Twitter, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Channel_facebook(ctx context.Context, field graphql.CollectedField, obj *model.Channel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Channel",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Facebook, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Channel_instagram(ctx context.Context, field graphql.CollectedField, obj *model.Channel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Channel",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Instagram, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Channel_validPremium(ctx context.Context, field graphql.CollectedField, obj *model.Channel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Channel",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ValidPremium, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ChannelSubscription_id(ctx context.Context, field graphql.CollectedField, obj *model.ChannelSubscription) (ret graphql.Marshaler) {
@@ -4519,6 +5211,334 @@ func (ec *executionContext) _Mutation_createChannel(ctx context.Context, field g
 	res := resTmp.(*model.Channel)
 	fc.Result = res
 	return ec.marshalNChannel2ᚖGo_graphqlᚋgraphᚋmodelᚐChannel(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_changeDescription(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changeDescription_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangeDescription(rctx, args["id"].(string), args["channelDescription"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_changeTwitter(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changeTwitter_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangeTwitter(rctx, args["id"].(string), args["twitter"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_changeFacebook(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changeFacebook_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangeFacebook(rctx, args["id"].(string), args["facebook"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_changeInstagram(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changeInstagram_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangeInstagram(rctx, args["id"].(string), args["instagram"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_changeIcon(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changeIcon_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangeIcon(rctx, args["id"].(string), args["photoURL"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_changeBanner(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changeBanner_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangeBanner(rctx, args["id"].(string), args["bannerURL"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_changePremium(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changePremium_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangePremium(rctx, args["id"].(string), args["isPremium"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_validPremium(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_validPremium_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ValidPremium(rctx, args["id"].(string), args["validPremium"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createVideo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -9267,6 +10287,60 @@ func (ec *executionContext) unmarshalInputnewChannel(ctx context.Context, obj in
 			if err != nil {
 				return it, err
 			}
+		case "joinDate":
+			var err error
+			it.JoinDate, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "joinMonth":
+			var err error
+			it.JoinMonth, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "joinYear":
+			var err error
+			it.JoinYear, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "channelDescription":
+			var err error
+			it.ChannelDescription, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "isMature":
+			var err error
+			it.IsMature, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "twitter":
+			var err error
+			it.Twitter, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "facebook":
+			var err error
+			it.Facebook, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "instagram":
+			var err error
+			it.Instagram, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "validPremium":
+			var err error
+			it.ValidPremium, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -9861,6 +10935,51 @@ func (ec *executionContext) _Channel(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "joinDate":
+			out.Values[i] = ec._Channel_joinDate(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "joinMonth":
+			out.Values[i] = ec._Channel_joinMonth(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "joinYear":
+			out.Values[i] = ec._Channel_joinYear(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channelDescription":
+			out.Values[i] = ec._Channel_channelDescription(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "isMature":
+			out.Values[i] = ec._Channel_isMature(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "twitter":
+			out.Values[i] = ec._Channel_twitter(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "facebook":
+			out.Values[i] = ec._Channel_facebook(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "instagram":
+			out.Values[i] = ec._Channel_instagram(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "validPremium":
+			out.Values[i] = ec._Channel_validPremium(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10226,6 +11345,46 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = graphql.MarshalString("Mutation")
 		case "createChannel":
 			out.Values[i] = ec._Mutation_createChannel(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changeDescription":
+			out.Values[i] = ec._Mutation_changeDescription(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changeTwitter":
+			out.Values[i] = ec._Mutation_changeTwitter(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changeFacebook":
+			out.Values[i] = ec._Mutation_changeFacebook(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changeInstagram":
+			out.Values[i] = ec._Mutation_changeInstagram(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changeIcon":
+			out.Values[i] = ec._Mutation_changeIcon(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changeBanner":
+			out.Values[i] = ec._Mutation_changeBanner(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changePremium":
+			out.Values[i] = ec._Mutation_changePremium(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "validPremium":
+			out.Values[i] = ec._Mutation_validPremium(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
