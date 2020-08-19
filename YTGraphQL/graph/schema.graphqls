@@ -124,6 +124,28 @@ type PlaylistVideo {
   place: Int!
 }
 
+type Post {
+  id: ID!
+  channelId: Int!
+  content: String!
+  photoURL: String!
+  likes: Int!
+  dislikes: Int!
+  time: Int!
+}
+
+type PostLike {
+  id: ID!
+  channelId: Int!
+  postId: Int!
+}
+
+type PostDislike {
+  id: ID!
+  channelId: Int!
+  postId: Int!
+}
+
 input newVideo {
   videoTitle: String!
   videoDesc: String!
@@ -240,7 +262,27 @@ input newSubscription {
   channelPhotoURL: String!
 }
 
+input newPost {
+  channelId: Int!
+  content: String!
+  photoURL: String!
+  likes: Int!
+  dislikes: Int!
+  time: Int!
+}
+
+input newPostLike {
+  channelId: Int!
+  postId: Int!
+}
+
+input newPostDislike {
+  channelId: Int!
+  postId: Int!
+}
+
 type Query {
+  posts: [Post!]!
   subscriptions: [ChannelSubscription!]!
   channels: [Channel!]!
   videos: [Video!]!
@@ -312,4 +354,14 @@ type Mutation {
   removeSubscription(clientEmail: String!, channelEmail: String!): Boolean!
   increaseSubscriber(id: ID!): Boolean!
   decreaseSubscriber(id: ID!): Boolean!
+
+  addPost(input: newPost): Post!
+  increasePostLike(postId: ID!): Boolean!
+  decreasePostLike(postId: ID!): Boolean!
+  increasePostDislike(postId: ID!): Boolean!
+  decreasePostDislike(postId: ID!): Boolean!
+  registerPostLike(input: newPostLike): Boolean!
+  removePostLike(postId: Int!, channelId: Int!): Boolean!
+  registerPostDislike(input: newPostDislike): Boolean!
+  removePostDislike(postId: Int!, channelId: Int!): Boolean!
 }

@@ -1,5 +1,7 @@
-<div class="container">
-    <div class="banner"></div>
+<div class="container" *ngIf="channel">
+    <div class="banner">
+        <img [src]="channel.bannerURL" alt="">
+    </div>
 
     <div class="profile">
         <div class="profile-container">
@@ -16,10 +18,15 @@
                     </div>
                 </div>
             </div>
-            <div class="right">
+            <div class="right" *ngIf="allSubscriptions">
                 <div>
-                    <div class="subscribe">
+                    <div class="subscribe" *ngIf="isSubscribed == false" (click)="addSub()">
                         SUBSCRIBE
+                    </div>
+                </div>
+                <div>
+                    <div class="subscribed" *ngIf="isSubscribed == true" (click)="removeSub()">
+                        SUBSCRIBED
                     </div>
                 </div>
                 <div class="bell">
@@ -49,7 +56,7 @@
         </div>
     </div>
 
-    <div class="channel-home" *ngIf="channel">
+    <!-- <div class="channel-home" *ngIf="channel">
         <app-channel-home [chan]="(channel)" (moveEvent)="moveToVideos()"></app-channel-home>
     </div>
 
@@ -62,10 +69,14 @@
     </div>
 
     <div class="channel-about hidden" *ngIf="channel">
-        <app-channel-about></app-channel-about>
+        <app-channel-about [chan]="(channel)"></app-channel-about>
     </div>
 
     <div class="channel-settings hidden" *ngIf="channel">
         <app-channel-settings [chan]="(channel)"></app-channel-settings>
+    </div> -->
+
+    <div class="channel-community">
+        <app-channel-community></app-channel-community>
     </div>
 </div>

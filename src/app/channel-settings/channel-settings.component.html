@@ -6,13 +6,39 @@
         Change Channel Icon
     </div>
     <div style="margin-bottom: 3%;">
-        <input type="file" name="" id="">
+        <input type="file" (change)="uploadProfile($event.target.files)">
+    </div>
+    <div *ngIf="profileURL" class="progressBar">
+        <div class="profileDisplay">
+            <img [src]="profileURL" alt="">
+        </div>
+        <div class="confirmation">
+            <div class="cancel-btn" style="margin-right: 3%;" (click)="cancelUploadProfile()">
+                Cancel
+            </div>
+            <div class="done-btn" (click)="changeIcon()">
+                Save
+            </div>
+        </div>
     </div>
     <div class="sub-title">
         Change Channel Banner
     </div>
     <div style="margin-bottom: 3%;">
-        <input type="file" name="" id="">
+        <input type="file" (change)="uploadBanner($event.target.files)">
+    </div>
+    <div *ngIf="bannerURL" class="progressBar">
+        <div class="bannerDisplay">
+            <img [src]="bannerURL" alt="">
+        </div>
+        <div class="confirmation">
+            <div class="cancel-btn" style="margin-right: 3%;" (click)="cancelUploadBanner()">
+                Cancel
+            </div>
+            <div class="done-btn" (click)="changeBanner()">
+                Save
+            </div>
+        </div>
     </div>
     <div class="line">
         <hr>

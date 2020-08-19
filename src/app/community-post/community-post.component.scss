@@ -1,0 +1,92 @@
+.container
+{
+    border: 1px solid lightgray;
+    padding: 1.5%;
+
+    .inner
+    {
+        display: flex;
+        justify-content: flex-start;
+
+        .left
+        {
+            width: 5%;
+            display: flex;
+            justify-content: center;
+
+            img
+            {
+                width: 70%;
+                border-radius: 50%;
+            }
+        }
+
+        .right
+        {
+            .profile
+            {
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                margin-bottom: .6%;
+
+                .name
+                {
+                    font-weight: 500;
+                    color: black;
+                    font-size: .9em;
+                }
+
+                .time
+                {
+                    color: rgba(76, 67, 67, 1);
+                    font-size: .9em;
+                }
+            }
+
+            .content
+            {
+                font-size: .9em;
+                margin-bottom: 1%;
+            }
+
+            .picture
+            {
+                img
+                {
+                    max-width: 100%;
+                }
+            }
+
+            .misc 
+            {
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                color: rgba(76, 67, 67, 1);
+
+                .like-count
+                {
+                    font-size: .9em;
+                    margin: 1%;
+                }
+
+                .dislike-count
+                {
+                    font-size: .9em;
+                    margin: 1%;
+                }
+
+                .like:hover
+                {
+                    cursor: pointer;
+                }
+
+                .dislike:hover
+                {
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}

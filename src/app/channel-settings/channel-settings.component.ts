@@ -1,6 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { UserService } from '../data-service/user-service';
+import { Observable } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { Channel } from '../model/channel';
+import { AngularFireStorage, AngularFireUploadTask } from 'angularfire2/storage';
  
 @Component({
   selector: 'app-channel-settings',
@@ -42,7 +45,19 @@ export class ChannelSettingsComponent implements OnInit {
   post: string
   m: string
 
-  constructor(private userService: UserService) {}
+  profileTask: AngularFireUploadTask;
+  bannerTask: AngularFireUploadTask;
+
+  profilePercentage: Observable<number>
+  bannerPercentage: Observable<number>
+  
+  profileSnapshot: Observable<any>
+  bannerSnapshot: Observable<any>
+
+  profileURL: Observable<string>
+  bannerURL: Observable<string>
+
+  constructor(private userService: UserService, private storage: AngularFireStorage) {}
 
   ngOnInit(): void {
     this.processDate()
@@ -120,6 +135,24 @@ export class ChannelSettingsComponent implements OnInit {
     this.toggleOffLinkBox()
   }
 
+  cancelUploadProfile(): void {
+    this.profileURL = null
+  }
+
+  changeIcon(): void {
+    this.userService.changeProfile(this.channel.id, this.profileURL.toString())
+    this.profileURL = null
+  }
+
+  cancelUploadBanner(): void {
+    this.bannerURL = null
+  }
+
+  changeBanner(): void {
+    this.userService.changeBanner(this.channel.id, this.bannerURL.toString())
+    this.bannerURL = null
+  }
+
   processDate(): void {
     var date = new Date()
       if(this.channel.joinMonth == 1)
@@ -147,5 +180,45 @@ export class ChannelSettingsComponent implements OnInit {
       else if(this.channel.joinMonth == 12)
         this.m = 'Dec'
       this.post = 'Joined ' + this.m + ' ' + this.channel.joinDate + ', ' + this.channel.joinYear
+  }
+
+  uploadProfile(event: FileList) {
+    const file = event.item(0)
+
+    const path = `profile/${new Date().getTime()}_${file.name}`;
+
+    this.profileTask = this.storage.upload(path, file)
+    const ref = this.storage.ref(path);
+
+    this.profilePercentage = this.profileTask.percentageChanges();
+    this.profileSnapshot = this.profileTask.snapshotChanges();
+
+    this.profileTask.snapshotChanges().pipe(
+      finalize(() => {
+        ref.getDownloadURL().subscribe(url => {
+          this.profileURL = url;
+        });
+      })
+    ).subscribe();
+  }
+
+  uploadBanner(event: FileList) {
+    const file = event.item(0)
+
+    const path = `banner/${new Date().getTime()}_${file.name}`;
+
+    this.bannerTask = this.storage.upload(path, file)
+    const ref = this.storage.ref(path);
+
+    this.bannerPercentage = this.bannerTask.percentageChanges();
+    this.bannerSnapshot = this.bannerTask.snapshotChanges();
+
+    this.bannerTask.snapshotChanges().pipe(
+      finalize(() => {
+        ref.getDownloadURL().subscribe(url => {
+          this.bannerURL = url;
+        });
+      })
+    ).subscribe();
   }
 }

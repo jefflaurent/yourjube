@@ -39,6 +39,5 @@ export class ChannelPlaylistsComponent implements OnInit {
         j++
       }
     }
-    console.log(this.playlists)
   }
 }

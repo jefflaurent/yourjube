@@ -31,6 +31,80 @@
         margin-bottom: 2%;
     }
 
+    .progressBar
+    {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4%;
+        width: 25%;
+
+        .profileDisplay
+        {
+            width: 40%;
+            
+            img
+            {
+                width: 100%;
+                border-radius: 50%;
+            }
+        }
+
+        .bannerDisplay
+        {
+            width: 40%;
+
+            img
+            {
+                width: 100%;
+            }
+        }
+
+        .confirmation
+        {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60%;
+
+            .cancel-btn
+            {
+                border: 1px solid lightgrey;
+                padding-left: 1%;
+                padding-right: 1%;
+                padding-top: .5%;
+                padding-bottom: .5%;
+                border-radius: 2px;
+                font-size: 1em;
+                font-weight: 500;
+            }
+
+            .cancel-btn:hover
+            {
+                cursor: pointer;
+            }
+
+            .done-btn
+            {
+                margin-left: 1%;
+                background-color: blue;
+                color: white;
+                padding-left: 1%;
+                padding-right: 1%;
+                padding-top: .5%;
+                padding-bottom: .5%;
+                border-radius: 2px;
+                font-size: 1em;
+                font-weight: 500;
+            }
+
+            .done-btn:hover
+            {
+                cursor: pointer;
+            }
+        }
+    }
+
     .line
     {
         margin-bottom: 3%;

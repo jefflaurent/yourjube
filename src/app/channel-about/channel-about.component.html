@@ -5,7 +5,7 @@
                 Description
             </div>
             <div class="content">
-                I make videos.
+                {{ channel.channelDescription }}
             </div>
         </div>
         <div>
@@ -15,9 +15,19 @@
             <div class="sub-title">
                 Links
             </div>
-            <div class="link-content">
-                <a href="www.twitter.com">
+            <div class="link-content" *ngIf="channel.twitter != ''">
+                <a href="https://{{channel.twitter}}" target="self">
                     Twitter
+                </a>
+            </div>
+            <div class="link-content" *ngIf="channel.instagram != ''">
+                <a href="https://{{channel.instagram}}" target="self">
+                    Instagram
+                </a>
+            </div>
+            <div class="link-content" *ngIf="channel.facebook != ''">
+                <a href="https://{{channel.facebook}}" target="self">
+                    Facebook
                 </a>
             </div>
         </div>
@@ -34,13 +44,13 @@
                 <hr>
             </div>
             <div class="stat-content">
-                Joined Apr 29, 2010
+                {{ post }}
             </div>
             <div>
                 <hr>
             </div>
             <div class="stat-content">
-                25,756,182,051 views
+                {{ totalViews }} views
             </div>
         </div>
     </div>

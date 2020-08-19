@@ -992,6 +992,207 @@ func (r *mutationResolver) DecreaseSubscriber(ctx context.Context, id string) (b
 	return true, nil
 }
 
+func (r *mutationResolver) AddPost(ctx context.Context, input *model.NewPost) (*model.Post, error) {
+	post := model.Post{
+		ChannelID: input.ChannelID,
+		Content:   input.Content,
+		PhotoURL:  input.PhotoURL,
+		Likes:     input.Likes,
+		Dislikes:  input.Dislikes,
+		Time:      input.Time,
+	}
+
+	_, err := r.DB.Model(&post).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &post, nil
+}
+
+func (r *mutationResolver) IncreasePostLike(ctx context.Context, postID string) (bool, error) {
+	var post model.Post
+	var temp int
+
+	err := r.DB.Model(&post).Where("post_id = ?", postID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = post.Likes
+	temp++
+
+	post.Likes = temp
+
+	_, updateErr := r.DB.Model(&post).Where("post_id = ?", postID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) DecreasePostLike(ctx context.Context, postID string) (bool, error) {
+	var post model.Post
+	var temp int
+
+	err := r.DB.Model(&post).Where("post_id = ?", postID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = post.Likes
+	temp--
+
+	if temp < 0 {
+		temp = 0
+	}
+
+	post.Likes = temp
+
+	_, updateErr := r.DB.Model(&post).Where("post_id = ?", postID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) IncreasePostDislike(ctx context.Context, postID string) (bool, error) {
+	var post model.Post
+	var temp int
+
+	err := r.DB.Model(&post).Where("post_id = ?", postID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = post.Dislikes
+	temp++
+
+	post.Dislikes = temp
+
+	_, updateErr := r.DB.Model(&post).Where("post_id = ?", postID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) DecreasePostDislike(ctx context.Context, postID string) (bool, error) {
+	var post model.Post
+	var temp int
+
+	err := r.DB.Model(&post).Where("post_id = ?", postID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	temp = post.Dislikes
+	temp--
+
+	if temp < 0 {
+		temp = 0
+	}
+
+	post.Dislikes = temp
+
+	_, updateErr := r.DB.Model(&post).Where("post_id = ?", postID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) RegisterPostLike(ctx context.Context, input *model.NewPostLike) (bool, error) {
+	postLike := model.PostLike{
+		ChannelID: input.ChannelID,
+		PostID:    input.PostID,
+	}
+
+	_, err := r.DB.Model(&postLike).Insert()
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) RemovePostLike(ctx context.Context, postID int, channelID int) (bool, error) {
+	var postLike model.PostLike
+
+	err := r.DB.Model(&postLike).Where("post_id = ? AND channel_id = ?", postID, channelID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	_, deleteErr := r.DB.Model(&postLike).Where("post_id = ? AND channel_id = ?", postID, channelID).Delete()
+
+	if deleteErr != nil {
+		return false, deleteErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) RegisterPostDislike(ctx context.Context, input *model.NewPostDislike) (bool, error) {
+	postDislike := model.PostDislike{
+		ChannelID: input.ChannelID,
+		PostID:    input.PostID,
+	}
+
+	_, err := r.DB.Model(&postDislike).Insert()
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) RemovePostDislike(ctx context.Context, postID int, channelID int) (bool, error) {
+	var postDislike model.PostDislike
+
+	err := r.DB.Model(&postDislike).Where("post_id = ? AND channel_id = ?", postID, channelID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	_, deleteErr := r.DB.Model(&postDislike).Where("post_id = ? AND channel_id = ?", postID, channelID).Delete()
+
+	if deleteErr != nil {
+		return false, deleteErr
+	}
+
+	return true, nil
+}
+
+func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
+	var posts []*model.Post
+
+	err := r.DB.Model(&posts).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+}
+
 func (r *queryResolver) Subscriptions(ctx context.Context) ([]*model.ChannelSubscription, error) {
 	var subscriptions []*model.ChannelSubscription
 

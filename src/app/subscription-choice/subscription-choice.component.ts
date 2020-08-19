@@ -19,7 +19,5 @@ export class SubscriptionChoiceComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log(this.subscription)
   }
-
 }

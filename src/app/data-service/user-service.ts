@@ -12,12 +12,21 @@ export class UserService {
     query channels {
       channels {
         id,
-        name,
-        email,
-        photoURL,
-        bannerURL,
-        subscriber,
-        isPremium,
+          name,
+          email,
+          photoURL,
+          bannerURL,
+          subscriber,
+          isPremium,
+          joinDate,
+          joinMonth,
+          joinYear,
+          channelDescription,
+          isMature,
+          twitter,
+          facebook,
+          instagram,
+          validPremium
       }
     }
   `;
@@ -43,6 +52,7 @@ export class UserService {
             twitter,
             facebook,
             instagram,
+            validPremium
           }
         }
       `, 
@@ -207,6 +217,40 @@ export class UserService {
       variables: {
         id: channelId,
         facebook: facebook
+      },
+      refetchQueries:[{
+        query: this.getAllChannelQuery
+      }]
+    }).subscribe()
+  }
+
+  changeProfile(id: number, profileURL: string): void {
+    this.apollo.mutate({
+      mutation: gql`
+        mutation changeIcon($id: ID!, $photoURL: String!) {
+          changeIcon(id: $id, photoURL: $photoURL)
+        }
+      `,
+      variables: { 
+        id: id,
+        photoURL: profileURL
+      },
+      refetchQueries:[{
+        query: this.getAllChannelQuery
+      }]
+    }).subscribe()
+  }
+
+  changeBanner(id: number, bannerURL: string): void {
+    this.apollo.mutate({
+      mutation: gql`
+        mutation changeBanner($id: ID!, $bannerURL: String!) {
+          changeBanner(id: $id, bannerURL: $bannerURL)
+        }
+      `,
+      variables: { 
+        id: id,
+        bannerURL: bannerURL
       },
       refetchQueries:[{
         query: this.getAllChannelQuery

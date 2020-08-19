@@ -42,6 +42,14 @@ import { ChannelVideosComponent } from './channel-videos/channel-videos.componen
 import { ChannelPlaylistsComponent } from './channel-playlists/channel-playlists.component';
 import { PremiumPageComponent } from './premium-page/premium-page.component';
 import { CategoryPageComponent } from './category-page/category-page.component';
+import { SubscriptionPageComponent } from './subscription-page/subscription-page.component';
+import { SubscriptionChoiceComponent } from './subscription-choice/subscription-choice.component';
+import { SearchPageComponent } from './search-page/search-page.component';
+import { PlaylistSearchComponent } from './playlist-search/playlist-search.component';
+import { ChannelSearchComponent } from './channel-search/channel-search.component';
+import { ChannelAboutComponent } from './channel-about/channel-about.component';
+import { ChannelSettingsComponent } from './channel-settings/channel-settings.component';
+
 
 import { PlaylistService } from './data-service/playlist-data';
 import { PlaylistModalInfo } from './data-service/playlist-modal-service';
@@ -50,13 +58,10 @@ import { VideoService } from './data-service/video-service';
 import { CommentService } from './data-service/comment-service';
 import { UserService } from './data-service/user-service';
 import { SubscriptionService } from './data-service/subscription-service';
-import { SubscriptionPageComponent } from './subscription-page/subscription-page.component';
-import { SubscriptionChoiceComponent } from './subscription-choice/subscription-choice.component';
-import { SearchPageComponent } from './search-page/search-page.component';
-import { PlaylistSearchComponent } from './playlist-search/playlist-search.component';
-import { ChannelSearchComponent } from './channel-search/channel-search.component';
-import { ChannelAboutComponent } from './channel-about/channel-about.component';
-import { ChannelSettingsComponent } from './channel-settings/channel-settings.component';
+import { PostService } from './data-service/post-service';
+import { ChannelCommunityComponent } from './channel-community/channel-community.component';
+import { CommunityPostComponent } from './community-post/community-post.component';
+
 
 @NgModule({
   declarations: [
@@ -92,6 +97,8 @@ import { ChannelSettingsComponent } from './channel-settings/channel-settings.co
     ChannelSearchComponent,
     ChannelAboutComponent,
     ChannelSettingsComponent,
+    ChannelCommunityComponent,
+    CommunityPostComponent,
   ],
   imports: [
     HttpModule,
@@ -128,6 +135,7 @@ import { ChannelSettingsComponent } from './channel-settings/channel-settings.co
     CommentService,
     UserService,
     SubscriptionService,
+    PostService,
   ],
   bootstrap: [AppComponent],
 })

@@ -107,6 +107,28 @@ type PlaylistVideo struct {
 	Place          int    `json:"place"`
 }
 
+type Post struct {
+	ID        string `json:"id"`
+	ChannelID int    `json:"channelId"`
+	Content   string `json:"content"`
+	PhotoURL  string `json:"photoURL"`
+	Likes     int    `json:"likes"`
+	Dislikes  int    `json:"dislikes"`
+	Time      int    `json:"time"`
+}
+
+type PostDislike struct {
+	ID        string `json:"id"`
+	ChannelID int    `json:"channelId"`
+	PostID    int    `json:"postId"`
+}
+
+type PostLike struct {
+	ID        string `json:"id"`
+	ChannelID int    `json:"channelId"`
+	PostID    int    `json:"postId"`
+}
+
 type Video struct {
 	VideoID         string `json:"videoId"`
 	VideoTitle      string `json:"videoTitle"`
@@ -214,6 +236,25 @@ type NewPlaylistVideo struct {
 	ChannelEmail   string `json:"channelEmail"`
 	Time           int    `json:"time"`
 	Place          int    `json:"place"`
+}
+
+type NewPost struct {
+	ChannelID int    `json:"channelId"`
+	Content   string `json:"content"`
+	PhotoURL  string `json:"photoURL"`
+	Likes     int    `json:"likes"`
+	Dislikes  int    `json:"dislikes"`
+	Time      int    `json:"time"`
+}
+
+type NewPostDislike struct {
+	ChannelID int `json:"channelId"`
+	PostID    int `json:"postId"`
+}
+
+type NewPostLike struct {
+	ChannelID int `json:"channelId"`
+	PostID    int `json:"postId"`
 }
 
 type NewSubscription struct {

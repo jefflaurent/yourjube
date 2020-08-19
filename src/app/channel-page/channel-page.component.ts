@@ -1,5 +1,9 @@
+import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../data-service/user-service';
+import { SubscriptionService } from '../data-service/subscription-service';
+import { Channel } from '../model/channel'; 
+import { Subscriptions } from '../model/subscription';
 
 @Component({
   selector: 'app-channel-page',
@@ -8,19 +12,49 @@ import { UserService } from '../data-service/user-service';
 })
 export class ChannelPageComponent implements OnInit {
 
-  constructor(private userService: UserService) { }
+  constructor(private subscriptionService: SubscriptionService, private userService: UserService, private activatedRoute: ActivatedRoute) { }
 
   user: any
-  channel: any
+  channelId: any
+  channel: Channel
+  loggedInChannel: Channel
+  allChannels: Channel [] = []
+  isSubscribed: boolean
+  allSubscriptions: Subscriptions[] = []
 
   ngOnInit(): void {
-    if(localStorage.getItem('users') != null) {
-      this.user = JSON.parse(localStorage.getItem('users'))
-    }
+    this.activatedRoute.paramMap.subscribe( params => {
+      this.channelId = params.get('id')
 
-    this.userService.getUser(this.user.email).valueChanges.subscribe( result => {
-      this.channel = result.data.findChannel[0]
+      if(localStorage.getItem('users') != null) {
+        this.user = JSON.parse(localStorage.getItem('users'))
+      }
+
+      this.userService.getAllChannel().valueChanges.subscribe( result => {
+        this.allChannels = result.data.channels
+        this.channel = this.allChannels.find( c => c.id == this.channelId)
+        this.loggedInChannel = this.allChannels.find( c => c.email == this.user.email)
+
+        this.subscriptionService.fetchAllSubs().valueChanges.subscribe( result => {
+          this.allSubscriptions = result.data.subscriptions
+          var temp = this.allSubscriptions.find( s => s.channelEmail == this.channel.email && s.clientEmail == this.loggedInChannel.email)
+          if(temp)
+            this.isSubscribed = true
+          else
+            this.isSubscribed = false
+        })
+      })
     })
+  }
+
+  addSub(): void {
+    this.subscriptionService.registerSubs(this.loggedInChannel.email, this.channel)
+    this.userService.increaseSubscriber(this.channel.id)
+  }
+
+  removeSub(): void {
+    this.subscriptionService.removeSubs(this.loggedInChannel.email, this.channel.email)
+    this.userService.decreaseSubscriber(this.channel.id)
   }
 
   moveToHome(): void {
