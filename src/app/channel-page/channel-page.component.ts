@@ -62,6 +62,7 @@ export class ChannelPageComponent implements OnInit {
     this.hidePlaylist()
     this.hideAbout()
     this.hideSettings()
+    this.hideCommunity()
     this.showHome()
   }
 
@@ -70,6 +71,7 @@ export class ChannelPageComponent implements OnInit {
     this.hidePlaylist()
     this.hideAbout()
     this.hideSettings()
+    this.hideCommunity()
     this.showVideos()
   }
 
@@ -77,7 +79,8 @@ export class ChannelPageComponent implements OnInit {
     this.hideHome()
     this.hideVideos()
     this.hideAbout()
-    this.hideSettings()
+    this.hideSettings()    
+    this.hideCommunity()
     this.showPlaylist()
   }
 
@@ -86,6 +89,7 @@ export class ChannelPageComponent implements OnInit {
     this.hideVideos()
     this.hidePlaylist()
     this.hideSettings()
+    this.hideCommunity()
     this.showAbout()
   }
 
@@ -94,7 +98,17 @@ export class ChannelPageComponent implements OnInit {
     this.hideVideos()
     this.hidePlaylist()
     this.hideAbout()
+    this.hideCommunity()
     this.showSettings()
+  }
+
+  moveToCommunity(): void {
+    this.hideHome()
+    this.hideVideos()
+    this.hidePlaylist()
+    this.hideAbout()
+    this.hideSettings()
+    this.showCommunity()   
   }
 
   showHome(): void {
@@ -163,6 +177,20 @@ export class ChannelPageComponent implements OnInit {
   hideSettings(): void {
     var x = document.querySelector('.channel-settings')
     var y = document.querySelector('.settings')
+    x.classList.add('hidden')
+    y.classList.remove('selected')
+  }
+
+  showCommunity(): void {
+    var x = document.querySelector('.channel-community')
+    var y = document.querySelector('.community')
+    x.classList.remove('hidden')
+    y.classList.add('selected')
+  }
+
+  hideCommunity(): void {
+    var x = document.querySelector('.channel-community')
+    var y = document.querySelector('.community')
     x.classList.add('hidden')
     y.classList.remove('selected')
   }

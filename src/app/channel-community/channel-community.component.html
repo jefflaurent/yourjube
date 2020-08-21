@@ -1,6 +1,6 @@
 <div class="container">
     <div class="btn-container">
-        <div class="add-btn">
+        <div class="add-post-btn" (click)="togglePost()">
             <div style="margin-right: 1%;">
                 <i class="fa fa-plus"></i>
             </div>
@@ -9,7 +9,38 @@
             </div>
         </div>
     </div>
-    <div>
-        <app-community-post></app-community-post>
+    <div class="new-post-container hidden">
+        <div class="left">
+            <div>
+                <img [src]="channel.photoURL" alt="">
+            </div>
+        </div>
+        <div class="right">
+            <div class="input-field">
+                <div class="input-text">
+                    <input type="text" [value]="content" (input)="content = $event.target.value">
+                </div>
+                <div class="input-file" *ngIf="url == null">
+                    <label class="upload-img" for="img-uploader">
+                        <i class="fa fa-picture-o fa-2x"></i>
+                    </label>
+                    <input type="file" id="img-uploader" (change)="uploadImage($event.target.files)">
+                </div>
+                <div *ngIf="url" class="img-preview">
+                    <img [src]="url" alt="">
+                </div>
+            </div>
+            <div class="post-cancel">
+                <div class="cancel-btn" (click)="togglePost()">
+                    CANCEL
+                </div>
+                <div class="post-btn" (click)="createPost()">
+                    POST
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="channelPosts">
+        <app-community-post *ngFor="let post of channelPosts" [post]="post"></app-community-post>
     </div>
 </div>

@@ -45,18 +45,21 @@
         <div class="tab-choice playlist" (click)="moveToPlaylist()">
             PLAYLISTS
         </div>
-        <div class="tab-choice community">
+        <div class="tab-choice community" (click)="moveToCommunity()">
             COMMUNITY
         </div>
         <div class="tab-choice about" (click)="moveToAbout()">
             ABOUT
+        </div>
+        <div class="tab-choice studio">
+            STUDIO
         </div>
         <div class="tab-choice settings" (click)="moveToSettings()">
             SETTINGS
         </div>
     </div>
 
-    <!-- <div class="channel-home" *ngIf="channel">
+    <div class="channel-home" *ngIf="channel">
         <app-channel-home [chan]="(channel)" (moveEvent)="moveToVideos()"></app-channel-home>
     </div>
 
@@ -74,9 +77,13 @@
 
     <div class="channel-settings hidden" *ngIf="channel">
         <app-channel-settings [chan]="(channel)"></app-channel-settings>
-    </div> -->
+    </div>
 
-    <div class="channel-community">
-        <app-channel-community></app-channel-community>
+    <div class="channel-community hidden" *ngIf="channel">
+        <app-channel-community [chan]="(channel)"></app-channel-community>
+    </div>
+
+    <div class="channel-studio">
+
     </div>
 </div>

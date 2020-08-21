@@ -1,9 +1,8 @@
+import { AngularFireStorage, AngularFireUploadTask } from 'angularfire2/storage';
 import { Component, OnInit, Input } from '@angular/core';
 import { UserService } from '../data-service/user-service';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-import { Channel } from '../model/channel';
-import { AngularFireStorage, AngularFireUploadTask } from 'angularfire2/storage';
  
 @Component({
   selector: 'app-channel-settings',

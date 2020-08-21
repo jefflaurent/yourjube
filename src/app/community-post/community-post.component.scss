@@ -1,7 +1,10 @@
 .container
 {
     border: 1px solid lightgray;
-    padding: 1.5%;
+    margin-top: 2%;
+    padding: 3%;
+    padding-top: 2%;
+    padding-bottom: 2%;
 
     .inner
     {
@@ -23,6 +26,7 @@
 
         .right
         {
+            width: 95%;
             .profile
             {
                 display: flex;

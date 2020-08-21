@@ -1,38 +1,43 @@
 <div class="container">
     <div class="inner">
         <div class="left">
-            <div>
-                <img src="../../assets/navIcon/user.png" alt="">
+            <div *ngIf="creatorChannel">
+                <img [src]="creatorChannel.photoURL" alt="">
             </div>
         </div>
-        <div class="right">
+        <div class="right" *ngIf="creatorChannel">
             <div class="profile">
                 <div class="name" style="margin-right: .7%;">
-                    PewDiePie
+                    {{ creatorChannel.name }}
                 </div>
                 <div class="time">
-                    3 days ago
+                    {{ timePost }}
                 </div>
             </div>
             <div class="content">   
-                Finished Ghost of Tsushima 100%, these are my favorite stills from it. https://imgur.com/gallery/nBI944r
-                God of War Playthrough Live coming soon!﻿
+                {{ post.content }}
             </div>
-            <div class="picture">
-                <img src="../../assets/upload/unnamed.jpg" alt="">
+            <div class="picture" *ngIf="post.photoURL != ''">
+                <img [src]="post.photoURL" alt="">
             </div>
             <div class="misc">
-                <div class="like">
+                <div class="like" *ngIf="!liked" (click)="initiateLike()">
+                    <i class="fa fa-thumbs-up"></i>
+                </div>
+                <div class="like" *ngIf="liked" style="color: blue" (click)="initiateLike()">
                     <i class="fa fa-thumbs-up"></i>
                 </div>
                 <div class="like-count">
-                    100k
+                    {{ post.likes }}
                 </div>
-                <div class="dislike">
+                <div class="dislike" *ngIf="!disliked" (click)="initiateDislike()">
+                    <i class="fa fa-thumbs-down"></i>
+                </div>
+                <div class="dislike" *ngIf="disliked" style="color: blue" (click)="initiateDislike()">
                     <i class="fa fa-thumbs-down"></i>
                 </div>
                 <div class="dislike-count">
-                    450
+                    {{ post.dislikes }}
                 </div>
             </div>
         </div>

@@ -283,6 +283,8 @@ input newPostDislike {
 
 type Query {
   posts: [Post!]!
+  postLikes: [PostLike!]!
+  postDislikes: [PostDislike!]!
   subscriptions: [ChannelSubscription!]!
   channels: [Channel!]!
   videos: [Video!]!
@@ -356,10 +358,10 @@ type Mutation {
   decreaseSubscriber(id: ID!): Boolean!
 
   addPost(input: newPost): Post!
-  increasePostLike(postId: ID!): Boolean!
-  decreasePostLike(postId: ID!): Boolean!
-  increasePostDislike(postId: ID!): Boolean!
-  decreasePostDislike(postId: ID!): Boolean!
+  increasePostLike(id: ID!): Boolean!
+  decreasePostLike(id: ID!): Boolean!
+  increasePostDislike(id: ID!): Boolean!
+  decreasePostDislike(id: ID!): Boolean!
   registerPostLike(input: newPostLike): Boolean!
   removePostLike(postId: Int!, channelId: Int!): Boolean!
   registerPostDislike(input: newPostDislike): Boolean!

@@ -1011,11 +1011,11 @@ func (r *mutationResolver) AddPost(ctx context.Context, input *model.NewPost) (*
 	return &post, nil
 }
 
-func (r *mutationResolver) IncreasePostLike(ctx context.Context, postID string) (bool, error) {
+func (r *mutationResolver) IncreasePostLike(ctx context.Context, id string) (bool, error) {
 	var post model.Post
 	var temp int
 
-	err := r.DB.Model(&post).Where("post_id = ?", postID).Select()
+	err := r.DB.Model(&post).Where("id = ?", id).Select()
 
 	if err != nil {
 		return false, err
@@ -1026,7 +1026,7 @@ func (r *mutationResolver) IncreasePostLike(ctx context.Context, postID string) 
 
 	post.Likes = temp
 
-	_, updateErr := r.DB.Model(&post).Where("post_id = ?", postID).Update()
+	_, updateErr := r.DB.Model(&post).Where("id = ?", id).Update()
 
 	if updateErr != nil {
 		return false, updateErr
@@ -1035,11 +1035,11 @@ func (r *mutationResolver) IncreasePostLike(ctx context.Context, postID string) 
 	return true, nil
 }
 
-func (r *mutationResolver) DecreasePostLike(ctx context.Context, postID string) (bool, error) {
+func (r *mutationResolver) DecreasePostLike(ctx context.Context, id string) (bool, error) {
 	var post model.Post
 	var temp int
 
-	err := r.DB.Model(&post).Where("post_id = ?", postID).Select()
+	err := r.DB.Model(&post).Where("id = ?", id).Select()
 
 	if err != nil {
 		return false, err
@@ -1054,7 +1054,7 @@ func (r *mutationResolver) DecreasePostLike(ctx context.Context, postID string) 
 
 	post.Likes = temp
 
-	_, updateErr := r.DB.Model(&post).Where("post_id = ?", postID).Update()
+	_, updateErr := r.DB.Model(&post).Where("id = ?", id).Update()
 
 	if updateErr != nil {
 		return false, updateErr
@@ -1063,11 +1063,11 @@ func (r *mutationResolver) DecreasePostLike(ctx context.Context, postID string) 
 	return true, nil
 }
 
-func (r *mutationResolver) IncreasePostDislike(ctx context.Context, postID string) (bool, error) {
+func (r *mutationResolver) IncreasePostDislike(ctx context.Context, id string) (bool, error) {
 	var post model.Post
 	var temp int
 
-	err := r.DB.Model(&post).Where("post_id = ?", postID).Select()
+	err := r.DB.Model(&post).Where("id = ?", id).Select()
 
 	if err != nil {
 		return false, err
@@ -1078,7 +1078,7 @@ func (r *mutationResolver) IncreasePostDislike(ctx context.Context, postID strin
 
 	post.Dislikes = temp
 
-	_, updateErr := r.DB.Model(&post).Where("post_id = ?", postID).Update()
+	_, updateErr := r.DB.Model(&post).Where("id = ?", id).Update()
 
 	if updateErr != nil {
 		return false, updateErr
@@ -1087,11 +1087,11 @@ func (r *mutationResolver) IncreasePostDislike(ctx context.Context, postID strin
 	return true, nil
 }
 
-func (r *mutationResolver) DecreasePostDislike(ctx context.Context, postID string) (bool, error) {
+func (r *mutationResolver) DecreasePostDislike(ctx context.Context, id string) (bool, error) {
 	var post model.Post
 	var temp int
 
-	err := r.DB.Model(&post).Where("post_id = ?", postID).Select()
+	err := r.DB.Model(&post).Where("id = ?", id).Select()
 
 	if err != nil {
 		return false, err
@@ -1106,7 +1106,7 @@ func (r *mutationResolver) DecreasePostDislike(ctx context.Context, postID strin
 
 	post.Dislikes = temp
 
-	_, updateErr := r.DB.Model(&post).Where("post_id = ?", postID).Update()
+	_, updateErr := r.DB.Model(&post).Where("id = ?", id).Update()
 
 	if updateErr != nil {
 		return false, updateErr
@@ -1191,6 +1191,30 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	}
 
 	return posts, nil
+}
+
+func (r *queryResolver) PostLikes(ctx context.Context) ([]*model.PostLike, error) {
+	var postLikes []*model.PostLike
+
+	err := r.DB.Model(&postLikes).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return postLikes, nil
+}
+
+func (r *queryResolver) PostDislikes(ctx context.Context) ([]*model.PostDislike, error) {
+	var postDislikes []*model.PostDislike
+
+	err := r.DB.Model(&postDislikes).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return postDislikes, nil
 }
 
 func (r *queryResolver) Subscriptions(ctx context.Context) ([]*model.ChannelSubscription, error) {

@@ -148,15 +148,15 @@ type ComplexityRoot struct {
 		DecreaseCommentLike      func(childComplexity int, commentID string) int
 		DecreaseDislike          func(childComplexity int, videoID string) int
 		DecreaseLike             func(childComplexity int, videoID string) int
-		DecreasePostDislike      func(childComplexity int, postID string) int
-		DecreasePostLike         func(childComplexity int, postID string) int
+		DecreasePostDislike      func(childComplexity int, id string) int
+		DecreasePostLike         func(childComplexity int, id string) int
 		DecreaseSubscriber       func(childComplexity int, id string) int
 		DecreaseVideoCount       func(childComplexity int, playlistID string) int
 		DislikeVideo             func(childComplexity int, videoID string) int
 		IncreaseCommentDislike   func(childComplexity int, commentID string) int
 		IncreaseCommentLike      func(childComplexity int, commentID string) int
-		IncreasePostDislike      func(childComplexity int, postID string) int
-		IncreasePostLike         func(childComplexity int, postID string) int
+		IncreasePostDislike      func(childComplexity int, id string) int
+		IncreasePostLike         func(childComplexity int, id string) int
 		IncreaseSubscriber       func(childComplexity int, id string) int
 		LikeVideo                func(childComplexity int, videoID string) int
 		RegisterCommentDislike   func(childComplexity int, input *model.NewCommentDislike) int
@@ -242,6 +242,8 @@ type ComplexityRoot struct {
 		Likes              func(childComplexity int) int
 		PlaylistVideos     func(childComplexity int, channelEmail string) int
 		Playlists          func(childComplexity int, channelEmail string) int
+		PostDislikes       func(childComplexity int) int
+		PostLikes          func(childComplexity int) int
 		Posts              func(childComplexity int) int
 		PublicVideos       func(childComplexity int) int
 		SearchChannel      func(childComplexity int, channelName string) int
@@ -320,10 +322,10 @@ type MutationResolver interface {
 	IncreaseSubscriber(ctx context.Context, id string) (bool, error)
 	DecreaseSubscriber(ctx context.Context, id string) (bool, error)
 	AddPost(ctx context.Context, input *model.NewPost) (*model.Post, error)
-	IncreasePostLike(ctx context.Context, postID string) (bool, error)
-	DecreasePostLike(ctx context.Context, postID string) (bool, error)
-	IncreasePostDislike(ctx context.Context, postID string) (bool, error)
-	DecreasePostDislike(ctx context.Context, postID string) (bool, error)
+	IncreasePostLike(ctx context.Context, id string) (bool, error)
+	DecreasePostLike(ctx context.Context, id string) (bool, error)
+	IncreasePostDislike(ctx context.Context, id string) (bool, error)
+	DecreasePostDislike(ctx context.Context, id string) (bool, error)
 	RegisterPostLike(ctx context.Context, input *model.NewPostLike) (bool, error)
 	RemovePostLike(ctx context.Context, postID int, channelID int) (bool, error)
 	RegisterPostDislike(ctx context.Context, input *model.NewPostDislike) (bool, error)
@@ -331,6 +333,8 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Posts(ctx context.Context) ([]*model.Post, error)
+	PostLikes(ctx context.Context) ([]*model.PostLike, error)
+	PostDislikes(ctx context.Context) ([]*model.PostDislike, error)
 	Subscriptions(ctx context.Context) ([]*model.ChannelSubscription, error)
 	Channels(ctx context.Context) ([]*model.Channel, error)
 	Videos(ctx context.Context) ([]*model.Video, error)
@@ -1089,7 +1093,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DecreasePostDislike(childComplexity, args["postId"].(string)), true
+		return e.complexity.Mutation.DecreasePostDislike(childComplexity, args["id"].(string)), true
 
 	case "Mutation.decreasePostLike":
 		if e.complexity.Mutation.DecreasePostLike == nil {
@@ -1101,7 +1105,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DecreasePostLike(childComplexity, args["postId"].(string)), true
+		return e.complexity.Mutation.DecreasePostLike(childComplexity, args["id"].(string)), true
 
 	case "Mutation.decreaseSubscriber":
 		if e.complexity.Mutation.DecreaseSubscriber == nil {
@@ -1173,7 +1177,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.IncreasePostDislike(childComplexity, args["postId"].(string)), true
+		return e.complexity.Mutation.IncreasePostDislike(childComplexity, args["id"].(string)), true
 
 	case "Mutation.increasePostLike":
 		if e.complexity.Mutation.IncreasePostLike == nil {
@@ -1185,7 +1189,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.IncreasePostLike(childComplexity, args["postId"].(string)), true
+		return e.complexity.Mutation.IncreasePostLike(childComplexity, args["id"].(string)), true
 
 	case "Mutation.increaseSubscriber":
 		if e.complexity.Mutation.IncreaseSubscriber == nil {
@@ -1806,6 +1810,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Playlists(childComplexity, args["channelEmail"].(string)), true
 
+	case "Query.postDislikes":
+		if e.complexity.Query.PostDislikes == nil {
+			break
+		}
+
+		return e.complexity.Query.PostDislikes(childComplexity), true
+
+	case "Query.postLikes":
+		if e.complexity.Query.PostLikes == nil {
+			break
+		}
+
+		return e.complexity.Query.PostLikes(childComplexity), true
+
 	case "Query.posts":
 		if e.complexity.Query.Posts == nil {
 			break
@@ -2345,6 +2363,8 @@ input newPostDislike {
 
 type Query {
   posts: [Post!]!
+  postLikes: [PostLike!]!
+  postDislikes: [PostDislike!]!
   subscriptions: [ChannelSubscription!]!
   channels: [Channel!]!
   videos: [Video!]!
@@ -2418,10 +2438,10 @@ type Mutation {
   decreaseSubscriber(id: ID!): Boolean!
 
   addPost(input: newPost): Post!
-  increasePostLike(postId: ID!): Boolean!
-  decreasePostLike(postId: ID!): Boolean!
-  increasePostDislike(postId: ID!): Boolean!
-  decreasePostDislike(postId: ID!): Boolean!
+  increasePostLike(id: ID!): Boolean!
+  decreasePostLike(id: ID!): Boolean!
+  increasePostDislike(id: ID!): Boolean!
+  decreasePostDislike(id: ID!): Boolean!
   registerPostLike(input: newPostLike): Boolean!
   removePostLike(postId: Int!, channelId: Int!): Boolean!
   registerPostDislike(input: newPostDislike): Boolean!
@@ -2882,13 +2902,13 @@ func (ec *executionContext) field_Mutation_decreasePostDislike_args(ctx context.
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["postId"]; ok {
+	if tmp, ok := rawArgs["id"]; ok {
 		arg0, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["postId"] = arg0
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -2896,13 +2916,13 @@ func (ec *executionContext) field_Mutation_decreasePostLike_args(ctx context.Con
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["postId"]; ok {
+	if tmp, ok := rawArgs["id"]; ok {
 		arg0, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["postId"] = arg0
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -2980,13 +3000,13 @@ func (ec *executionContext) field_Mutation_increasePostDislike_args(ctx context.
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["postId"]; ok {
+	if tmp, ok := rawArgs["id"]; ok {
 		arg0, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["postId"] = arg0
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -2994,13 +3014,13 @@ func (ec *executionContext) field_Mutation_increasePostLike_args(ctx context.Con
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["postId"]; ok {
+	if tmp, ok := rawArgs["id"]; ok {
 		arg0, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["postId"] = arg0
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -7524,7 +7544,7 @@ func (ec *executionContext) _Mutation_increasePostLike(ctx context.Context, fiel
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().IncreasePostLike(rctx, args["postId"].(string))
+		return ec.resolvers.Mutation().IncreasePostLike(rctx, args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7565,7 +7585,7 @@ func (ec *executionContext) _Mutation_decreasePostLike(ctx context.Context, fiel
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DecreasePostLike(rctx, args["postId"].(string))
+		return ec.resolvers.Mutation().DecreasePostLike(rctx, args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7606,7 +7626,7 @@ func (ec *executionContext) _Mutation_increasePostDislike(ctx context.Context, f
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().IncreasePostDislike(rctx, args["postId"].(string))
+		return ec.resolvers.Mutation().IncreasePostDislike(rctx, args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7647,7 +7667,7 @@ func (ec *executionContext) _Mutation_decreasePostDislike(ctx context.Context, f
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DecreasePostDislike(rctx, args["postId"].(string))
+		return ec.resolvers.Mutation().DecreasePostDislike(rctx, args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -9016,6 +9036,74 @@ func (ec *executionContext) _Query_posts(ctx context.Context, field graphql.Coll
 	res := resTmp.([]*model.Post)
 	fc.Result = res
 	return ec.marshalNPost2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐPostᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_postLikes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().PostLikes(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.PostLike)
+	fc.Result = res
+	return ec.marshalNPostLike2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐPostLikeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_postDislikes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().PostDislikes(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.PostDislike)
+	fc.Result = res
+	return ec.marshalNPostDislike2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐPostDislikeᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_subscriptions(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -13316,6 +13404,34 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "postLikes":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_postLikes(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "postDislikes":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_postDislikes(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "subscriptions":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -14518,6 +14634,108 @@ func (ec *executionContext) marshalNPost2ᚖGo_graphqlᚋgraphᚋmodelᚐPost(ct
 		return graphql.Null
 	}
 	return ec._Post(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNPostDislike2Go_graphqlᚋgraphᚋmodelᚐPostDislike(ctx context.Context, sel ast.SelectionSet, v model.PostDislike) graphql.Marshaler {
+	return ec._PostDislike(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPostDislike2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐPostDislikeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.PostDislike) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPostDislike2ᚖGo_graphqlᚋgraphᚋmodelᚐPostDislike(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNPostDislike2ᚖGo_graphqlᚋgraphᚋmodelᚐPostDislike(ctx context.Context, sel ast.SelectionSet, v *model.PostDislike) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._PostDislike(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNPostLike2Go_graphqlᚋgraphᚋmodelᚐPostLike(ctx context.Context, sel ast.SelectionSet, v model.PostLike) graphql.Marshaler {
+	return ec._PostLike(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPostLike2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐPostLikeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.PostLike) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPostLike2ᚖGo_graphqlᚋgraphᚋmodelᚐPostLike(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNPostLike2ᚖGo_graphqlᚋgraphᚋmodelᚐPostLike(ctx context.Context, sel ast.SelectionSet, v *model.PostLike) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._PostLike(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
