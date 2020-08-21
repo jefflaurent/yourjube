@@ -1,0 +1,72 @@
+<hr>
+<div class="outer">
+    <div class="container">
+        <div class="line">{{space}}</div>
+        <div class="left">
+            <img [src]="video.videoThumbnail" alt="">
+        </div>
+        <div class="mid">
+            <div class="top" [id]="dummyId2">
+                {{ video.videoTitle }}
+            </div>
+            <div class="input-title hidden" [id]="dummyId3">
+                <input type="text">
+            </div>
+            <div class="bot" [id]="dummyId4">
+                {{ description }}
+            </div>
+            <div class="input-desc hidden" [id]="dummyId5">
+                <textarea cols="10"></textarea>
+            </div>
+        </div>
+        <div class="right" (click)="toggleModal()">
+            <div *ngIf="visibility == 'Public'">
+                <i class="fa fa-globe"></i>
+            </div>
+            <div *ngIf="visibility == 'Private'">
+                <i class="fa fa-lock"></i>
+            </div>
+            <div style="font-size: .9em; margin-left: 2%; margin-right: 2%">
+                {{ visibility }}
+            </div>
+            <div>
+                <i class="fa fa-caret-down"></i>
+            </div>
+            <div class="visibility-change-modal hidden" [id]="dummyId">
+                <div class="private">
+                    <div class="icon">
+                        <i class="fa fa-lock"></i>
+                    </div>
+                    <div class="text">
+                        <div>
+                            Private
+                        </div>
+                    </div>
+                </div>
+                <div class="public">
+                    <div class="icon">
+                        <i class="fa fa-globe"></i>
+                    </div>
+                    <div class="text">
+                        <div>
+                            Public
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="end-line">{{space}}</div>
+    </div>
+    <div class="container-right">
+        <div class="right-container">
+            <div class="clickables" (click)="toggleEdit()">
+                <i class="fa fa-pencil fa-lg"></i>
+            </div>
+            <div class="clickables">
+                <i class="fa fa-picture-o fa-lg"></i>
+            </div>
+        </div>
+        <div class="right-most"></div>
+    </div>
+</div>
+<hr>

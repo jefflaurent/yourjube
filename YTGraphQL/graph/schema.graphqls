@@ -317,6 +317,12 @@ type Mutation {
   changeBanner(id: ID!, bannerURL: String!): Boolean!
   changePremium(id: ID!, isPremium: String!): Boolean!
   validPremium(id: ID!, validPremium: Int!): Boolean!
+  
+  changeVideoPrivacy(videoId: ID!, viewer: String!): Boolean!
+  changeVideoDescription(videoId: ID!, videoDesc: String!): Boolean!
+  changeVideoTitle(videoId: ID!, videoTitle: String!): Boolean!
+  changeVideoThumbnail(videoId: ID!, videoThumbnail: String!): Boolean!
+  deleteVideo(videoId: ID!): Boolean!
   createVideo(input: newVideo): Video!
   watchVideo(videoId: ID!): Boolean!
   likeVideo(videoId: ID!): Boolean!

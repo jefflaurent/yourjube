@@ -51,7 +51,7 @@
         <div class="tab-choice about" (click)="moveToAbout()">
             ABOUT
         </div>
-        <div class="tab-choice studio">
+        <div class="tab-choice studio" (click)="moveToStudio()">
             STUDIO
         </div>
         <div class="tab-choice settings" (click)="moveToSettings()">
@@ -83,7 +83,7 @@
         <app-channel-community [chan]="(channel)"></app-channel-community>
     </div>
 
-    <div class="channel-studio">
-
+    <div class="channel-studio" *ngIf="channel">
+        <app-channel-studio [chan]="(channel)"></app-channel-studio>
     </div>
 </div>

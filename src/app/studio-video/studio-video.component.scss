@@ -1,0 +1,251 @@
+hr
+{
+    border: 1px solid lightgrey;
+    border-top: none;
+    margin: 0;
+}
+
+.outer
+{
+    display: flex;
+    justify-content: flex-start;
+
+    .container
+    {
+        width: 70%;
+        padding: .5%;
+        padding-left: 0;
+        padding-right: 0;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    
+        .line
+        {
+            width: .5%;
+            border: 1px solid lightgrey;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+            height: 110px;
+        }
+    
+        .left
+        {
+            width: 24.5%;
+            display: flex;
+            justify-content: center;
+    
+            img
+            {
+                width: 90%;
+            }
+        }
+    
+        .mid
+        {
+            width: 65%;
+            display: flex;
+            flex-direction: column;
+            font-size: .8em;
+    
+            .top
+            {
+                margin-bottom: 4%;
+            }
+
+            .top.hidden
+            {
+                display: none;
+            }
+
+            .input-title
+            {
+                margin-bottom: 4%;
+
+                input[type='text']
+                {
+                    width: 100%;
+                    outline-width: 0;
+                    background-color: #f2f2f2;
+                    border: 1px solid rgba(76, 67, 67, 1);
+                    border-left: none;
+                    border-top: none;
+                    border-right: none;
+                }
+            }
+
+            .input-title.hidden
+            {
+                display: none;
+            }
+    
+            .bot
+            {
+                color: rgba(76, 67, 67, 1);
+            }
+
+            .bot.hidden
+            {
+                display: none;
+            }
+
+            .input-desc
+            {
+                textarea
+                {
+                    outline-width: 0;
+                    width: 100%;
+                    resize: none;
+                }
+
+                textarea:focus
+                {
+                    outline: none;
+                    border: 1px solid blue;
+                    box-shadow: 0 0 3px #929496;
+                }
+            }
+
+            .input-desc.hidden
+            {
+                display: none;
+            }
+        }
+    
+        .right
+        {
+            position: relative;
+            width: 19.5%;
+            display: flex;
+            justify-content: center;
+
+            .visibility-change-modal
+            {
+                top: 120%;
+                right: 20%;
+                width: 100%;
+                z-index: 69;
+                padding-top: 6%;
+                font-size: .9em;
+                padding-bottom: 6%;
+                position: absolute;
+                background-color: white;
+
+                .private
+                {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 45px;
+
+                    .icon
+                    {
+                        width: 50%;
+                        display: flex;
+                        justify-content: center;
+                    }
+
+                    .text
+                    {
+                        width: 50%;
+                        display: flex;
+                        justify-content: flex-start;
+                    }
+                }
+
+                .private:hover
+                {
+                    cursor: pointer;
+                    background-color: lightgrey;
+                }
+
+                .public
+                {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 45px;
+
+                    .icon
+                    {
+                        width: 50%;
+                        display: flex;
+                        justify-content: center;
+                    }
+
+                    .text
+                    {
+                        width: 50%;
+                        display: flex;
+                        justify-content: flex-start;
+                    }
+                }
+
+                .public:hover
+                {
+                    cursor: pointer;
+                    background-color: lightgrey;
+                }
+            }
+
+            .visibility-change-modal.hidden
+            {
+                display: none;
+            }
+        }
+
+        .right:hover
+        {
+            cursor: pointer;
+        }
+    
+        .end-line
+        {
+            width: .5%;
+            border: 1px solid lightgrey;
+            border-top: none;
+            border-left: none;
+            border-bottom: none;
+            height: 110px;
+        }
+    }
+
+    .container-right
+    {
+        width: 30%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+        .right-container
+        {
+            width: 99.5%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        
+            .clickables
+            {
+                margin: 2%;
+                color: rgba(76, 67, 67, 1);
+            }
+    
+            .clickables:hover
+            {
+                color: black;
+                cursor: pointer;
+            }
+        }
+
+        .right-most
+        {
+            width: .5;
+            height: 110px;
+            border: 1px solid lightgrey;
+            border-left: none;
+            border-top: none;
+            border-bottom: none;
+        }
+    }
+}

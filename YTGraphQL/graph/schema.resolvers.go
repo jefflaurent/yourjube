@@ -199,6 +199,104 @@ func (r *mutationResolver) ValidPremium(ctx context.Context, id string, validPre
 	return true, nil
 }
 
+func (r *mutationResolver) ChangeVideoPrivacy(ctx context.Context, videoID string, viewer string) (bool, error) {
+	var video model.Video
+
+	err := r.DB.Model(&video).Where("video_id = ?", videoID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	video.Viewer = viewer
+
+	_, updateErr := r.DB.Model(&video).Where("video_id = ?", videoID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) ChangeVideoDescription(ctx context.Context, videoID string, videoDesc string) (bool, error) {
+	var video model.Video
+
+	err := r.DB.Model(&video).Where("video_id = ?", videoID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	video.VideoDesc = videoDesc
+
+	_, updateErr := r.DB.Model(&video).Where("video_id = ?", videoID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) ChangeVideoTitle(ctx context.Context, videoID string, videoTitle string) (bool, error) {
+	var video model.Video
+
+	err := r.DB.Model(&video).Where("video_id = ?", videoID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	video.VideoTitle = videoTitle
+
+	_, updateErr := r.DB.Model(&video).Where("video_id = ?", videoID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) ChangeVideoThumbnail(ctx context.Context, videoID string, videoThumbnail string) (bool, error) {
+	var video model.Video
+
+	err := r.DB.Model(&video).Where("video_id = ?", videoID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	video.VideoThumbnail = videoThumbnail
+
+	_, updateErr := r.DB.Model(&video).Where("video_id = ?", videoID).Update()
+
+	if updateErr != nil {
+		return false, updateErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) DeleteVideo(ctx context.Context, videoID string) (bool, error) {
+	var video model.Video
+
+	err := r.DB.Model(&video).Where("video_id = ?", videoID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	_, deleteErr := r.DB.Model(&video).Where("video_id = ?", videoID).Delete()
+
+	if deleteErr != nil {
+		return false, deleteErr
+	}
+
+	return true, nil
+}
+
 func (r *mutationResolver) CreateVideo(ctx context.Context, input *model.NewVideo) (*model.Video, error) {
 	video := model.Video{
 		VideoTitle:      input.VideoTitle,

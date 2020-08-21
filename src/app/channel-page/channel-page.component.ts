@@ -63,6 +63,7 @@ export class ChannelPageComponent implements OnInit {
     this.hideAbout()
     this.hideSettings()
     this.hideCommunity()
+    this.hideStudio()
     this.showHome()
   }
 
@@ -72,6 +73,7 @@ export class ChannelPageComponent implements OnInit {
     this.hideAbout()
     this.hideSettings()
     this.hideCommunity()
+    this.hideStudio()
     this.showVideos()
   }
 
@@ -81,6 +83,7 @@ export class ChannelPageComponent implements OnInit {
     this.hideAbout()
     this.hideSettings()    
     this.hideCommunity()
+    this.hideStudio()
     this.showPlaylist()
   }
 
@@ -90,6 +93,7 @@ export class ChannelPageComponent implements OnInit {
     this.hidePlaylist()
     this.hideSettings()
     this.hideCommunity()
+    this.hideStudio()
     this.showAbout()
   }
 
@@ -99,6 +103,7 @@ export class ChannelPageComponent implements OnInit {
     this.hidePlaylist()
     this.hideAbout()
     this.hideCommunity()
+    this.hideStudio()
     this.showSettings()
   }
 
@@ -108,7 +113,18 @@ export class ChannelPageComponent implements OnInit {
     this.hidePlaylist()
     this.hideAbout()
     this.hideSettings()
+    this.hideStudio()
     this.showCommunity()   
+  }
+
+  moveToStudio(): void {
+    this.hideHome()
+    this.hideVideos()
+    this.hidePlaylist()
+    this.hideAbout()
+    this.hideSettings()
+    this.hideCommunity()
+    this.showStudio()
   }
 
   showHome(): void {
@@ -191,6 +207,20 @@ export class ChannelPageComponent implements OnInit {
   hideCommunity(): void {
     var x = document.querySelector('.channel-community')
     var y = document.querySelector('.community')
+    x.classList.add('hidden')
+    y.classList.remove('selected')
+  }
+
+  showStudio(): void {
+    var x = document.querySelector('.channel-studio')
+    var y = document.querySelector('.studio')
+    x.classList.remove('hidden')
+    y.classList.add('selected')
+  }
+
+  hideStudio(): void {
+    var x = document.querySelector('.channel-studio')
+    var y = document.querySelector('.studio')
     x.classList.add('hidden')
     y.classList.remove('selected')
   }

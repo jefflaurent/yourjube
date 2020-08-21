@@ -61,6 +61,8 @@ import { SubscriptionService } from './data-service/subscription-service';
 import { PostService } from './data-service/post-service';
 import { ChannelCommunityComponent } from './channel-community/channel-community.component';
 import { CommunityPostComponent } from './community-post/community-post.component';
+import { ChannelStudioComponent } from './channel-studio/channel-studio.component';
+import { StudioVideoComponent } from './studio-video/studio-video.component';
 
 
 @NgModule({
@@ -99,6 +101,8 @@ import { CommunityPostComponent } from './community-post/community-post.componen
     ChannelSettingsComponent,
     ChannelCommunityComponent,
     CommunityPostComponent,
+    ChannelStudioComponent,
+    StudioVideoComponent,
   ],
   imports: [
     HttpModule,

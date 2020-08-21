@@ -140,6 +140,10 @@ type ComplexityRoot struct {
 		ChangePlaylistVisibility func(childComplexity int, playlistID string, visibility string) int
 		ChangePremium            func(childComplexity int, id string, isPremium string) int
 		ChangeTwitter            func(childComplexity int, id string, twitter string) int
+		ChangeVideoDescription   func(childComplexity int, videoID string, videoDesc string) int
+		ChangeVideoPrivacy       func(childComplexity int, videoID string, viewer string) int
+		ChangeVideoThumbnail     func(childComplexity int, videoID string, videoThumbnail string) int
+		ChangeVideoTitle         func(childComplexity int, videoID string, videoTitle string) int
 		ClearPlaylist            func(childComplexity int, playlistID int) int
 		CreateChannel            func(childComplexity int, input *model.NewChannel) int
 		CreatePlaylist           func(childComplexity int, input *model.NewPlaylist) int
@@ -152,6 +156,7 @@ type ComplexityRoot struct {
 		DecreasePostLike         func(childComplexity int, id string) int
 		DecreaseSubscriber       func(childComplexity int, id string) int
 		DecreaseVideoCount       func(childComplexity int, playlistID string) int
+		DeleteVideo              func(childComplexity int, videoID string) int
 		DislikeVideo             func(childComplexity int, videoID string) int
 		IncreaseCommentDislike   func(childComplexity int, commentID string) int
 		IncreaseCommentLike      func(childComplexity int, commentID string) int
@@ -285,6 +290,11 @@ type MutationResolver interface {
 	ChangeBanner(ctx context.Context, id string, bannerURL string) (bool, error)
 	ChangePremium(ctx context.Context, id string, isPremium string) (bool, error)
 	ValidPremium(ctx context.Context, id string, validPremium int) (bool, error)
+	ChangeVideoPrivacy(ctx context.Context, videoID string, viewer string) (bool, error)
+	ChangeVideoDescription(ctx context.Context, videoID string, videoDesc string) (bool, error)
+	ChangeVideoTitle(ctx context.Context, videoID string, videoTitle string) (bool, error)
+	ChangeVideoThumbnail(ctx context.Context, videoID string, videoThumbnail string) (bool, error)
+	DeleteVideo(ctx context.Context, videoID string) (bool, error)
 	CreateVideo(ctx context.Context, input *model.NewVideo) (*model.Video, error)
 	WatchVideo(ctx context.Context, videoID string) (bool, error)
 	LikeVideo(ctx context.Context, videoID string) (bool, error)
@@ -987,6 +997,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.ChangeTwitter(childComplexity, args["id"].(string), args["twitter"].(string)), true
 
+	case "Mutation.changeVideoDescription":
+		if e.complexity.Mutation.ChangeVideoDescription == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changeVideoDescription_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangeVideoDescription(childComplexity, args["videoId"].(string), args["videoDesc"].(string)), true
+
+	case "Mutation.changeVideoPrivacy":
+		if e.complexity.Mutation.ChangeVideoPrivacy == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changeVideoPrivacy_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangeVideoPrivacy(childComplexity, args["videoId"].(string), args["viewer"].(string)), true
+
+	case "Mutation.changeVideoThumbnail":
+		if e.complexity.Mutation.ChangeVideoThumbnail == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changeVideoThumbnail_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangeVideoThumbnail(childComplexity, args["videoId"].(string), args["videoThumbnail"].(string)), true
+
+	case "Mutation.changeVideoTitle":
+		if e.complexity.Mutation.ChangeVideoTitle == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changeVideoTitle_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangeVideoTitle(childComplexity, args["videoId"].(string), args["videoTitle"].(string)), true
+
 	case "Mutation.clearPlaylist":
 		if e.complexity.Mutation.ClearPlaylist == nil {
 			break
@@ -1130,6 +1188,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DecreaseVideoCount(childComplexity, args["playlistId"].(string)), true
+
+	case "Mutation.deleteVideo":
+		if e.complexity.Mutation.DeleteVideo == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteVideo_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteVideo(childComplexity, args["videoId"].(string)), true
 
 	case "Mutation.dislikeVideo":
 		if e.complexity.Mutation.DislikeVideo == nil {
@@ -2397,6 +2467,12 @@ type Mutation {
   changeBanner(id: ID!, bannerURL: String!): Boolean!
   changePremium(id: ID!, isPremium: String!): Boolean!
   validPremium(id: ID!, validPremium: Int!): Boolean!
+  
+  changeVideoPrivacy(videoId: ID!, viewer: String!): Boolean!
+  changeVideoDescription(videoId: ID!, videoDesc: String!): Boolean!
+  changeVideoTitle(videoId: ID!, videoTitle: String!): Boolean!
+  changeVideoThumbnail(videoId: ID!, videoThumbnail: String!): Boolean!
+  deleteVideo(videoId: ID!): Boolean!
   createVideo(input: newVideo): Video!
   watchVideo(videoId: ID!): Boolean!
   likeVideo(videoId: ID!): Boolean!
@@ -2786,6 +2862,94 @@ func (ec *executionContext) field_Mutation_changeTwitter_args(ctx context.Contex
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_changeVideoDescription_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["videoId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["videoDesc"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoDesc"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_changeVideoPrivacy_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["videoId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["viewer"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["viewer"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_changeVideoThumbnail_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["videoId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["videoThumbnail"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoThumbnail"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_changeVideoTitle_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["videoId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["videoTitle"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoTitle"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_clearPlaylist_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2951,6 +3115,20 @@ func (ec *executionContext) field_Mutation_decreaseVideoCount_args(ctx context.C
 		}
 	}
 	args["playlistId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteVideo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["videoId"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["videoId"] = arg0
 	return args, nil
 }
 
@@ -5987,6 +6165,211 @@ func (ec *executionContext) _Mutation_validPremium(ctx context.Context, field gr
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().ValidPremium(rctx, args["id"].(string), args["validPremium"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_changeVideoPrivacy(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changeVideoPrivacy_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangeVideoPrivacy(rctx, args["videoId"].(string), args["viewer"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_changeVideoDescription(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changeVideoDescription_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangeVideoDescription(rctx, args["videoId"].(string), args["videoDesc"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_changeVideoTitle(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changeVideoTitle_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangeVideoTitle(rctx, args["videoId"].(string), args["videoTitle"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_changeVideoThumbnail(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_changeVideoThumbnail_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ChangeVideoThumbnail(rctx, args["videoId"].(string), args["videoThumbnail"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteVideo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteVideo_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteVideo(rctx, args["videoId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -12856,6 +13239,31 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "validPremium":
 			out.Values[i] = ec._Mutation_validPremium(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changeVideoPrivacy":
+			out.Values[i] = ec._Mutation_changeVideoPrivacy(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changeVideoDescription":
+			out.Values[i] = ec._Mutation_changeVideoDescription(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changeVideoTitle":
+			out.Values[i] = ec._Mutation_changeVideoTitle(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changeVideoThumbnail":
+			out.Values[i] = ec._Mutation_changeVideoThumbnail(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteVideo":
+			out.Values[i] = ec._Mutation_deleteVideo(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
