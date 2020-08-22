@@ -199,7 +199,7 @@ func (r *mutationResolver) ValidPremium(ctx context.Context, id string, validPre
 	return true, nil
 }
 
-func (r *mutationResolver) ChangeVideoPrivacy(ctx context.Context, videoID string, viewer string) (bool, error) {
+func (r *mutationResolver) ChangeVideoVisibility(ctx context.Context, videoID string, visibility string) (bool, error) {
 	var video model.Video
 
 	err := r.DB.Model(&video).Where("video_id = ?", videoID).Select()
@@ -208,7 +208,7 @@ func (r *mutationResolver) ChangeVideoPrivacy(ctx context.Context, videoID strin
 		return false, err
 	}
 
-	video.Viewer = viewer
+	video.Visibility = visibility
 
 	_, updateErr := r.DB.Model(&video).Where("video_id = ?", videoID).Update()
 

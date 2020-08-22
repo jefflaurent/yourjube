@@ -47,74 +47,39 @@
         padding-top: 2%;
         width: 85%;
 
-        .filter
+        .common-bot
         {
-            position: relative;
             display: flex;
-            font-weight: 500;
-            font-size: .9em;
-            width: 100%;
             justify-content: flex-start;
-            margin-bottom: 2%;
+            flex-direction: column;
 
-            .sort-modal
+            .bot-top
             {
-                position: absolute;
-                top: 150%;
-                background-color: white;
-                width: 13%;
-                padding-top: 1%;
-                padding-bottom: 1%;
+                font-weight: 500;
+                font-size: 1em;
+                margin-bottom: 1%;
+            }
 
-                .modal
+            .allVideos
+            {
+                display: flex;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                margin-bottom: 2%;
+    
+                .video-container
                 {
-                    display: flex;
-                    justify-content: flex-start;
-                    flex-direction: column;
-
-                    .choice
-                    {
-                        display: flex;
-                        padding-left: 13%;
-                        justify-content: center;
-                        flex-direction: column;
-                        font-weight: 400;
-                        height: 50px;
-                    }
-
-                    .choice:hover
-                    {
-                        cursor: pointer;
-                        background-color: lightgrey;
-                    }
+                    padding: .5%;
+                    box-sizing: border-box;
+                    width: 25%;
                 }
             }
 
-            .sort-modal.hidden
+            .line
             {
-                display: none;
+                margin-bottom: 1%;
             }
         }
-
-        .filter:hover
-        {
-            cursor: pointer;
-        }
-
-        .allVideos
-        {
-            display: flex;
-            justify-content: flex-start;
-            flex-wrap: wrap;
-
-            .video-container
-            {
-                padding: .5%;
-                box-sizing: border-box;
-                width: 25%;
-            }
-        }
-
     }
 
 }

@@ -10,60 +10,94 @@
                 {{ video.videoTitle }}
             </div>
             <div class="input-title hidden" [id]="dummyId3">
-                <input type="text">
+                <input type="text" [value]="titleTemp" (input)="titleTemp = $event.target.value">
             </div>
             <div class="bot" [id]="dummyId4">
                 {{ description }}
             </div>
             <div class="input-desc hidden" [id]="dummyId5">
-                <textarea cols="10"></textarea>
+                <textarea cols="10" [value]="descriptionTemp" (input)="descriptionTemp = $event.target.value"></textarea>
             </div>
         </div>
-        <div class="right" (click)="toggleModal()">
-            <div *ngIf="visibility == 'Public'">
-                <i class="fa fa-globe"></i>
-            </div>
-            <div *ngIf="visibility == 'Private'">
-                <i class="fa fa-lock"></i>
-            </div>
-            <div style="font-size: .9em; margin-left: 2%; margin-right: 2%">
-                {{ visibility }}
-            </div>
-            <div>
-                <i class="fa fa-caret-down"></i>
-            </div>
-            <div class="visibility-change-modal hidden" [id]="dummyId">
-                <div class="private">
-                    <div class="icon">
-                        <i class="fa fa-lock"></i>
+        <div class="right-container">
+            <div class="right" (click)="toggleModal()">
+                <div *ngIf="visibility == 'Public'">
+                    <i class="fa fa-globe"></i>
+                </div>
+                <div *ngIf="visibility == 'Private'">
+                    <i class="fa fa-lock"></i>
+                </div>
+                <div style="font-size: .9em; margin-left: 2%; margin-right: 2%">
+                    {{ visibility }}
+                </div>
+                <div>
+                    <i class="fa fa-caret-down"></i>
+                </div>
+                <div class="visibility-change-modal hidden" [id]="dummyId">
+                    <div class="private" (click)="changeVideoVisibility('private')">
+                        <div class="icon">
+                            <i class="fa fa-lock"></i>
+                        </div>
+                        <div class="text">
+                            <div>
+                                Private
+                            </div>
+                        </div>
                     </div>
-                    <div class="text">
-                        <div>
-                            Private
+                    <div class="public" (click)="changeVideoVisibility('public')">
+                        <div class="icon">
+                            <i class="fa fa-globe"></i>
+                        </div>
+                        <div class="text">
+                            <div>
+                                Public
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="public">
-                    <div class="icon">
-                        <i class="fa fa-globe"></i>
-                    </div>
-                    <div class="text">
-                        <div>
-                            Public
-                        </div>
-                    </div>
-                </div>
             </div>
+            <div class="cancel-confirm hidden" [id]="dummyId6">
+                <div class="cancel" (click)="openEditor()">
+                    CANCEL
+                </div>
+                <div class="confirm" (click)="saveChanges()">
+                    SAVE
+                </div>
+            </div>    
         </div>
         <div class="end-line">{{space}}</div>
     </div>
     <div class="container-right">
         <div class="right-container">
-            <div class="clickables" (click)="toggleEdit()">
+            <div class="clickables" (click)="openEditor()">
                 <i class="fa fa-pencil fa-lg"></i>
             </div>
             <div class="clickables">
-                <i class="fa fa-picture-o fa-lg"></i>
+                <label class="upload-img" [for]="dummyId7">
+                    <i class="fa fa-picture-o fa-lg"></i>
+                    <input type="file" class="hide-this" [id]="dummyId7" (change)="uploadImage($event.target.files)">
+                </label>
+            </div>
+            <div class="clickables" (click)="toggleDeleteModal()">
+                <i class="fa fa-trash fa-lg"></i>
+            </div>
+            <div class="del-confirm-modal hidden" [id]="dummyId9">
+                <div class="confirmation-top">
+                    <div class="warning-icon">
+                        <i class="fa fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="warning-txt">
+                        Are you sure you want to delete this video?
+                    </div>
+                </div>
+                <div class="confirmation-bot">
+                    <div class="cancel-del" (click)="toggleDeleteModal()">
+                        CANCEL
+                    </div>
+                    <div class="confirm-del" (click)="deleteVideo()">
+                        GO AHEAD
+                    </div>
+                </div>
             </div>
         </div>
         <div class="right-most"></div>

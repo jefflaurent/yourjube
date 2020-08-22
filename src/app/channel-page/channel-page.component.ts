@@ -20,6 +20,7 @@ export class ChannelPageComponent implements OnInit {
   loggedInChannel: Channel
   allChannels: Channel [] = []
   isSubscribed: boolean
+  owner: boolean
   allSubscriptions: Subscriptions[] = []
 
   ngOnInit(): void {
@@ -34,6 +35,11 @@ export class ChannelPageComponent implements OnInit {
         this.allChannels = result.data.channels
         this.channel = this.allChannels.find( c => c.id == this.channelId)
         this.loggedInChannel = this.allChannels.find( c => c.email == this.user.email)
+        
+        if(this.channel.email == this.loggedInChannel.email)
+          this.owner = true
+        else
+          this.owner = false
 
         this.subscriptionService.fetchAllSubs().valueChanges.subscribe( result => {
           this.allSubscriptions = result.data.subscriptions

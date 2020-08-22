@@ -5,7 +5,6 @@ import { finalize } from 'rxjs/operators';
 import { Posts } from '../model/post';
 import { Observable } from 'rxjs';
 
-
 @Component({
   selector: 'app-channel-community',
   templateUrl: './channel-community.component.html',
@@ -40,6 +39,7 @@ export class ChannelCommunityComponent implements OnInit {
 
   allPosts: Posts[] = []
   channelPosts: Posts[] = []
+  owner: boolean
 
   constructor(private storage: AngularFireStorage, private postService: PostService) { }
 

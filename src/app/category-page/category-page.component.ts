@@ -13,14 +13,20 @@ export class CategoryPageComponent implements OnInit {
   constructor(private videoService: VideoService, private activatedRoute: ActivatedRoute) { }
 
   allVideos: Videos[] = []
-  videos: Videos[] = []
+  recentVideos: Videos[] = []
+  weekVideos: Videos[] = []
+  monthVideos: Videos[] = []
+  allTimeVideos: Videos[] = []
   category: string
   categoryTitle: string
 
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe( params => {
       this.allVideos = []
-      this.videos = []
+      this.recentVideos = []
+      this.weekVideos = []
+      this.monthVideos = []
+      this.allTimeVideos = []
 
       this.category = params.get('category')
       if(this.category == 'gaming')
@@ -38,7 +44,10 @@ export class CategoryPageComponent implements OnInit {
 
       this.videoService.fetchAllVideos().valueChanges.subscribe(result => {
         this.allVideos = result.data.videos
-        this.filterVideos()
+        this.filterAllTime()
+        this.filterThisWeek()
+        this.filterThisMonth()
+        this.filterRecently()
       })
     })
   }
@@ -49,24 +58,12 @@ export class CategoryPageComponent implements OnInit {
     btn.classList.toggle('hidden')
   }
 
-  filterVideos(): void {
-    let j = 0
-    for(let i = 0; i < this.allVideos.length; i++) {
-      if(this.allVideos[i].category == this.category && this.allVideos[i].visibility == 'public') {
-        this.videos[j] = this.allVideos[i]
-        this.videos.sort((a,b) => (a.views > b.views) ? -1 : 1)
-        j++ 
-      }
-    }
-  }
-
   filterAllTime(): void {
     let j = 0
-    this.videos = []
     for(let i = 0; i < this.allVideos.length; i++) {
       if(this.allVideos[i].category == this.category && this.allVideos[i].visibility == 'public') {
-        this.videos[j] = this.allVideos[i]
-        this.videos.sort((a,b) => (a.views > b.views) ? -1 : 1)
+        this.allTimeVideos[j] = this.allVideos[i]
+        this.allTimeVideos.sort((a,b) => (a.views > b.views) ? -1 : 1)
         j++ 
       }
     }
@@ -76,11 +73,10 @@ export class CategoryPageComponent implements OnInit {
     var date = new Date()
     var currTime = date.getTime()
     let j = 0
-    this.videos = []
     for(let i = 0; i < this.allVideos.length; i++) {
       if(this.allVideos[i].category == this.category && this.allVideos[i].visibility == 'public' && currTime - this.allVideos[i].time <= 604800000) {
-        this.videos[j] = this.allVideos[i]
-        this.videos.sort((a,b) => (a.views > b.views) ? -1 : 1)
+        this.weekVideos[j] = this.allVideos[i]
+        this.weekVideos.sort((a,b) => (a.views > b.views) ? -1 : 1)
         j++ 
       }
     }
@@ -90,11 +86,10 @@ export class CategoryPageComponent implements OnInit {
     var date = new Date()
     var currTime = date.getTime()
     let j = 0
-    this.videos = []
     for(let i = 0; i < this.allVideos.length; i++) {
       if(this.allVideos[i].category == this.category && this.allVideos[i].visibility == 'public' && currTime - this.allVideos[i].time <= 2678400000) {
-        this.videos[j] = this.allVideos[i]
-        this.videos.sort((a,b) => (a.views > b.views) ? -1 : 1)
+        this.monthVideos[j] = this.allVideos[i]
+        this.monthVideos.sort((a,b) => (a.views > b.views) ? -1 : 1)
         j++ 
       }
     }
@@ -102,15 +97,12 @@ export class CategoryPageComponent implements OnInit {
 
   filterRecently(): void {
     let j = 0
-    this.videos = []
     for(let i = 0; i < this.allVideos.length; i++) {
       if(this.allVideos[i].category == this.category && this.allVideos[i].visibility == 'public') {
-        this.videos[j] = this.allVideos[i]
-        this.videos.sort((a,b) => (a.time > b.time) ? -1 : 1)
+        this.recentVideos[j] = this.allVideos[i]
+        this.recentVideos.sort((a,b) => (a.time > b.time) ? -1 : 1)
         j++ 
       }
     }
   }
-
-
 }

@@ -318,7 +318,7 @@ type Mutation {
   changePremium(id: ID!, isPremium: String!): Boolean!
   validPremium(id: ID!, validPremium: Int!): Boolean!
   
-  changeVideoPrivacy(videoId: ID!, viewer: String!): Boolean!
+  changeVideoVisibility(videoId: ID!, visibility: String!): Boolean!
   changeVideoDescription(videoId: ID!, videoDesc: String!): Boolean!
   changeVideoTitle(videoId: ID!, videoTitle: String!): Boolean!
   changeVideoThumbnail(videoId: ID!, videoThumbnail: String!): Boolean!

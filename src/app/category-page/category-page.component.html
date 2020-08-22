@@ -26,27 +26,53 @@
     </div>
 
     <div class="bottom">
-        <div class="filter" (click)="toggleModal()">
-            <div>
-                SORT BY 
+        <div class="common-bot">
+            <div class="bot-top">
+                Recently uploaded
             </div>
-            <div style="margin-left: 1%">
-                <i class="fa fa-caret-down"></i>
-            </div>
-
-            <div class="sort-modal hidden">
-                <div class="modal">
-                    <div class="choice" (click)="filterAllTime()">All-time popular</div>
-                    <div class="choice" (click)="filterThisMonth()">Popular this month</div>
-                    <div class="choice" (click)="filterThisWeek()">Popular this week</div>
-                    <div class="choice" (click)="filterRecently()">Recently uploaded</div>
+            <div class="allVideos" *ngIf="recentVideos">  
+                <div class="video-container" *ngFor="let video of recentVideos, let i = index">
+                    <app-video-page *ngIf="i < 20" [vid]="(video)"></app-video-page>
                 </div>
             </div>
+            <div class="line">
+                <hr>
+            </div>
         </div>
-
-        <div class="allVideos" *ngIf="videos">  
-            <div class="video-container" *ngFor="let video of videos, let i = index">
-                <app-video-page *ngIf="i < 20" [vid]="(video)"></app-video-page>
+        <div class="common-bot">
+            <div class="bot-top">
+                Popular this week
+            </div>
+            <div class="allVideos" *ngIf="weekVideos">  
+                <div class="video-container" *ngFor="let video of weekVideos, let i = index">
+                    <app-video-page *ngIf="i < 20" [vid]="(video)"></app-video-page>
+                </div>
+            </div>
+            <div class="line">
+                <hr>
+            </div>
+        </div>
+        <div class="common-bot">
+            <div class="bot-top">
+                Popular this month
+            </div>
+            <div class="allVideos" *ngIf="monthVideos">  
+                <div class="video-container" *ngFor="let video of monthVideos, let i = index">
+                    <app-video-page *ngIf="i < 20" [vid]="(video)"></app-video-page>
+                </div>
+            </div>
+            <div class="line">
+                <hr>
+            </div>
+        </div>
+        <div class="common-bot">
+            <div class="bot-top">
+                All time popular
+            </div>
+            <div class="allVideos" *ngIf="allTimeVideos">  
+                <div class="video-container" *ngFor="let video of allTimeVideos, let i = index">
+                    <app-video-page *ngIf="i < 20" [vid]="(video)"></app-video-page>
+                </div>
             </div>
         </div>
     </div>

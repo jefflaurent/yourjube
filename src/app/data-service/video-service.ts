@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { Videos } from '../model/video'; 
-import gql from 'graphql-tag';
 import { BehaviorSubject } from 'rxjs';
+import gql from 'graphql-tag';
 
 @Injectable()
 export class VideoService {
@@ -318,5 +318,89 @@ export class VideoService {
           videoTitle: videoTitle
         }
       })
+    }
+
+    changeVideoTitle(videoId: number, videoTitle: string): void {
+      this.apollo.mutate({
+        mutation: gql`
+          mutation changeVideoTitle($videoId: ID!, $videoTitle: String!) {
+            changeVideoTitle(videoId: $videoId, videoTitle: $videoTitle)
+          }
+        `,
+        variables: {
+          videoId: videoId,
+          videoTitle: videoTitle,
+        },
+        refetchQueries: [{
+          query: this.fetchAllVideosQuery,
+        }],
+      }).subscribe()
+    }
+
+    changeVideoDescription(videoId: number, videoDesc: string): void {
+      this.apollo.mutate({
+        mutation: gql`
+          mutation changeVideoDescription($videoId: ID!, $videoDesc: String!) {
+            changeVideoDescription(videoId: $videoId, videoDesc: $videoDesc)
+          }
+        `,
+        variables: {
+          videoId: videoId,
+          videoDesc: videoDesc,
+        },
+        refetchQueries: [{
+          query: this.fetchAllVideosQuery,
+        }],
+      }).subscribe()
+    }
+
+    changeVideoThumbnail(videoId: number, videoThumbnail: string): void {
+      this.apollo.mutate({
+        mutation: gql`
+          mutation changeVideoThumbnail($videoId: ID!, $videoThumbnail: String!) {
+            changeVideoThumbnail(videoId: $videoId, videoThumbnail: $videoThumbnail)
+          }
+        `,
+        variables: {
+          videoId: videoId,
+          videoThumbnail: videoThumbnail,
+        },
+        refetchQueries: [{
+          query: this.fetchAllVideosQuery,
+        }],
+      }).subscribe()
+    }
+
+    changeVideoVisibility(videoId: number, visibility: string): void {
+      this.apollo.mutate({
+        mutation: gql`
+          mutation changeVisibility($videoId: ID!, $visibility: String!) {
+            changeVideoVisibility(videoId: $videoId, visibility: $visibility)
+          }
+        `,
+        variables: {
+          videoId: videoId,
+          visibility: visibility,
+        },
+        refetchQueries: [{
+          query: this.fetchAllVideosQuery,
+        }],
+      }).subscribe()
+    }
+
+    deleteVideo(videoId: number): void {
+      this.apollo.mutate({
+        mutation: gql`
+          mutation deleteVideo($videoId: ID!) {
+            deleteVideo(videoId: $videoId)
+          }
+        `,
+        variables: {
+          videoId: videoId,
+        },
+        refetchQueries: [{
+          query: this.fetchAllVideosQuery,
+        }],
+      }).subscribe()
     }
 }
