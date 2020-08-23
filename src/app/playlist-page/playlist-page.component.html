@@ -94,9 +94,15 @@
                         SUBSCRIBE
                     </div>
                 </div>
-                <div class="sub-container" (click)="removeSub()" *ngIf="isSubscribed == true">
-                    <div class="subbed-button">
+                <div class="sub-container" *ngIf="isSubscribed == true">
+                    <div class="subbed-button" (click)="removeSub()">
                         SUBSCRIBED
+                    </div>
+                    <div class="bell" *ngIf="isBelled" (click)="removeBell()">
+                        <i class="fa fa-bell fa-lg"></i>
+                    </div>
+                    <div class="bell" *ngIf="!isBelled" (click)="addBell()">
+                        <i class="fa fa-bell-slash fa-lg"></i>
                     </div>
                 </div>
             </div>

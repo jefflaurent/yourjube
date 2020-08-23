@@ -2,6 +2,12 @@
 
 package model
 
+type Bell struct {
+	ID        string `json:"id"`
+	ClientID  int    `json:"clientId"`
+	ChannelID int    `json:"channelId"`
+}
+
 type Channel struct {
 	ID                 string `json:"id"`
 	Name               string `json:"name"`
@@ -80,6 +86,16 @@ type Like struct {
 	VideoURL       string `json:"videoURL"`
 }
 
+type Notification struct {
+	ID        string `json:"id"`
+	ChannelID int    `json:"channelId"`
+	Route     int    `json:"route"`
+	PhotoURL  string `json:"photoURL"`
+	Content   string `json:"content"`
+	Type      string `json:"type"`
+	Time      int    `json:"time"`
+}
+
 type Playlist struct {
 	PlaylistID          string `json:"playlistId"`
 	PlaylistName        string `json:"playlistName"`
@@ -150,6 +166,11 @@ type Video struct {
 	Time            int    `json:"time"`
 }
 
+type NewBell struct {
+	ClientID  int `json:"clientId"`
+	ChannelID int `json:"channelId"`
+}
+
 type NewChannel struct {
 	Name               string `json:"name"`
 	Email              string `json:"email"`
@@ -211,6 +232,15 @@ type NewLike struct {
 	VideoID        int    `json:"videoId"`
 	VideoThumbnail string `json:"videoThumbnail"`
 	VideoURL       string `json:"videoURL"`
+}
+
+type NewNotification struct {
+	ChannelID int    `json:"channelId"`
+	Route     int    `json:"route"`
+	PhotoURL  string `json:"photoURL"`
+	Content   string `json:"content"`
+	Type      string `json:"type"`
+	Time      int    `json:"time"`
 }
 
 type NewPlaylist struct {

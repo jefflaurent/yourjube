@@ -2,7 +2,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../data-service/user-service';
 import { SubscriptionService } from '../data-service/subscription-service';
+import { NotificationService } from '../data-service/notification-service';
 import { Channel } from '../model/channel'; 
+import { Bells } from '../model/bell';
 import { Subscriptions } from '../model/subscription';
 
 @Component({
@@ -12,7 +14,7 @@ import { Subscriptions } from '../model/subscription';
 })
 export class ChannelPageComponent implements OnInit {
 
-  constructor(private subscriptionService: SubscriptionService, private userService: UserService, private activatedRoute: ActivatedRoute) { }
+  constructor(private subscriptionService: SubscriptionService, private userService: UserService, private activatedRoute: ActivatedRoute, private notificationService: NotificationService) { }
 
   user: any
   channelId: any
@@ -22,6 +24,8 @@ export class ChannelPageComponent implements OnInit {
   isSubscribed: boolean
   owner: boolean
   allSubscriptions: Subscriptions[] = []
+  allBells: Bells [] = []
+  isBelled: boolean
 
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe( params => {
@@ -36,6 +40,15 @@ export class ChannelPageComponent implements OnInit {
         this.channel = this.allChannels.find( c => c.id == this.channelId)
         this.loggedInChannel = this.allChannels.find( c => c.email == this.user.email)
         
+        this.notificationService.fetchAllBells().valueChanges.subscribe( result => {
+          this.allBells = result.data.bells
+          var temp = this.allBells.find(b => this.channel.id == b.channelId && this.loggedInChannel.id == b.clientId)
+          if(!temp)
+            this.isBelled = false
+          else
+            this.isBelled = true 
+        })
+
         if(this.channel.email == this.loggedInChannel.email)
           this.owner = true
         else
@@ -229,5 +242,13 @@ export class ChannelPageComponent implements OnInit {
     var y = document.querySelector('.studio')
     x.classList.add('hidden')
     y.classList.remove('selected')
+  }
+
+  addBell(): void {
+    this.notificationService.addBell(this.loggedInChannel.id, this.channel.id)
+  }
+
+  removeBell(): void {
+    this.notificationService.deleteBell(this.loggedInChannel.id, this.channel.id)
   }
 }

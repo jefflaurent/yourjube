@@ -43,6 +43,12 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Bell struct {
+		ChannelID func(childComplexity int) int
+		ClientID  func(childComplexity int) int
+		ID        func(childComplexity int) int
+	}
+
 	Channel struct {
 		BannerURL          func(childComplexity int) int
 		ChannelDescription func(childComplexity int) int
@@ -122,9 +128,11 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
+		AddBell                  func(childComplexity int, input *model.NewBell) int
 		AddComment               func(childComplexity int, input *model.NewComment) int
 		AddDislike               func(childComplexity int, input *model.NewDislike) int
 		AddLike                  func(childComplexity int, input *model.NewLike) int
+		AddNotification          func(childComplexity int, input *model.NewNotification) int
 		AddPlaylist              func(childComplexity int, input *model.NewPlaylistVideo) int
 		AddPost                  func(childComplexity int, input *model.NewPost) int
 		AddReplyCount            func(childComplexity int, commentID string) int
@@ -156,6 +164,7 @@ type ComplexityRoot struct {
 		DecreasePostLike         func(childComplexity int, id string) int
 		DecreaseSubscriber       func(childComplexity int, id string) int
 		DecreaseVideoCount       func(childComplexity int, playlistID string) int
+		DeleteBell               func(childComplexity int, clientID int, channelID int) int
 		DeleteVideo              func(childComplexity int, videoID string) int
 		DislikeVideo             func(childComplexity int, videoID string) int
 		IncreaseCommentDislike   func(childComplexity int, commentID string) int
@@ -181,6 +190,16 @@ type ComplexityRoot struct {
 		UpdateThumbnail          func(childComplexity int, playlistID int, playlistThumbnail string) int
 		ValidPremium             func(childComplexity int, id string, validPremium int) int
 		WatchVideo               func(childComplexity int, videoID string) int
+	}
+
+	Notification struct {
+		ChannelID func(childComplexity int) int
+		Content   func(childComplexity int) int
+		ID        func(childComplexity int) int
+		PhotoURL  func(childComplexity int) int
+		Route     func(childComplexity int) int
+		Time      func(childComplexity int) int
+		Type      func(childComplexity int) int
 	}
 
 	Playlist struct {
@@ -234,6 +253,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		AllPlaylists       func(childComplexity int) int
+		Bells              func(childComplexity int) int
 		Channels           func(childComplexity int) int
 		Comments           func(childComplexity int, videoID int) int
 		FindChannel        func(childComplexity int, email string) int
@@ -245,6 +265,7 @@ type ComplexityRoot struct {
 		FindVideo          func(childComplexity int, videoID string) int
 		FindVideoPlaylist  func(childComplexity int, playlistID int, videoID int) int
 		Likes              func(childComplexity int) int
+		Notifications      func(childComplexity int) int
 		PlaylistVideos     func(childComplexity int, channelEmail string) int
 		Playlists          func(childComplexity int, channelEmail string) int
 		PostDislikes       func(childComplexity int) int
@@ -340,8 +361,13 @@ type MutationResolver interface {
 	RemovePostLike(ctx context.Context, postID int, channelID int) (bool, error)
 	RegisterPostDislike(ctx context.Context, input *model.NewPostDislike) (bool, error)
 	RemovePostDislike(ctx context.Context, postID int, channelID int) (bool, error)
+	AddBell(ctx context.Context, input *model.NewBell) (*model.Bell, error)
+	DeleteBell(ctx context.Context, clientID int, channelID int) (bool, error)
+	AddNotification(ctx context.Context, input *model.NewNotification) (*model.Notification, error)
 }
 type QueryResolver interface {
+	Notifications(ctx context.Context) ([]*model.Notification, error)
+	Bells(ctx context.Context) ([]*model.Bell, error)
 	Posts(ctx context.Context) ([]*model.Post, error)
 	PostLikes(ctx context.Context) ([]*model.PostLike, error)
 	PostDislikes(ctx context.Context) ([]*model.PostDislike, error)
@@ -381,6 +407,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Bell.channelId":
+		if e.complexity.Bell.ChannelID == nil {
+			break
+		}
+
+		return e.complexity.Bell.ChannelID(childComplexity), true
+
+	case "Bell.clientId":
+		if e.complexity.Bell.ClientID == nil {
+			break
+		}
+
+		return e.complexity.Bell.ClientID(childComplexity), true
+
+	case "Bell.id":
+		if e.complexity.Bell.ID == nil {
+			break
+		}
+
+		return e.complexity.Bell.ID(childComplexity), true
 
 	case "Channel.bannerURL":
 		if e.complexity.Channel.BannerURL == nil {
@@ -781,6 +828,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Like.VideoURL(childComplexity), true
 
+	case "Mutation.addBell":
+		if e.complexity.Mutation.AddBell == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addBell_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddBell(childComplexity, args["input"].(*model.NewBell)), true
+
 	case "Mutation.addComment":
 		if e.complexity.Mutation.AddComment == nil {
 			break
@@ -816,6 +875,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.AddLike(childComplexity, args["input"].(*model.NewLike)), true
+
+	case "Mutation.addNotification":
+		if e.complexity.Mutation.AddNotification == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addNotification_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddNotification(childComplexity, args["input"].(*model.NewNotification)), true
 
 	case "Mutation.addPlaylist":
 		if e.complexity.Mutation.AddPlaylist == nil {
@@ -1189,6 +1260,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DecreaseVideoCount(childComplexity, args["playlistId"].(string)), true
 
+	case "Mutation.deleteBell":
+		if e.complexity.Mutation.DeleteBell == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteBell_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteBell(childComplexity, args["clientId"].(int), args["channelId"].(int)), true
+
 	case "Mutation.deleteVideo":
 		if e.complexity.Mutation.DeleteVideo == nil {
 			break
@@ -1489,6 +1572,55 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.WatchVideo(childComplexity, args["videoId"].(string)), true
 
+	case "Notification.channelId":
+		if e.complexity.Notification.ChannelID == nil {
+			break
+		}
+
+		return e.complexity.Notification.ChannelID(childComplexity), true
+
+	case "Notification.content":
+		if e.complexity.Notification.Content == nil {
+			break
+		}
+
+		return e.complexity.Notification.Content(childComplexity), true
+
+	case "Notification.id":
+		if e.complexity.Notification.ID == nil {
+			break
+		}
+
+		return e.complexity.Notification.ID(childComplexity), true
+
+	case "Notification.photoURL":
+		if e.complexity.Notification.PhotoURL == nil {
+			break
+		}
+
+		return e.complexity.Notification.PhotoURL(childComplexity), true
+
+	case "Notification.route":
+		if e.complexity.Notification.Route == nil {
+			break
+		}
+
+		return e.complexity.Notification.Route(childComplexity), true
+
+	case "Notification.time":
+		if e.complexity.Notification.Time == nil {
+			break
+		}
+
+		return e.complexity.Notification.Time(childComplexity), true
+
+	case "Notification.type":
+		if e.complexity.Notification.Type == nil {
+			break
+		}
+
+		return e.complexity.Notification.Type(childComplexity), true
+
 	case "Playlist.channelEmail":
 		if e.complexity.Playlist.ChannelEmail == nil {
 			break
@@ -1734,6 +1866,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.AllPlaylists(childComplexity), true
 
+	case "Query.bells":
+		if e.complexity.Query.Bells == nil {
+			break
+		}
+
+		return e.complexity.Query.Bells(childComplexity), true
+
 	case "Query.channels":
 		if e.complexity.Query.Channels == nil {
 			break
@@ -1855,6 +1994,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Likes(childComplexity), true
+
+	case "Query.notifications":
+		if e.complexity.Query.Notifications == nil {
+			break
+		}
+
+		return e.complexity.Query.Notifications(childComplexity), true
 
 	case "Query.playlistVideos":
 		if e.complexity.Query.PlaylistVideos == nil {
@@ -2296,6 +2442,22 @@ type PostDislike {
   postId: Int!
 }
 
+type Bell {
+  id: ID!
+  clientId: Int!
+  channelId: Int!
+}
+
+type Notification {
+  id: ID!
+  channelId: Int!
+  route: Int!
+  photoURL: String!
+  content: String!
+  type: String!
+  time: Int!
+}
+
 input newVideo {
   videoTitle: String!
   videoDesc: String!
@@ -2431,7 +2593,23 @@ input newPostDislike {
   postId: Int!
 }
 
+input newBell {
+  clientId: Int!
+  channelId: Int!
+}
+
+input newNotification {
+  channelId: Int!
+  route: Int!
+  photoURL: String!
+  content: String!
+  type: String!
+  time: Int!
+}
+
 type Query {
+  notifications: [Notification!]!
+  bells: [Bell!]!
   posts: [Post!]!
   postLikes: [PostLike!]!
   postDislikes: [PostDislike!]!
@@ -2522,6 +2700,10 @@ type Mutation {
   removePostLike(postId: Int!, channelId: Int!): Boolean!
   registerPostDislike(input: newPostDislike): Boolean!
   removePostDislike(postId: Int!, channelId: Int!): Boolean!
+
+  addBell(input: newBell): Bell!
+  deleteBell(clientId: Int!, channelId: Int!): Boolean!
+  addNotification(input: newNotification): Notification!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -2529,6 +2711,20 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_addBell_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.NewBell
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOnewBell2ᚖGo_graphqlᚋgraphᚋmodelᚐNewBell(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_addComment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -2564,6 +2760,20 @@ func (ec *executionContext) field_Mutation_addLike_args(ctx context.Context, raw
 	var arg0 *model.NewLike
 	if tmp, ok := rawArgs["input"]; ok {
 		arg0, err = ec.unmarshalOnewLike2ᚖGo_graphqlᚋgraphᚋmodelᚐNewLike(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_addNotification_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.NewNotification
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOnewNotification2ᚖGo_graphqlᚋgraphᚋmodelᚐNewNotification(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3115,6 +3325,28 @@ func (ec *executionContext) field_Mutation_decreaseVideoCount_args(ctx context.C
 		}
 	}
 	args["playlistId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteBell_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["clientId"]; ok {
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["clientId"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["channelId"]; ok {
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["channelId"] = arg1
 	return args, nil
 }
 
@@ -3873,6 +4105,108 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Bell_id(ctx context.Context, field graphql.CollectedField, obj *model.Bell) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Bell",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Bell_clientId(ctx context.Context, field graphql.CollectedField, obj *model.Bell) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Bell",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ClientID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Bell_channelId(ctx context.Context, field graphql.CollectedField, obj *model.Bell) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Bell",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Channel_id(ctx context.Context, field graphql.CollectedField, obj *model.Channel) (ret graphql.Marshaler) {
 	defer func() {
@@ -8231,6 +8565,367 @@ func (ec *executionContext) _Mutation_removePostDislike(ctx context.Context, fie
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_addBell(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_addBell_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddBell(rctx, args["input"].(*model.NewBell))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Bell)
+	fc.Result = res
+	return ec.marshalNBell2ᚖGo_graphqlᚋgraphᚋmodelᚐBell(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteBell(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteBell_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteBell(rctx, args["clientId"].(int), args["channelId"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_addNotification(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_addNotification_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddNotification(rctx, args["input"].(*model.NewNotification))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Notification)
+	fc.Result = res
+	return ec.marshalNNotification2ᚖGo_graphqlᚋgraphᚋmodelᚐNotification(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_id(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Notification",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_channelId(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Notification",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_route(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Notification",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Route, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_photoURL(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Notification",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PhotoURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_content(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Notification",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Content, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_type(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Notification",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_time(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Notification",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Time, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Playlist_playlistId(ctx context.Context, field graphql.CollectedField, obj *model.Playlist) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -9385,6 +10080,74 @@ func (ec *executionContext) _PostLike_postId(ctx context.Context, field graphql.
 	res := resTmp.(int)
 	fc.Result = res
 	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_notifications(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Notifications(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Notification)
+	fc.Result = res
+	return ec.marshalNNotification2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐNotificationᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_bells(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Bells(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Bell)
+	fc.Result = res
+	return ec.marshalNBell2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐBellᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_posts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -12003,6 +12766,30 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputnewBell(ctx context.Context, obj interface{}) (model.NewBell, error) {
+	var it model.NewBell
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "clientId":
+			var err error
+			it.ClientID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "channelId":
+			var err error
+			it.ChannelID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputnewChannel(ctx context.Context, obj interface{}) (model.NewChannel, error) {
 	var it model.NewChannel
 	var asMap = obj.(map[string]interface{})
@@ -12336,6 +13123,54 @@ func (ec *executionContext) unmarshalInputnewLike(ctx context.Context, obj inter
 		case "videoURL":
 			var err error
 			it.VideoURL, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputnewNotification(ctx context.Context, obj interface{}) (model.NewNotification, error) {
+	var it model.NewNotification
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "channelId":
+			var err error
+			it.ChannelID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "route":
+			var err error
+			it.Route, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "photoURL":
+			var err error
+			it.PhotoURL, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "content":
+			var err error
+			it.Content, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "type":
+			var err error
+			it.Type, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "time":
+			var err error
+			it.Time, err = ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12742,6 +13577,43 @@ func (ec *executionContext) unmarshalInputnewVideo(ctx context.Context, obj inte
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var bellImplementors = []string{"Bell"}
+
+func (ec *executionContext) _Bell(ctx context.Context, sel ast.SelectionSet, obj *model.Bell) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bellImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Bell")
+		case "id":
+			out.Values[i] = ec._Bell_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "clientId":
+			out.Values[i] = ec._Bell_clientId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channelId":
+			out.Values[i] = ec._Bell_channelId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
 
 var channelImplementors = []string{"Channel"}
 
@@ -13492,6 +14364,78 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "addBell":
+			out.Values[i] = ec._Mutation_addBell(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteBell":
+			out.Values[i] = ec._Mutation_deleteBell(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "addNotification":
+			out.Values[i] = ec._Mutation_addNotification(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var notificationImplementors = []string{"Notification"}
+
+func (ec *executionContext) _Notification(ctx context.Context, sel ast.SelectionSet, obj *model.Notification) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, notificationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Notification")
+		case "id":
+			out.Values[i] = ec._Notification_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channelId":
+			out.Values[i] = ec._Notification_channelId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "route":
+			out.Values[i] = ec._Notification_route(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "photoURL":
+			out.Values[i] = ec._Notification_photoURL(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "content":
+			out.Values[i] = ec._Notification_content(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "type":
+			out.Values[i] = ec._Notification_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "time":
+			out.Values[i] = ec._Notification_time(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -13798,6 +14742,34 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "notifications":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_notifications(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "bells":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_bells(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "posts":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -14492,6 +15464,57 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNBell2Go_graphqlᚋgraphᚋmodelᚐBell(ctx context.Context, sel ast.SelectionSet, v model.Bell) graphql.Marshaler {
+	return ec._Bell(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBell2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐBellᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Bell) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNBell2ᚖGo_graphqlᚋgraphᚋmodelᚐBell(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNBell2ᚖGo_graphqlᚋgraphᚋmodelᚐBell(ctx context.Context, sel ast.SelectionSet, v *model.Bell) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Bell(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	return graphql.UnmarshalBoolean(v)
 }
@@ -14889,6 +15912,57 @@ func (ec *executionContext) marshalNLike2ᚖGo_graphqlᚋgraphᚋmodelᚐLike(ct
 		return graphql.Null
 	}
 	return ec._Like(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNNotification2Go_graphqlᚋgraphᚋmodelᚐNotification(ctx context.Context, sel ast.SelectionSet, v model.Notification) graphql.Marshaler {
+	return ec._Notification(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNotification2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐNotificationᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Notification) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNNotification2ᚖGo_graphqlᚋgraphᚋmodelᚐNotification(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNNotification2ᚖGo_graphqlᚋgraphᚋmodelᚐNotification(ctx context.Context, sel ast.SelectionSet, v *model.Notification) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Notification(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNPlaylist2Go_graphqlᚋgraphᚋmodelᚐPlaylist(ctx context.Context, sel ast.SelectionSet, v model.Playlist) graphql.Marshaler {
@@ -15665,6 +16739,18 @@ func (ec *executionContext) marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgen�
 	return ec.___Type(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalOnewBell2Go_graphqlᚋgraphᚋmodelᚐNewBell(ctx context.Context, v interface{}) (model.NewBell, error) {
+	return ec.unmarshalInputnewBell(ctx, v)
+}
+
+func (ec *executionContext) unmarshalOnewBell2ᚖGo_graphqlᚋgraphᚋmodelᚐNewBell(ctx context.Context, v interface{}) (*model.NewBell, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOnewBell2Go_graphqlᚋgraphᚋmodelᚐNewBell(ctx, v)
+	return &res, err
+}
+
 func (ec *executionContext) unmarshalOnewChannel2Go_graphqlᚋgraphᚋmodelᚐNewChannel(ctx context.Context, v interface{}) (model.NewChannel, error) {
 	return ec.unmarshalInputnewChannel(ctx, v)
 }
@@ -15734,6 +16820,18 @@ func (ec *executionContext) unmarshalOnewLike2ᚖGo_graphqlᚋgraphᚋmodelᚐNe
 		return nil, nil
 	}
 	res, err := ec.unmarshalOnewLike2Go_graphqlᚋgraphᚋmodelᚐNewLike(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) unmarshalOnewNotification2Go_graphqlᚋgraphᚋmodelᚐNewNotification(ctx context.Context, v interface{}) (model.NewNotification, error) {
+	return ec.unmarshalInputnewNotification(ctx, v)
+}
+
+func (ec *executionContext) unmarshalOnewNotification2ᚖGo_graphqlᚋgraphᚋmodelᚐNewNotification(ctx context.Context, v interface{}) (*model.NewNotification, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOnewNotification2Go_graphqlᚋgraphᚋmodelᚐNewNotification(ctx, v)
 	return &res, err
 }
 

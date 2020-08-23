@@ -49,6 +49,11 @@ import { PlaylistSearchComponent } from './playlist-search/playlist-search.compo
 import { ChannelSearchComponent } from './channel-search/channel-search.component';
 import { ChannelAboutComponent } from './channel-about/channel-about.component';
 import { ChannelSettingsComponent } from './channel-settings/channel-settings.component';
+import { PostService } from './data-service/post-service';
+import { ChannelCommunityComponent } from './channel-community/channel-community.component';
+import { CommunityPostComponent } from './community-post/community-post.component';
+import { ChannelStudioComponent } from './channel-studio/channel-studio.component';
+import { StudioVideoComponent } from './studio-video/studio-video.component';
 
 
 import { PlaylistService } from './data-service/playlist-data';
@@ -58,11 +63,8 @@ import { VideoService } from './data-service/video-service';
 import { CommentService } from './data-service/comment-service';
 import { UserService } from './data-service/user-service';
 import { SubscriptionService } from './data-service/subscription-service';
-import { PostService } from './data-service/post-service';
-import { ChannelCommunityComponent } from './channel-community/channel-community.component';
-import { CommunityPostComponent } from './community-post/community-post.component';
-import { ChannelStudioComponent } from './channel-studio/channel-studio.component';
-import { StudioVideoComponent } from './studio-video/studio-video.component';
+import { NotificationService } from './data-service/notification-service';
+import { NotificationListComponent } from './notification-list/notification-list.component';
 
 
 @NgModule({
@@ -103,6 +105,7 @@ import { StudioVideoComponent } from './studio-video/studio-video.component';
     CommunityPostComponent,
     ChannelStudioComponent,
     StudioVideoComponent,
+    NotificationListComponent,
   ],
   imports: [
     HttpModule,
@@ -140,6 +143,7 @@ import { StudioVideoComponent } from './studio-video/studio-video.component';
     UserService,
     SubscriptionService,
     PostService,
+    NotificationService,
   ],
   bootstrap: [AppComponent],
 })

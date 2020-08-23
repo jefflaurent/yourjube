@@ -1279,6 +1279,82 @@ func (r *mutationResolver) RemovePostDislike(ctx context.Context, postID int, ch
 	return true, nil
 }
 
+func (r *mutationResolver) AddBell(ctx context.Context, input *model.NewBell) (*model.Bell, error) {
+	bell := model.Bell{
+		ClientID:  input.ClientID,
+		ChannelID: input.ChannelID,
+	}
+
+	_, err := r.DB.Model(&bell).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &bell, nil
+}
+
+func (r *mutationResolver) DeleteBell(ctx context.Context, clientID int, channelID int) (bool, error) {
+	var bell model.Bell
+
+	err := r.DB.Model(&bell).Where("client_id = ? AND channel_id = ?", clientID, channelID).Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	_, deleteErr := r.DB.Model(&bell).Where("client_id = ? AND channel_id = ?", clientID, channelID).Delete()
+
+	if deleteErr != nil {
+		return false, deleteErr
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) AddNotification(ctx context.Context, input *model.NewNotification) (*model.Notification, error) {
+	notification := model.Notification{
+		ChannelID: input.ChannelID,
+		Route:     input.Route,
+		PhotoURL:  input.PhotoURL,
+		Content:   input.Content,
+		Type:      input.Type,
+		Time:      input.Time,
+	}
+
+	_, err := r.DB.Model(&notification).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &notification, nil
+}
+
+func (r *queryResolver) Notifications(ctx context.Context) ([]*model.Notification, error) {
+	var notifications []*model.Notification
+
+	err := r.DB.Model(&notifications).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return notifications, nil
+}
+
+func (r *queryResolver) Bells(ctx context.Context) ([]*model.Bell, error) {
+	var bells []*model.Bell
+
+	err := r.DB.Model(&bells).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return bells, nil
+}
+
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	var posts []*model.Post
 

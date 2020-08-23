@@ -16,7 +16,7 @@
             <input type="text" id="searchBar" placeholder="Search" [value]="(query)" (input)="query = $event.target.value">
             <button type="submit" id="searchIcon">
                 <a [routerLink]="['/search', query]">
-                <img src="../../assets/navIcon/search.png" height="15px">
+                    <img src="../../assets/navIcon/search.png" height="15px">
                 </a>
             </button>
         </div>
@@ -35,9 +35,20 @@
             </div>
         </div>
     
-        <div class="miscIcon">
-            <div>
+        <div class="miscIcon notif-icon">
+            <div (click)="toggleNotif()">
                 <img src="../../assets/navIcon/bell.png">
+            </div>
+            <div class="notification-modal hidden">
+                <div class="notification-modal-top">
+                    Notifications
+                </div>
+                <div>
+                    <hr style="border: 1px solid lightgrey; border-bottom: none;">
+                </div>
+                <div class="notif-repeat"> 
+                    <app-notification-list *ngFor="let notification of myNotifications" [notif]="notification"></app-notification-list>
+                </div>
             </div>
         </div>
 
@@ -52,12 +63,14 @@
             </div>
         </div>
 
-        <div *ngIf="user" class="miscIcon modal-container" style="width: 12%;" (click)="toggleModal()">
-            <img src="{{ user.photoUrl }}" alt="" style="border-radius: 50%;">
+        <div *ngIf="channel" class="miscIcon modal-container" style="width: 12%;" (click)="toggleModal()">
+            <img src="{{ channel.photoURL }}" alt="" style="border-radius: 50%;">
             <div class="profile-modal hidden">
                 <div class="modal-top">
                     <div class="inner-left">
-                        <img [src]="user.photoUrl" alt="">
+                        <div>
+                            <img [src]="channel.photoURL" alt="">
+                        </div>
                     </div>
                     <div class="inner-right">
                         <div class="profile-name">
@@ -111,6 +124,17 @@
                             Keyboard shortcuts
                         </div>
                     </div>
+                    <a [routerLink]="['/premium']" style="text-decoration: none;">
+                        <div class="choice">
+                            <div class="choice-left">
+                                <i class="fa fa-youtube fa-lg"></i>
+                            </div>
+                            <div class="choice-right">
+                                YouRJube Premium
+                            </div>
+                        </div>
+                    </a>
+
                     <div class="choice">
                         <div class="choice-left">
                             <i class="fa fa-sign-out fa-lg"></i>

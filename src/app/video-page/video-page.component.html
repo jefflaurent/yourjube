@@ -6,11 +6,11 @@
         </a>
     </div>
     
-    <div class="inner">
+    <div class="inner" *ngIf="creator">
         <div class="top">
             <div class="left">
-                <a [routerLink]="['/channel', channelId]">
-                    <img [src]="video.channelPhotoURL">
+                <a [routerLink]="['/channel', creator.id]">
+                    <img [src]="creator.photoURL">
                 </a>
             </div>
             <div class="title">

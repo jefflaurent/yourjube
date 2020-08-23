@@ -95,6 +95,17 @@
 {
     display: flex;
     align-items: center;
+
+    .bell
+    {
+        color: rgba(76, 67, 67, 1);
+        margin-left: 5%;
+    }
+
+    .bell:hover
+    {
+        cursor: pointer;
+    }
 }
 
 .sub-container:hover

@@ -6,10 +6,11 @@ import { VideoService } from '../data-service/video-service';
 import { CommentService } from '../data-service/comment-service';
 import { UserService } from '../data-service/user-service';
 import { SubscriptionService } from '../data-service/subscription-service';
+import { NotificationService } from '../data-service/notification-service';
 import { Subscriptions } from '../model/subscription';
 import { Comments } from '../model/comment';
 import { Channel } from '../model/channel';
-import gql from 'graphql-tag';
+import { Bells } from '../model/bell';
 
 @Component({
   selector: 'app-video-play',
@@ -33,6 +34,9 @@ export class VideoPlayComponent implements OnInit {
   subscriptions: Subscriptions[] = []
   mySubscription: Subscriptions
 
+  allBells: Bells[]
+  isBelled: boolean 
+
   id: any
   month: any
   post: string
@@ -50,7 +54,7 @@ export class VideoPlayComponent implements OnInit {
   observer: any
   description: any
 
-  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private videoService: VideoService, private commentService: CommentService, private userService: UserService, private subscriptionService: SubscriptionService) { }
+  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private videoService: VideoService, private commentService: CommentService, private userService: UserService, private subscriptionService: SubscriptionService, private notificationService: NotificationService) { }
 
   ngOnInit(): void {
     
@@ -98,6 +102,15 @@ export class VideoPlayComponent implements OnInit {
             this.allChannels = result.data.channels
             this.channel = this.allChannels.find( c => c.email = this.currVid.channelEmail)
             this.loggedInChannel = this.allChannels.find( c => c.email = this.user.email)
+
+            this.notificationService.fetchAllBells().valueChanges.subscribe( result => {
+              this.allBells = result.data.bells
+              var temp = this.allBells.find(b => b.clientId == this.loggedInChannel.id && b.channelId == this.channel.id)
+              if(temp == undefined)
+                this.isBelled = false
+              else
+                this.isBelled = true
+            })
           })
         }, 500)
 
@@ -347,5 +360,13 @@ export class VideoPlayComponent implements OnInit {
 
   sortByNewest(): void {
     this.showComments.sort((a,b) => (a.time > b.time) ? -1 : 1)
+  }
+
+  addBell(): void {
+    this.notificationService.addBell(this.loggedInChannel.id, this.channel.id)
+  }
+
+  removeBell(): void {
+    this.notificationService.deleteBell(this.loggedInChannel.id, this.channel.id)
   }
 }

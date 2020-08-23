@@ -1,16 +1,23 @@
-import { Component, OnInit } from '@angular/core';
-import { SocialAuthService, SocialUser } from "angularx-social-login";
-import { GoogleLoginProvider } from 'angularx-social-login';
 import { Apollo } from'apollo-angular';
-import { PlaylistService } from '../data-service/playlist-data';
-import { PlaylistVideoService } from '../data-service/playlist-video-service';
-import { VideoService } from '../data-service/video-service';
-import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
+import { Component, OnInit } from '@angular/core';
+import { GoogleLoginProvider } from 'angularx-social-login';
+import { SocialAuthService, SocialUser } from "angularx-social-login";
+
 import { UserService } from '../data-service/user-service';
+import { VideoService } from '../data-service/video-service';
+import { PlaylistService } from '../data-service/playlist-data';
+import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
 import { SubscriptionService } from '../data-service/subscription-service';
+import { NotificationService } from '../data-service/notification-service';
+import { PlaylistVideoService } from '../data-service/playlist-video-service';
+
+import { Bells } from '../model/bell';
 import { Playlists } from '../model/playlist'
 import { Subscriptions } from '../model/subscription';
+import { Notifications } from '../model/notification';
+
 import gql from 'graphql-tag';
+import { from } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -35,11 +42,17 @@ export class HeaderComponent implements OnInit {
   showMore: boolean
   showLess: boolean
 
-  constructor(private authService: SocialAuthService, private apollo: Apollo, private data: PlaylistService, private videoData: PlaylistVideoService, private videoService: VideoService, private userService: UserService, private modalInfo: PlaylistModalInfo, private subscriptionService: SubscriptionService) { }
+  allNotifications: Notifications[] = []
+  myNotifications: Notifications[] = []
+
+  allBells: Bells[] = []
+  myBells: Bells[] = []
+
+  constructor(private authService: SocialAuthService, private apollo: Apollo, private data: PlaylistService, private videoData: PlaylistVideoService, private videoService: VideoService, private userService: UserService, private modalInfo: PlaylistModalInfo, private subscriptionService: SubscriptionService, private notificationService: NotificationService) { }
   
   ngOnInit(): void {
     this.query = ""
-    this.playlistLimit = 3
+    this.playlistLimit = 5
 
     if(localStorage.getItem('users') == null) {
       this.user = null
@@ -69,6 +82,16 @@ export class HeaderComponent implements OnInit {
       this.subscriptionService.fetchAllSubs().valueChanges.subscribe( result => {
         this.allSubscriptions = result.data.subscriptions
         this.filterSubs()
+      })
+
+      this.notificationService.fetchAllBells().valueChanges.subscribe( result => {
+        this.allBells = result.data.bells
+        this.filterBells()
+
+        this.notificationService.fetchAllNotifications().valueChanges.subscribe( result => {
+          this.allNotifications = result.data.notifications
+          this.filterNotifications()
+        })
       })
     })
 
@@ -101,6 +124,34 @@ export class HeaderComponent implements OnInit {
     for(let i = 0; i < this.allSubscriptions.length; i++) {
       if(this.allSubscriptions[i].clientEmail == this.channel.email) {
         this.mySubscription[j] = this.allSubscriptions[i]
+        j++
+      }
+    }
+  }
+
+  filterBells(): void {
+    let j = 0
+    for(let i = 0; i < this.allBells.length; i++) {
+      if(this.channel.id == this.allBells[i].clientId) {
+        this.myBells[j] = this.allBells[i]
+        j++
+      }
+    }
+  }
+
+  checkBelled(channelId: number): boolean {
+    var temp = this.myBells.find(b => b.channelId == channelId)
+    if(!temp)
+      return false
+    else 
+      return true
+  }
+
+  filterNotifications(): void {
+    let j = 0
+    for(let i = 0; i < this.allNotifications.length; i++) {
+      if(this.checkBelled(this.allNotifications[i].channelId)) {
+        this.myNotifications[j] = this.allNotifications[i]
         j++
       }
     }
@@ -237,6 +288,11 @@ export class HeaderComponent implements OnInit {
     var showLess = document.querySelector('.show-less')
     showMore.classList.remove('hidden')
     showLess.classList.add('hidden')
-    this.playlistLimit = 3
+    this.playlistLimit = 5
+  }
+
+  toggleNotif(): void {
+    var notif = document.querySelector('.notification-modal')
+    notif.classList.toggle('hidden')
   }
 }

@@ -1,0 +1,16 @@
+<div class="container" (click)="relocate()">
+    <div class="left" *ngIf="posterChannel">
+        <img [src]="posterChannel.photoURL" alt="">
+    </div>
+    <div class="mid">
+        <div class="mid-top">
+            {{ notification.content }}
+        </div>
+        <div class="mid-bot">
+            {{ post }}
+        </div>
+    </div>
+    <div class="right">
+        <img [src]="notification.photoURL">
+    </div>
+</div>

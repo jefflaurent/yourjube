@@ -49,7 +49,7 @@
                 <div class="profile">
                     <div class="avatar" *ngIf="channel">
                         <a [routerLink]="['/channel', channel.id]">
-                            <img [src]="currVid.channelPhotoURL" alt="" width="40px" height="40px">
+                            <img [src]="channel.photoURL" alt="" width="40px" height="40px">
                         </a>
                     </div>
                     <div class="profile-desc" *ngIf="channel">
@@ -68,9 +68,15 @@
                         SUBSCRIBE
                     </div>
                 </div>
-                <div class="sub-container" (click)="removeSub()" *ngIf="isSubscribed == true">
-                    <div class="subbed-button">
+                <div class="sub-container" *ngIf="isSubscribed == true">
+                    <div class="subbed-button" (click)="removeSub()">
                         SUBSCRIBED
+                    </div>
+                    <div class="bell" *ngIf="isBelled" (click)="removeBell()">
+                        <i class="fa fa-bell fa-lg"></i>
+                    </div>
+                    <div class="bell" *ngIf="!isBelled" (click)="addBell()">
+                        <i class="fa fa-bell-slash fa-lg"></i>
                     </div>
                 </div>
             </div>
@@ -114,8 +120,8 @@
                 </div>
             </div>
             <div class="same-container">
-                <div class="comment-left" *ngIf="currVid">
-                    <img [src]="currVid.channelPhotoURL">
+                <div class="comment-left" *ngIf="loggedInChannel">
+                    <img [src]="loggedInChannel.photoURL">
                 </div>
                 <div class="comment-right">
                     <input type="text" placeholder="Add a public comment..." [value]="content" (input)="content = $event.target.value">

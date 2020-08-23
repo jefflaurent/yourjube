@@ -1,10 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { AngularFireStorage, AngularFireUploadTask } from 'angularfire2/storage';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { Apollo } from 'apollo-angular';
 import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
+import { UserService } from '../data-service/user-service';
+import { NotificationService } from '../data-service/notification-service';
+import { Channel } from '../model/channel';
 import gql from 'graphql-tag';
 
 @Component({
@@ -48,9 +51,18 @@ export class UploadMenuComponent implements OnInit {
   user: any
   modalStatus: any
 
-  constructor(private storage: AngularFireStorage, private apollo: Apollo, private modalInfo: PlaylistModalInfo) { }
+  loggedInChannel: Channel
+
+  constructor(private storage: AngularFireStorage, private apollo: Apollo, private modalInfo: PlaylistModalInfo, private userService: UserService, private notificationService: NotificationService) { }
 
   ngOnInit(){
+    if(localStorage.getItem('users') != null)
+      this.user = JSON.parse(localStorage.getItem('users'))
+    
+    this.userService.getAllChannel().valueChanges.subscribe( result => {
+      this.loggedInChannel = result.data.channels.find(c => c.email == this.user.email)
+    })
+
     this.modalInfo.modalStatus.subscribe( status => {
       this.modalStatus = status
       if(this.modalStatus == true) {
@@ -192,9 +204,24 @@ export class UploadMenuComponent implements OnInit {
             channelEmail: $channelEmail,
             time: $time
           }) {
+            videoId,
             videoTitle,
+            videoDesc,
             videoURL,
             videoThumbnail,
+            uploadDay,
+            uploadMonth,
+            uploadYear,
+            views,
+            likes,
+            dislikes,
+            visibility,
+            viewer,
+            category,
+            channelName,
+            channelPhotoURL,
+            channelEmail,
+            time,
           }
         }
       `,
@@ -217,6 +244,13 @@ export class UploadMenuComponent implements OnInit {
         channelEmail: this.user.email.toString(),
         time: date.getTime(),
       }
-    }).subscribe()
-  }  
+    }).subscribe( result => {
+      var content = (result as any).data.createVideo.channelName + " uploaded: " + (result as any).data.createVideo.videoTitle
+      this.addNotification((result as any).data.createVideo.videoId, (result as any).data.createVideo.videoThumbnail, content)
+    })
+  }
+
+  addNotification(route: number, photoURL: string, content: string): void {
+    this.notificationService.addNotification(this.loggedInChannel.id, route, photoURL, content, "video")
+  }
 }

@@ -1,0 +1,58 @@
+.container
+{
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    padding-left: .5%;
+    padding-right: .5%;
+
+    .left
+    {
+        width: 18%;
+        display: flex;
+        justify-content: center;
+
+        img
+        {
+            width: 65%;
+            border-radius: 50%;
+        }
+    }
+
+    .mid
+    {
+        width: 50%;
+        font-size: .8em;
+        line-height: 1.5em;
+        
+        .mid-top
+        {
+            font-weight: 400;
+        }
+
+        .mid-bot
+        {
+            margin-top: 5%;
+            color: rgba(76, 67, 67, 1)
+        }
+    }
+
+    .right
+    {
+        width: 32%;
+        display: flex;
+        justify-content: center;
+
+        img
+        {
+            width: 80%;
+        }
+    }
+}
+
+.container:hover
+{
+    background-color: lightgrey;
+}

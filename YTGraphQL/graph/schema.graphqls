@@ -146,6 +146,22 @@ type PostDislike {
   postId: Int!
 }
 
+type Bell {
+  id: ID!
+  clientId: Int!
+  channelId: Int!
+}
+
+type Notification {
+  id: ID!
+  channelId: Int!
+  route: Int!
+  photoURL: String!
+  content: String!
+  type: String!
+  time: Int!
+}
+
 input newVideo {
   videoTitle: String!
   videoDesc: String!
@@ -281,7 +297,23 @@ input newPostDislike {
   postId: Int!
 }
 
+input newBell {
+  clientId: Int!
+  channelId: Int!
+}
+
+input newNotification {
+  channelId: Int!
+  route: Int!
+  photoURL: String!
+  content: String!
+  type: String!
+  time: Int!
+}
+
 type Query {
+  notifications: [Notification!]!
+  bells: [Bell!]!
   posts: [Post!]!
   postLikes: [PostLike!]!
   postDislikes: [PostDislike!]!
@@ -372,4 +404,8 @@ type Mutation {
   removePostLike(postId: Int!, channelId: Int!): Boolean!
   registerPostDislike(input: newPostDislike): Boolean!
   removePostDislike(postId: Int!, channelId: Int!): Boolean!
+
+  addBell(input: newBell): Bell!
+  deleteBell(clientId: Int!, channelId: Int!): Boolean!
+  addNotification(input: newNotification): Notification!
 }

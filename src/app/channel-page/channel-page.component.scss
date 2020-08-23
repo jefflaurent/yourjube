@@ -74,38 +74,56 @@
         justify-content: flex-end;
         align-items: center;
 
-        .subscribe
+        .sub-container
         {
-            box-sizing: border-box;
-            font-weight: 400;
-            font-size: 14px;
-            padding: 10px;
-            padding-left: 15px;
-            padding-right: 15px;
-            background-color: #D51313;
-            color: white;
-        }
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
 
-        .subscribe:hover
-        {
-            cursor: pointer;
-        }
+            .subscribe
+            {
+                box-sizing: border-box;
+                font-weight: 400;
+                font-size: 14px;
+                padding: 10px;
+                padding-left: 15px;
+                padding-right: 15px;
+                background-color: #D51313;
+                color: white;
+            }
+    
+            .subscribe:hover
+            {
+                cursor: pointer;
+            }
+    
+            .subscribed
+            {
+                box-sizing: border-box;
+                font-weight: 400;
+                font-size: 14px;
+                padding: 10px;
+                padding-left: 15px;
+                padding-right: 15px;
+                background-color: lightgrey;
+                color: rgba(76, 67, 67, 1);
+            }
+    
+            .subscribed:hover
+            {
+                cursor: pointer;
+            }
 
-        .subscribed
-        {
-            box-sizing: border-box;
-            font-weight: 400;
-            font-size: 14px;
-            padding: 10px;
-            padding-left: 15px;
-            padding-right: 15px;
-            background-color: lightgrey;
-            color: rgba(76, 67, 67, 1);
-        }
-
-        .subscribed:hover
-        {
-            cursor: pointer;
+            .bell
+            {
+                color: rgba(76, 67, 67, 1);
+                margin-left: 5%;
+            }
+        
+            .bell:hover
+            {
+                cursor: pointer;
+            }
         }
 
         .bell

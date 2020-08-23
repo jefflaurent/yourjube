@@ -27,7 +27,6 @@ export class ChannelHomeComponent implements OnInit {
   moveTo: string
   allVideos: Videos[] = []
   videos: Videos[] = []
-  recentVideos: Videos[] = []
   showVideos: Videos[] = []
   allPlaylists: Playlists[] = []
   playlists: Playlists[] = []
@@ -36,6 +35,9 @@ export class ChannelHomeComponent implements OnInit {
   constructor(private videoService: VideoService, private playlistService: PlaylistService, private userService: UserService) { }
   
   ngOnInit(): void {
+    this.allVideos = []
+    this.videos = []
+
     this.videoService.fetchAllVideos().valueChanges.subscribe( result => {
       this.allVideos = result.data.videos
       this.filterVideos()

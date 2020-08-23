@@ -1,3 +1,5 @@
+$ytGrey: rgba(76, 67, 67, 1);
+
 .head
 {
     background-color: white;
@@ -172,7 +174,7 @@ hr
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgba(76, 67, 67, 1);
+    color: $ytGrey;
 }
 
 .item:hover
@@ -203,7 +205,7 @@ hr
 {
     text-decoration: none;
     font-family: 'Roboto';
-    color: rgba(76, 67, 67, 1);
+    color: $ytGrey;
     font-weight: 500;
 }
 
@@ -242,10 +244,57 @@ hr
     width: 100%;
 }
 
+.notif-icon
+{
+    position: relative;
+
+    .notification-modal
+    {
+        position: absolute;
+        right: 110%;
+        top: -60%;
+        background-color: white;
+        width: 2000%;
+        height: 3000%;
+
+        .notification-modal-top
+        {
+            padding: 3.6%;
+            font-weight: 400;
+        }
+
+        .notif-repeat
+        {
+            overflow-y: auto;
+
+            ::-webkit-scrollbar {
+                width: 1%;
+            }
+        
+            ::-webkit-scrollbar-track {
+                background: #f1f1f1; 
+            }
+           
+            ::-webkit-scrollbar-thumb {
+                background: #888; 
+            }
+            
+            ::-webkit-scrollbar-thumb:hover {
+                background: #555; 
+            }
+        }
+    }
+
+    .notification-modal.hidden
+    {
+        display :none;
+    }
+}
+
 .nav a
 {
     text-decoration: none;
-    color: rgba(76, 67, 67, 1);
+    color: $ytGrey;
 }
 
 .nav-contents
@@ -301,10 +350,16 @@ hr
                 display: flex;
                 justify-content: center;
 
-                img
+                div
                 {
-                    width: 40%;
-                    border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+
+                    img
+                    {
+                        width: 40%;
+                        border-radius: 50%;
+                    }
                 }
             }
 
@@ -331,7 +386,7 @@ hr
             display: flex;
             justify-content: flex-start;
             flex-direction: column;
-            color: rgba(76, 67, 67, 1);
+            color: $ytGrey;
             margin-top: 5%;
 
             hr
@@ -371,7 +426,7 @@ hr
         .modal-bot a
         {
             text-decoration: none;
-            color: rgba(76, 67, 67, 1); 
+            color: $ytGrey; 
         }
 
     }
@@ -401,7 +456,7 @@ hr
     margin-left: 14%;
     margin-top: 10%;
     margin-bottom: 2%;
-    color: rgba(76, 67, 67, 1);
+    color: $ytGrey;
 }
 
 .categories

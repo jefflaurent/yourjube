@@ -1,17 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Apollo } from 'apollo-angular';
-import { Playlists } from '../model/playlist';
-import { Videos } from '../model/video';
 import { PlaylistVideoService } from '../data-service/playlist-video-service';
-import { PlaylistVideos } from '../model/playlist-video';
 import { PlaylistService } from '../data-service/playlist-data';
 import { VideoService } from '../data-service/video-service';
 import { SubscriptionService } from '../data-service/subscription-service';
-import { Subscriptions } from '../model/subscription';
+import { NotificationService } from '../data-service/notification-service';
 import { UserService } from '../data-service/user-service';
+import { PlaylistVideos } from '../model/playlist-video';
+import { Subscriptions } from '../model/subscription';
+import { Playlists } from '../model/playlist';
+import { Videos } from '../model/video';
 import { Channel } from '../model/channel';
-import gql from 'graphql-tag';
+import { Bells } from '../model/bell';
 
 @Component({
   selector: 'app-playlist-page',
@@ -39,6 +40,9 @@ export class PlaylistPageComponent implements OnInit {
   allChannel: Channel[]
   playlistCreator: Channel
   loggedInAccount: Channel
+
+  allBells: Bells[]
+  isBelled: boolean
   
   visibility: string 
   playlistName: string
@@ -46,16 +50,14 @@ export class PlaylistPageComponent implements OnInit {
   playlistThumbnail: string
   post: string
   playlistId: any
-  d: any
   m: any
-  y: any
   observer: any
   videoLimit: number
   isSubscribed: boolean
   flag: boolean
   
 
-  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private data: PlaylistVideoService, private currData: PlaylistService, private videoService: VideoService, private userService: UserService, private subscriptionService: SubscriptionService) { }
+  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private data: PlaylistVideoService, private currData: PlaylistService, private videoService: VideoService, private userService: UserService, private subscriptionService: SubscriptionService, private notificationService: NotificationService) { }
 
   ngOnInit(): void {
 
@@ -98,6 +100,15 @@ export class PlaylistPageComponent implements OnInit {
                 this.isSubscribed = false
               else
                 this.isSubscribed = true
+            })
+
+            this.notificationService.fetchAllBells().valueChanges.subscribe( result => {
+              this.allBells = result.data.bells
+              var belled = this.allBells.find( b => b.clientId == this.loggedInAccount.id && b.channelId == this.playlistCreator.id)
+              if(belled == undefined)
+                this.isBelled = false
+              else
+                this.isBelled = true
             })
           })
           this.processDate()
@@ -331,5 +342,13 @@ export class PlaylistPageComponent implements OnInit {
   shufflePlay(): void {
     this.shuffle = Math.random() * (this.playlistVideos.length - 0) + 0
     this.shuffle = Math.floor(this.shuffle)
+  }
+
+  addBell(): void {
+    this.notificationService.addBell(this.loggedInAccount.id, this.playlistCreator.id)
+  }
+
+  removeBell(): void {
+    this.notificationService.deleteBell(this.loggedInAccount.id, this.playlistCreator.id)
   }
 }

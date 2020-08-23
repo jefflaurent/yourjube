@@ -24,13 +24,16 @@
                         SUBSCRIBE
                     </div>
                 </div>
-                <div>
+                <div class="sub-container">
                     <div class="subscribed" *ngIf="isSubscribed == true" (click)="removeSub()">
                         SUBSCRIBED
                     </div>
-                </div>
-                <div class="bell">
-                    <img src="../../assets/navIcon/bell.png" alt="">
+                    <div class="bell" *ngIf="isBelled" (click)="removeBell()">
+                        <i class="fa fa-bell fa-lg"></i>
+                    </div>
+                    <div class="bell" *ngIf="!isBelled" (click)="addBell()">
+                        <i class="fa fa-bell-slash fa-lg"></i>
+                    </div>
                 </div>
             </div>
         </div>

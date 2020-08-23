@@ -4,8 +4,7 @@ import { UserService } from '../data-service/user-service';
 import { PlaylistService } from '../data-service/playlist-data';
 import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
 import { PlaylistVideoService } from '../data-service/playlist-video-service';
-import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
+import { Channel } from '../model/channel';
 
 @Component({
   selector: 'app-video-page',
@@ -34,52 +33,29 @@ export class VideoPageComponent implements OnInit {
     time: number,
   }
 
-  getPlaylistQuery = gql`
-    query getPlaylist($channelEmail: String!) {
-      playlists(channelEmail: $channelEmail){
-        playlistId,
-        playlistName,
-        playlistThumbnail,
-        playlistDescription,
-        channelEmail,
-        lastDate,
-        lastMonth,
-        lastYear,
-        videoCount,
-        views,
-        visibility,
-      }
-    }
-  `;
-
-  constructor(private apollo: Apollo, private data: PlaylistService, private status: PlaylistModalInfo, private playlistData: PlaylistVideoService, private userService: UserService) { }
+  constructor(private data: PlaylistService, private status: PlaylistModalInfo, private playlistData: PlaylistVideoService, private userService: UserService) { }
 
   playlists: Playlists[] = [];
   dummyId: string = ''
   dummyId2: string = ""
   channelId: any
-  time: Date
   date: any
   month: any
   year: any
   user: any
   views: any
-
   post : string
+  creator: Channel
 
   ngOnInit(): void {
     this.dummyId = 'vid' + this.video.videoId
     this.dummyId2 = 'play' + this.video.videoId
-    this.time = new Date()
-    this.date = this.time.getDate()
-    this.month = this.time.getMonth()
-    this.year = this.time.getFullYear()
 
     this.user = JSON.parse(localStorage.getItem('users'))
     this.processViews()
 
-    this.userService.getUser(this.user.email).valueChanges.subscribe( result => {
-      this.channelId = result.data.findChannel[0].id
+    this.userService.getUser(this.video.channelEmail).valueChanges.subscribe( result => {
+      this.creator = result.data.findChannel[0]
     })
     
     this.processPost()
