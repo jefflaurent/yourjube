@@ -1500,6 +1500,18 @@ func (r *queryResolver) PlaylistVideos(ctx context.Context, channelEmail string)
 	return playlistVideos, nil
 }
 
+func (r *queryResolver) PlaylistVideosByID(ctx context.Context, playlistID int) ([]*model.PlaylistVideo, error) {
+	var playlistVideos []*model.PlaylistVideo
+
+	err := r.DB.Model(&playlistVideos).Where("playlist_id = ?", playlistID).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return playlistVideos, nil
+}
+
 func (r *queryResolver) FindVideo(ctx context.Context, videoID string) ([]*model.Video, error) {
 	var video []*model.Video
 

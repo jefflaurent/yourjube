@@ -20,6 +20,20 @@
 {
     margin-left: 30px;
     width: 35%;
+
+    .playlist-box
+    {
+        border: 1px solid lightgrey;
+        background-color: white;
+        width: 89%;
+
+        .playlist-box-header
+        {
+            font-size: .9em;
+            font-weight: 500;
+            padding: 2%;
+        }
+    }
 }
 
 #mainvideo

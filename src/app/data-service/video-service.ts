@@ -7,11 +7,26 @@ import gql from 'graphql-tag';
 @Injectable()
 export class VideoService {
     
+    private playlistId = new BehaviorSubject<number>(0)
+    currentPlaylistId = this.playlistId.asObservable()
+
     private restrictMode = new BehaviorSubject<boolean>(false)
     currentStatus = this.restrictMode.asObservable()
 
+    private fromPlaylist = new BehaviorSubject<boolean>(false)
+    isFromPlaylist = this.fromPlaylist.asObservable()
+
     changeStatus(status: boolean): void {
       this.restrictMode.next(status)
+    }
+
+    changeFromPlaylist(status: boolean): void {
+      this.fromPlaylist.next(status)
+      console.log(this.isFromPlaylist)
+    }
+
+    changePlaylistId(playlistId: number): void {
+      this.playlistId.next(playlistId)
     }
     
     constructor(private apollo: Apollo) {}
@@ -319,6 +334,38 @@ export class VideoService {
         }
       })
     }
+
+    searchRelatedVideo(query: string): any {
+      return this.apollo.watchQuery<any>({ 
+        query: gql`
+          query searchVideo($videoTitle: String!) {
+            searchVideo(videoTitle: $videoTitle) {
+              videoId,
+              videoTitle,
+              videoDesc,
+              videoURL,
+              videoThumbnail,
+              uploadDay,
+              uploadMonth,
+              uploadYear,
+              views,
+              likes,
+              dislikes,
+              visibility,
+              viewer,
+              category,
+              channelName,
+              channelPhotoURL,
+              channelEmail,
+              time,
+            }
+          } 
+        `,
+        variables: {
+          videoTitle: '%' + query + '%'
+        }
+      })
+    } 
 
     changeVideoTitle(videoId: number, videoTitle: string): void {
       this.apollo.mutate({

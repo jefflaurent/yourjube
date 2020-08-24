@@ -326,6 +326,8 @@ type Query {
   allPlaylists: [Playlist!]!
   playlists(channelEmail: String!): [Playlist!]!
   playlistVideos(channelEmail: String!): [PlaylistVideo!]!
+  playlistVideosById(playlistId: Int!): [PlaylistVideo!]!
+
   findVideo(videoId: ID!): [Video!]!
   findLike(email: String!, videoId: Int!): [Like!]!
   findDislike(email: String!, videoId: Int!): [Dislike!]!

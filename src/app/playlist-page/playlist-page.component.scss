@@ -38,13 +38,14 @@
 .thumbnail
 {
     margin: 0;
-    margin-bottom: -51px;
+    position: relative;
 }
 
 .overlap
 {
-    position: relative;
-    top: -51px;
+    position: absolute;
+    bottom: 1%;
+    width: 100%;
 }
 
 .overlap-container

@@ -1,15 +1,21 @@
 import { Apollo } from 'apollo-angular';
-import { Videos } from '../model/video';
 import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
+
 import { VideoService } from '../data-service/video-service';
 import { CommentService } from '../data-service/comment-service';
 import { UserService } from '../data-service/user-service';
 import { SubscriptionService } from '../data-service/subscription-service';
 import { NotificationService } from '../data-service/notification-service';
+import { PlaylistService } from '../data-service/playlist-data';
+import { PlaylistVideoService } from '../data-service/playlist-video-service';
+
+import { PlaylistVideos } from '../model/playlist-video';
 import { Subscriptions } from '../model/subscription';
+import { Playlists } from '../model/playlist';
 import { Comments } from '../model/comment';
 import { Channel } from '../model/channel';
+import { Videos } from '../model/video';
 import { Bells } from '../model/bell';
 
 @Component({
@@ -34,6 +40,9 @@ export class VideoPlayComponent implements OnInit {
   subscriptions: Subscriptions[] = []
   mySubscription: Subscriptions
 
+  currentPlaylist: Playlists
+  currentPlaylistVideos: PlaylistVideos[] = []
+
   allBells: Bells[]
   isBelled: boolean 
 
@@ -45,6 +54,9 @@ export class VideoPlayComponent implements OnInit {
   isLimited: boolean = true
   isLiked: boolean
   isDisliked: boolean
+  
+  fromPlaylist: boolean
+  playlistId: number
 
   user: any
   content: string = ""
@@ -54,7 +66,7 @@ export class VideoPlayComponent implements OnInit {
   observer: any
   description: any
 
-  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private videoService: VideoService, private commentService: CommentService, private userService: UserService, private subscriptionService: SubscriptionService, private notificationService: NotificationService) { }
+  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private videoService: VideoService, private commentService: CommentService, private userService: UserService, private subscriptionService: SubscriptionService, private notificationService: NotificationService, private playlistService: PlaylistService, private playlistVideoService: PlaylistVideoService) { }
 
   ngOnInit(): void {
     
@@ -93,6 +105,26 @@ export class VideoPlayComponent implements OnInit {
         }
       })
 
+      this.videoService.isFromPlaylist.subscribe( status => {
+        this.fromPlaylist = status
+        console.log(this.fromPlaylist)
+
+        if(this.fromPlaylist) {
+          this.videoService.currentPlaylistId.subscribe( playlistId => {
+            this.playlistId = playlistId
+            console.log(this.playlistId)
+
+            this.playlistService.fetchAllPlaylist().valueChanges.subscribe( result => {
+              this.currentPlaylist = result.data.allPlaylists.find(p => p.playlistId == this.playlistId)
+            })
+
+            this.playlistVideoService.fetchPlaylistVideoById(this.playlistId).valueChanges.subscribe( result => {
+              this.currentPlaylistVideos = result.data.playlistVideosById
+            })
+          })
+        }
+      })
+      
       this.videoService.fetchAllVideos().valueChanges.subscribe( result =>  {
         this.videos = result.data.videos
         this.currVid = this.videos.find( v => v.videoId == this.id)

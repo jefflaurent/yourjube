@@ -47,61 +47,71 @@ $ytGrey: rgba(76, 67, 67, 1);
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     width: 65%;
+    position: relative;
+
+    .search
+    {
+        width: 65%;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    #searchIcon
+    {
+        background-color: #FAF7F7;
+        border-color: lightgray;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-left: none;
+        border-radius: 3px;
+        border-top: 1px solid #e1e1d0;
+        border-right: 1px solid #e1e1d0;
+        border-bottom: 1px solid #e1e1d0;
+        border-top-left-radius: unset;
+        border-bottom-left-radius: unset;
+        width: 10%;
+    }
+
+    #searchIcon:hover
+    {
+        cursor: pointer;
+        background-color: lightgray;
+    }
+
+    #searchBar
+    {
+        width: 100%;
+        height: 32px;
+        font-size: 15px;
+        border-color: #e1e1d0;
+        padding: 2%;
+        border-radius: 3px;
+        box-sizing: border-box;
+        border-left: 1px solid #e1e1d0;
+        border-top: 1px solid #e1e1d0;
+        border-top-right-radius: unset;
+        border-bottom-right-radius: unset;
+    }
+
+    #searchBar:focus
+    {
+        outline-width: 0;
+        outline: none;
+        border: 1px solid blue;
+    }
+
+    .auto-complete
+    {
+        position: absolute;
+        top: 100%;
+        left: 17.5%;
+        width: 59%;
+    }
 }
 
-.search
-{
-    width: 65%;
-    display: flex;
-    justify-content: flex-end;
-}
-
-#searchIcon
-{
-    background-color: #FAF7F7;
-    border-color: lightgray;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-left: none;
-    border-radius: 3px;
-    border-top: 1px solid #e1e1d0;
-    border-right: 1px solid #e1e1d0;
-    border-bottom: 1px solid #e1e1d0;
-    border-top-left-radius: unset;
-    border-bottom-left-radius: unset;
-    width: 10%;
-}
-
-#searchIcon:hover
-{
-    cursor: pointer;
-    background-color: lightgray;
-}
-
-#searchBar
-{
-    width: 100%;
-    height: 32px;
-    font-size: 15px;
-    border-color: #e1e1d0;
-    padding: 5px;
-    padding-left: 10px;
-    border-radius: 3px;
-    box-sizing: border-box;
-    border-left: 1px solid #e1e1d0;
-    border-top: 1px solid #e1e1d0;
-    border-top-right-radius: unset;
-    border-bottom-right-radius: unset;
-}
-
-#searchBar:focus
-{
-    outline-width: 0;
-    outline: none;
-    border: 1px solid blue;
-}
 
 .signIn
 {

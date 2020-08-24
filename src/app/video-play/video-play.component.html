@@ -142,22 +142,34 @@
         <div class="footer"></div>
     </div>
     <div class="right">
-        <div class="header">
-            <div class="txt">
-                Up next
+        <div class="up-next">
+            <div class="header">
+                <div class="txt">
+                    Up next
+                </div>
+                <div class="autoplay">
+                    <div style="margin-right: 5px;">
+                        AUTOPLAY
+                    </div>
+                    <div>
+                        <i class="fa fa-toggle-off fa-lg"></i>
+                    </div>
+                </div>
             </div>
-            <div class="autoplay">
-                <div style="margin-right: 5px;">
-                    AUTOPLAY
-                </div>
-                <div>
-                    <i class="fa fa-toggle-off fa-lg"></i>
-                </div>
+            <app-video-side *ngFor="let video of firstVideo" [vid]=(video)></app-video-side>
+            <div class="special">
+                <hr>
             </div>
         </div>
-        <app-video-side *ngFor="let video of firstVideo" [vid]=(video)></app-video-side>
-        <div class="special">
-            <hr>
+        <div class="playlist-box">
+            <div class="playlist-box-header">
+                <div class="playlist-name">
+                    My Playlist #1
+                </div>
+            </div>
+            <div class="playlist-box-detail">
+                <app-playlist-detail *ngFor="let playlistVideo of currentPlaylistVideos" [play]="playlistVideo"></app-playlist-detail>
+            </div>
         </div>
         <div *ngFor="let video of passVideos, let i = index" class="side-container">
             <app-video-side *ngIf="i < videoLimit" [vid]=(video)></app-video-side>

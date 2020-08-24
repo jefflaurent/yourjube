@@ -65,6 +65,8 @@ import { UserService } from './data-service/user-service';
 import { SubscriptionService } from './data-service/subscription-service';
 import { NotificationService } from './data-service/notification-service';
 import { NotificationListComponent } from './notification-list/notification-list.component';
+import { AutoCompleteComponent } from './auto-complete/auto-complete.component';
+import { PlaylistDetailComponent } from './playlist-detail/playlist-detail.component';
 
 
 @NgModule({
@@ -106,6 +108,8 @@ import { NotificationListComponent } from './notification-list/notification-list
     ChannelStudioComponent,
     StudioVideoComponent,
     NotificationListComponent,
+    AutoCompleteComponent,
+    PlaylistDetailComponent,
   ],
   imports: [
     HttpModule,

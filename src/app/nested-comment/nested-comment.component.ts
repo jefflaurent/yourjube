@@ -179,7 +179,6 @@ export class NestedCommentComponent implements OnInit {
        commentId: commentId,
      }
    }).subscribe( result => {
-     console.log(result)
      if((result as any).data.findCommentLike.length > 0) {
        this.isLiked = true
        setTimeout( ()=> {
@@ -212,7 +211,6 @@ export class NestedCommentComponent implements OnInit {
        commentId: commentId,
      }
    }).subscribe( result => {
-     console.log(result)
      if((result as any).data.findCommentDislike.length > 0) {
        this.isDisliked = true 
        setTimeout( ()=> {

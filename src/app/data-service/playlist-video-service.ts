@@ -48,6 +48,29 @@ export class PlaylistVideoService{
       })
     }
 
+    fetchPlaylistVideoById(playlistId: number) {
+      return this.apollo.watchQuery<any>({
+        query: gql`
+          query playlistVideosById($playlistId: Int!) {
+            playlistVideosById(playlistId: $playlistId) {
+              id,
+              playlistId,
+              videoId,
+              videoName,
+              videoThumbnail,
+              videoURL,
+              channelName,
+              channelEmail,
+              time,
+              place,
+          }
+        `,
+        variables: {
+          playlistId: playlistId
+        }
+      })
+    }
+
     initiateAddPlaylistVideo(playlistId: any, video: Videos, time: any, place: any): void{
       this.addPlaylistVideo(playlistId, video, time, place);
     }

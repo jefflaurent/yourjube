@@ -15,9 +15,9 @@ import { Bells } from '../model/bell';
 import { Playlists } from '../model/playlist'
 import { Subscriptions } from '../model/subscription';
 import { Notifications } from '../model/notification';
+import { Videos } from '../model/video';
 
 import gql from 'graphql-tag';
-import { from } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -41,6 +41,7 @@ export class HeaderComponent implements OnInit {
   uploadModal: boolean
   showMore: boolean
   showLess: boolean
+  searchFocused: boolean
 
   allNotifications: Notifications[] = []
   myNotifications: Notifications[] = []
@@ -48,11 +49,14 @@ export class HeaderComponent implements OnInit {
   allBells: Bells[] = []
   myBells: Bells[] = []
 
+  relatedVideos: Videos[] = []
+
   constructor(private authService: SocialAuthService, private apollo: Apollo, private data: PlaylistService, private videoData: PlaylistVideoService, private videoService: VideoService, private userService: UserService, private modalInfo: PlaylistModalInfo, private subscriptionService: SubscriptionService, private notificationService: NotificationService) { }
   
   ngOnInit(): void {
     this.query = ""
     this.playlistLimit = 5
+    this.searchFocused = false
 
     if(localStorage.getItem('users') == null) {
       this.user = null
@@ -106,6 +110,25 @@ export class HeaderComponent implements OnInit {
     var btnClose = document.querySelector('#toggleClose');
     btnOn.addEventListener('click', this.toggleOn);
     btnClose.addEventListener('click', this.toggleOff);
+  }
+
+  searchRelated(): void {
+    this.relatedVideos = []
+    this.videoService.searchRelatedVideo(this.query).valueChanges.subscribe( result => {
+      this.relatedVideos = result.data.searchVideo
+    })
+  }
+
+  toggleSearchFocus(): void {
+    if(this.searchFocused)
+      this.searchFocused = false
+    else if(!this.searchFocused)
+      this.searchFocused = true
+  }
+
+  changeTitle($event): void {
+    console.log('receiving')
+    this.query = $event
   }
 
   signInWithGoogle(): void {

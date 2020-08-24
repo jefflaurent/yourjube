@@ -13,12 +13,17 @@
 
     <div class="middle">
         <div class="search">
-            <input type="text" id="searchBar" placeholder="Search" [value]="(query)" (input)="query = $event.target.value">
-            <button type="submit" id="searchIcon">
+            <input type="text" id="searchBar" placeholder="Search" [value]="(query)" (input)="query = $event.target.value" (keyup)="searchRelated()" (focus)="toggleSearchFocus()">
+            <div id="searchIcon">
                 <a [routerLink]="['/search', query]">
                     <img src="../../assets/navIcon/search.png" height="15px">
                 </a>
-            </button>
+            </div>
+        </div>
+        <div class="auto-complete" *ngIf="searchFocused">
+            <div *ngFor="let video of relatedVideos, let i = index">
+                <app-auto-complete (messageEvent)="changeTitle($event)" *ngIf="i < 10" [vid]="video"></app-auto-complete>
+            </div>
         </div>
     </div>
 
