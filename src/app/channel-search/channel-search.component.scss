@@ -13,12 +13,16 @@
         .profile-pic
         {
             width: 50%;
-            display: flex;
-            justify-content: center;
+
+            a
+            {
+                display: flex;
+                justify-content: center;
+            }
 
             img
             {
-                width: 100%;
+                width: 60%;
                 border-radius: 50%;
             }
         }
@@ -47,6 +51,12 @@
             {
                 font-size: .9em;
             }
+
+            .short-desc
+            {
+                margin-top: 1%;
+                font-size: .9em;
+            }
         }
     }
 
@@ -61,6 +71,17 @@
         {
             display: flex;
             align-items: center;
+
+            .bell
+            {
+                color: rgba(76, 67, 67, 1);
+                margin-left: 5%;
+            }
+        
+            .bell:hover
+            {
+                cursor: pointer;
+            }
         }
 
         .sub-container:hover

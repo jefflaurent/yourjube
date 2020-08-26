@@ -1,13 +1,19 @@
 <div class="container">
     <div class="left">
-        <img [src]="playlistVideo.videoThumbnail" alt="">
+        <a [routerLink]="['/video/playlist', playlistVideo.playlistId, playlistVideo.videoId]">
+            <img [src]="playlistVideo.videoThumbnail" alt="">
+        </a>
     </div>
-    <div class="right">
+    <div class="right" *ngIf="channel">
         <div class="title">
-            {{ playlistVideo.videoName }}
+            <a [routerLink]="['/video/playlist', playlistVideo.playlistId, playlistVideo.videoId]">
+                {{ playlistVideo.videoName }}
+            </a>
         </div>  
-        <div class="poster">
-            {{ playlistVideo.channelEmail }}
-        </div>
+        <a [routerLink]="['/channel', channel.id]">
+            <div class="poster">
+                {{ playlistVideo.channelName }}
+            </div>
+        </a>
     </div>
 </div>

@@ -2,6 +2,8 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommentComponent } from '../comment/comment.component';
 import { VideoPlayComponent } from '../video-play/video-play.component';
 import { CommentService } from '../data-service/comment-service';
+import { UserService } from '../data-service/user-service';
+import { Channel } from '../model/channel';
 import { Comments } from '../model/comment';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
@@ -28,6 +30,7 @@ export class NestedCommentComponent implements OnInit {
     month: number,
     year: number,
     replies: number,
+    time: number
   }
 
   comments: Comments[] = []
@@ -41,12 +44,24 @@ export class NestedCommentComponent implements OnInit {
   channel: any
   isLiked: boolean
   isDisliked: boolean
+  post: string
 
-  constructor(private videoPlay: VideoPlayComponent, private apollo: Apollo, private commentComponent: CommentComponent, private commentService: CommentService) { }
+  allChannels: Channel[] = []
+  posterChannel: Channel
+  loggedInChannel: Channel
+
+  constructor(private videoPlay: VideoPlayComponent, private apollo: Apollo, private commentComponent: CommentComponent, private commentService: CommentService, private userService: UserService) { }
 
   ngOnInit(): void {
     this.user = JSON.parse(localStorage.getItem('users'))
-    this.fetchUser()
+    this.processPost()
+    
+    this.userService.getAllChannel().valueChanges.subscribe( result => {
+      this.allChannels = result.data.channels
+      this.posterChannel = this.allChannels.find(c => c.email == this.comment.channelEmail)
+      this.loggedInChannel = this.allChannels.find(c => c.email == this.user.email)
+    })
+
     this.dummyId = 'open' + this.comment.commentId
     this.dummyId10 = 'nestedlike' + this.comment.commentId
     this.dummyId11 = 'nesteddislike' + this.comment.commentId
@@ -59,6 +74,54 @@ export class NestedCommentComponent implements OnInit {
 
     this.findCommentLike(this.comment.commentId, this.user.email)
     this.findCommentDislike(this.comment.commentId, this.user.email)
+  }
+
+  processPost(): void {
+    var date = new Date()
+    var currSecond = date.getTime()
+    var count = 0
+    let gap = currSecond - this.comment.time
+
+    if(gap < 2678400000) {
+      if(gap < 604800000) {
+        count = gap / 86400000
+        count = Math.floor(count)
+        if(count == 0)
+          this.post = 'Today'
+        else if(count == 1)
+          this.post = count + ' day ago'
+        else
+          this.post = count + ' days ago'
+      }
+      else if(gap >= 604800000) {
+        if(gap >= 604800000 && gap < 1209600000)
+          this.post = '1 week ago'
+        else if(gap >= 1209600000 && gap < 1814400000)
+          this.post = '2 weeks ago'
+        else if(gap >= 1814400000 && gap < 2419200000)
+          this.post = '3 weeks ago'
+        else if(gap >= 2419200000)
+          this.post = '4 weeks ago'
+      }
+    }
+    else if(gap < 30758400000) {
+      count = gap / 2678400000
+      count = Math.floor(count)
+
+      if(count == 1)
+        this.post = count + ' month ago'
+      else
+        this.post = count + ' months ago'
+    }
+    else {
+      count = gap / 30758400000
+      count = Math.floor(count)
+      
+      if(gap == 1) 
+        this.post = gap + ' year ago';
+      else
+        this.post = gap + ' years ago';
+    }
   }
 
   openReply(): void {
@@ -137,29 +200,6 @@ export class NestedCommentComponent implements OnInit {
     var query = '#' + id
     var btn = document.querySelector(query)
     btn.classList.remove('clicked')
-  }
-
-  fetchUser(): void {
-    this.apollo.query<any>({
-      query: gql`
-        query getUser($email: String!) {
-          findChannel(email: $email) {
-            id,
-            name,
-            email,
-            photoURL,
-            bannerURL,
-            subscriber,
-            isPremium,
-          }
-        }
-      `,
-      variables: {
-        email: this.user.email
-      },
-    }).subscribe( channel => {
-      this.channel = channel.data.findChannel[0];
-    })
   }
 
   findCommentLike(commentId: any, channelEmail: any): any {

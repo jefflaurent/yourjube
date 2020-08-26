@@ -351,10 +351,4 @@ export class PlaylistPageComponent implements OnInit {
   removeBell(): void {
     this.notificationService.deleteBell(this.loggedInAccount.id, this.playlistCreator.id)
   }
-
-  playAllPlaylist(): void {
-    this.videoService.changeFromPlaylist(true)
-    this.videoService.changePlaylistId(this.playlistId)
-    // location.href = 'http://localhost:4200/video/' + this.playlistVideos[0].videoId
-  }
 }

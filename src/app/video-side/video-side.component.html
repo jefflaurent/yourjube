@@ -11,8 +11,10 @@
             </a>
         </div>
         <div class="bottom">
-            <div class="channel">
-                {{ video.channelName }}
+            <div class="channel" *ngIf="channel">
+                <a [routerLink]="['/channel', channel.id]">
+                    {{ video.channelName }}
+                </a>
             </div>
             <div class="detail">
                 {{ views }} views <span>&#8226;</span> {{ post }}

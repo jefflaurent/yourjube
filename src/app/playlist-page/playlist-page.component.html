@@ -1,19 +1,21 @@
 <div class="container" *ngIf="currPlaylist">
     <div class="left">
         <div class="inner-container" *ngIf="flag">
-            <div class="thumbnail" (click)=playAllPlaylist()>
-                <img [src]="playlistThumbnail" alt="">
-                <div class="overlap">
-                    <div class="overlap-container">
-                        <div>
-                            <i class="fa fa-play"></i>
-                        </div>
-                        <div style="margin-left: 7px;">
-                            PLAY ALL
+            <a [routerLink]="['/video/playlist', playlistId, playlistVideos[0].videoId]">
+                <div class="thumbnail">
+                    <img [src]="playlistThumbnail" alt="">
+                    <div class="overlap">
+                        <div class="overlap-container">
+                            <div>
+                                <i class="fa fa-play"></i>
+                            </div>
+                            <div style="margin-left: 7px;">
+                                PLAY ALL
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
             <div class="space-between block">
                 <div class="title hidden">
                     <input type="text" [value]="playlistName" (input)="playlistName = $event.target.value">

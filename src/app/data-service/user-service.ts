@@ -112,6 +112,15 @@ export class UserService {
             bannerURL,
             subscriber,
             isPremium,
+            joinDate,
+            joinMonth,
+            joinYear,
+            channelDescription,
+            isMature,
+            twitter,
+            facebook,
+            instagram,
+            validPremium
           }
         }
       `,

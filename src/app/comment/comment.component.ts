@@ -1,7 +1,9 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Apollo } from 'apollo-angular';
-import { Comments } from '../model/comment';
 import { CommentService } from '../data-service/comment-service';
+import { UserService } from '../data-service/user-service';
+import { Apollo } from 'apollo-angular';
+import { Channel } from '../model/channel';
+import { Comments } from '../model/comment';
 import gql from 'graphql-tag';
 
 @Component({
@@ -12,20 +14,21 @@ import gql from 'graphql-tag';
 export class CommentComponent implements OnInit {
 
   @Input('com') comment: {
-    commentId: number,
-    videoId: number,
-    channelId: number,
-    channelName: string,
-    channelEmail: string,
-    channelPhotoURL: string,
-    content: string,
-    replyTo: number,
-    likes: number,
-    dislikes: number,
-    day: number,
-    month: number,
-    year: number,
-    replies: number,
+    commentId: number
+    videoId: number
+    channelId: number
+    channelName: string
+    channelEmail: string
+    channelPhotoURL: string
+    content: string
+    replyTo: number
+    likes: number
+    dislikes: number
+    day: number
+    month: number
+    year: number
+    replies: number
+    time: number
   }
 
   howMany: number
@@ -41,11 +44,14 @@ export class CommentComponent implements OnInit {
   dummyId5: any
   dummyId6: any
   user: any
-  channel: any
+  allChannels: Channel[] = []
+  loggedInChannel: Channel
+  posterChannel: Channel
   isLiked: boolean
   isDisliked: boolean
+  post: string
 
-  constructor(private apollo: Apollo, private commentService: CommentService) { }
+  constructor(private apollo: Apollo, private commentService: CommentService, private userService: UserService) { }
 
   ngOnInit(): void {
     this.dummyId = "id" + this.comment.commentId
@@ -55,7 +61,13 @@ export class CommentComponent implements OnInit {
     this.dummyId5 = "like" + this.comment.commentId
     this.dummyId6 = "dislike" + this.comment.commentId
     this.user = JSON.parse(localStorage.getItem('users'))
-    this.fetchUser();
+    this.processPost()
+    
+    this.userService.getAllChannel().valueChanges.subscribe( result => {
+      this.allChannels = result.data.channels
+      this.posterChannel = this.allChannels.find(c => c.email == this.comment.channelEmail)
+      this.loggedInChannel = this.allChannels.find(c => c.email == this.user.email)
+    })
 
     this.commentService.fetchComments(this.comment.videoId).valueChanges.subscribe( result => {
       this.commentTemp = result.data.comments
@@ -89,7 +101,7 @@ export class CommentComponent implements OnInit {
 
   like(): void {
     this.commentService.increaseCommentLike(this.comment.commentId, this.comment.videoId)
-    this.commentService.registerCommentLike(this.comment.commentId, this.channel.id, this.user.email)
+    this.commentService.registerCommentLike(this.comment.commentId, this.loggedInChannel.id, this.user.email)
     this.paintBlue(this.dummyId5)
     this.isLiked = true
   }
@@ -103,7 +115,7 @@ export class CommentComponent implements OnInit {
 
   dislike(): void {
     this.commentService.increaseCommentDislike(this.comment.commentId, this.comment.videoId)
-    this.commentService.registerCommentDislike(this.comment.commentId, this.channel.id, this.user.email)
+    this.commentService.registerCommentDislike(this.comment.commentId, this.loggedInChannel.id, this.user.email)
     this.paintBlue(this.dummyId6)
     this.isDisliked = true
   }
@@ -129,7 +141,7 @@ export class CommentComponent implements OnInit {
 
   addComment(): void {
     this.commentService.addReplyCount(this.comment.commentId, this.comment.videoId)
-    this.commentService.addComment(this.comment.videoId, this.channel, this.content, this.comment.commentId)
+    this.commentService.addComment(this.comment.videoId, this.loggedInChannel, this.content, this.comment.commentId)
     this.content = ""
   }
 
@@ -169,6 +181,54 @@ export class CommentComponent implements OnInit {
     btn3.classList.add('closed')
   }
 
+  processPost(): void {
+    var date = new Date()
+    var currSecond = date.getTime()
+    var count = 0
+    let gap = currSecond - this.comment.time
+
+    if(gap < 2678400000) {
+      if(gap < 604800000) {
+        count = gap / 86400000
+        count = Math.floor(count)
+        if(count == 0)
+          this.post = 'Today'
+        else if(count == 1)
+          this.post = count + ' day ago'
+        else
+          this.post = count + ' days ago'
+      }
+      else if(gap >= 604800000) {
+        if(gap >= 604800000 && gap < 1209600000)
+          this.post = '1 week ago'
+        else if(gap >= 1209600000 && gap < 1814400000)
+          this.post = '2 weeks ago'
+        else if(gap >= 1814400000 && gap < 2419200000)
+          this.post = '3 weeks ago'
+        else if(gap >= 2419200000)
+          this.post = '4 weeks ago'
+      }
+    }
+    else if(gap < 30758400000) {
+      count = gap / 2678400000
+      count = Math.floor(count)
+
+      if(count == 1)
+        this.post = count + ' month ago'
+      else
+        this.post = count + ' months ago'
+    }
+    else {
+      count = gap / 30758400000
+      count = Math.floor(count)
+      
+      if(gap == 1) 
+        this.post = gap + ' year ago';
+      else
+        this.post = gap + ' years ago';
+    }
+  }
+
   filterComments(array: Comments[]): void {
     let j = 0;
     for(let i = 0; i < array.length; i++) {
@@ -179,29 +239,6 @@ export class CommentComponent implements OnInit {
     }
     if(j != 0)
       this.howMany = j
-  }
-
-  fetchUser(): void {
-    this.apollo.query<any>({
-      query: gql`
-        query getUser($email: String!) {
-          findChannel(email: $email) {
-            id,
-            name,
-            email,
-            photoURL,
-            bannerURL,
-            subscriber,
-            isPremium,
-          }
-        }
-      `,
-      variables: {
-        email: this.user.email
-      },
-    }).subscribe( channel => {
-      this.channel = channel.data.findChannel[0];
-    })
   }
 
   findCommentLike(commentId: any, channelEmail: any): any {

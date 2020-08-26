@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { UserService } from '../data-service/user-service';
+import { Channel } from '../model/channel';
 
 @Component({
   selector: 'app-video-side',
@@ -24,6 +26,7 @@ export class VideoSideComponent implements OnInit {
     channelName: string,
     channelPhotoURL: string,
     channelEmail: string,
+    time: number
   }
 
   title : string = ''
@@ -33,12 +36,17 @@ export class VideoSideComponent implements OnInit {
   year : any
   views: any
   post : string
+  channel: Channel 
 
-
-  constructor() { }
+  constructor(private userService: UserService) { }
 
   ngOnInit(): void {
     this.processViews()
+    this.processPost()
+
+    this.userService.getUser(this.video.channelEmail).valueChanges.subscribe( result => {
+      this.channel = result.data.findChannel[0]
+    })
 
     if(this.video.videoTitle.length >= 60) {
       for(let i = 0; i < 50; i++) {
@@ -48,35 +56,6 @@ export class VideoSideComponent implements OnInit {
     }
     else {
       this.title = this.video.videoTitle
-    }
-
-    this.time = new Date()
-    this.date = this.time.getDate()
-    this.month = this.time.getMonth()
-    this.year = this.time.getFullYear()
-
-    if(parseInt(this.video.uploadYear) < this.year) {
-      let gap = this.year - parseInt(this.video.uploadYear) 
-      if(gap == 1) 
-        this.post = gap + ' year ago';
-      else
-        this.post = gap + ' years ago';
-    }
-    else if(parseInt(this.video.uploadYear) == this.year && parseInt(this.video.uploadMonth) < this.month) {
-      let gap = this.month - parseInt(this.video.uploadMonth)
-      if(gap == 1)
-        this.post = gap + ' month ago';
-      else 
-        this.post = gap + ' months ago';
-    }
-    else if(parseInt(this.video.uploadYear) == this.year && parseInt(this.video.uploadMonth) == this.month && parseInt(this.video.uploadDay) <= this.date) {
-      let gap = this.date - parseInt(this.video.uploadDay)
-      if(gap == 0)
-        this.post = 'Today';
-      else if(gap == 1)
-        this.post = gap + ' day ago';
-      else
-        this.post = gap + ' days ago';
     }
   }
 
@@ -98,6 +77,54 @@ export class VideoSideComponent implements OnInit {
     }
     else {
       this.views = this.video.views + ''
+    }
+  }
+
+  processPost(): void {
+    var date = new Date()
+    var currSecond = date.getTime()
+    var count = 0
+    let gap = currSecond - this.video.time
+
+    if(gap < 2678400000) {
+      if(gap < 604800000) {
+        count = gap / 86400000
+        count = Math.floor(count)
+        if(count == 0)
+          this.post = 'Today'
+        else if(count == 1)
+          this.post = count + ' day ago'
+        else
+          this.post = count + ' days ago'
+      }
+      else if(gap >= 604800000) {
+        if(gap >= 604800000 && gap < 1209600000)
+          this.post = '1 week ago'
+        else if(gap >= 1209600000 && gap < 1814400000)
+          this.post = '2 weeks ago'
+        else if(gap >= 1814400000 && gap < 2419200000)
+          this.post = '3 weeks ago'
+        else if(gap >= 2419200000)
+          this.post = '4 weeks ago'
+      }
+    }
+    else if(gap < 30758400000) {
+      count = gap / 2678400000
+      count = Math.floor(count)
+
+      if(count == 1)
+        this.post = count + ' month ago'
+      else
+        this.post = count + ' months ago'
+    }
+    else {
+      count = gap / 30758400000
+      count = Math.floor(count)
+      
+      if(gap == 1) 
+        this.post = gap + ' year ago';
+      else
+        this.post = gap + ' years ago';
     }
   }
 }

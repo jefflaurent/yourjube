@@ -1,7 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { SubscriptionService } from '../data-service/subscription-service';
+import { NotificationService } from '../data-service/notification-service';
 import { UserService } from '../data-service/user-service';
 import { Subscriptions } from '../model/subscription';
+import { Bells } from '../model/bell';
 import { Channel } from '../model/channel';
 
 @Component({
@@ -30,14 +32,16 @@ export class ChannelSearchComponent implements OnInit {
     validPremium: number
   }
 
+  isBelled: boolean
   isSubscribed: boolean
+  allBells: Bells[] = []
   allSubscriptions: Subscriptions[] = []
   mySubscription: Subscriptions = null
   loggedInChannel: Channel
   allChannels: Channel[] = []
   user: any
 
-  constructor(private subscriptionService: SubscriptionService, private userService: UserService) { }
+  constructor(private subscriptionService: SubscriptionService, private userService: UserService, private notificationService: NotificationService) { }
 
   ngOnInit(): void {
     this.user = JSON.parse(localStorage.getItem('users'))
@@ -54,6 +58,15 @@ export class ChannelSearchComponent implements OnInit {
         else
           this.isSubscribed = true
       })
+
+      this.notificationService.fetchAllBells().valueChanges.subscribe( result => {
+        this.allBells = result.data.bells
+        var belled = this.allBells.find( b => b.clientId == this.loggedInChannel.id && b.channelId == this.channel.id)
+        if(belled == undefined)
+          this.isBelled = false
+        else
+          this.isBelled = true
+      })
     })
   }
 
@@ -65,5 +78,13 @@ export class ChannelSearchComponent implements OnInit {
   removeSub(): void {
     this.subscriptionService.removeSubs(this.loggedInChannel.email, this.channel.email)
     this.userService.decreaseSubscriber(this.channel.id)
+  }
+
+  addBell(): void {
+    this.notificationService.addBell(this.loggedInChannel.id, this.channel.id)
+  }
+
+  removeBell(): void {
+    this.notificationService.deleteBell(this.loggedInChannel.id, this.channel.id)
   }
 }

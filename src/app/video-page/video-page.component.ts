@@ -38,6 +38,7 @@ export class VideoPageComponent implements OnInit {
   playlists: Playlists[] = [];
   dummyId: string = ''
   dummyId2: string = ""
+  dummyIdVid: string
   channelId: any
   date: any
   month: any
@@ -46,10 +47,13 @@ export class VideoPageComponent implements OnInit {
   views: any
   post : string
   creator: Channel
+  duration: string
+  currVid: HTMLVideoElement
 
   ngOnInit(): void {
     this.dummyId = 'vid' + this.video.videoId
     this.dummyId2 = 'play' + this.video.videoId
+    this.dummyIdVid = 'dur' + this.video.videoId
 
     this.user = JSON.parse(localStorage.getItem('users'))
     this.processViews()
@@ -58,6 +62,10 @@ export class VideoPageComponent implements OnInit {
       this.creator = result.data.findChannel[0]
     })
     
+    var query = '#' + this.dummyIdVid
+    this.currVid = (document.getElementsByTagName('mat-video')[0] as HTMLVideoElement).querySelector('video')
+    // this.getDuration(this.currVid.duration)
+
     this.processPost()
   }
 
@@ -125,6 +133,74 @@ export class VideoPageComponent implements OnInit {
     }
     else {
       this.views = this.video.views + ''
+    }
+  }
+
+  getDuration(v):void{
+    var time = v
+    var hour
+    var minute
+    var second
+
+    if(time > 3600){
+      hour = Math.floor(time / 3600)
+      minute = Math.floor((time - (3600 * hour)) / 60)      
+      second = Math.floor(((time - (3600 * hour)) - minute * 60))
+
+      if(hour <= 9 ){
+        this.duration =  "0" + hour   
+      }
+      else{
+        this.duration = hour.toString()
+      }
+
+      this.duration += ":"
+
+      if(minute <= 9){
+        this.duration += "0" + minute 
+      }
+      else{
+        this.duration += minute.toString()
+      }
+
+      this.duration += ":"
+
+      if(second <= 9){
+        this.duration += "0" + second
+      }
+      else{
+        this.duration += second.toString()
+      }
+    }
+    else if(time > 60){
+      minute = Math.floor(time / 60)
+      second = Math.floor((time - minute * 60))
+
+      if(minute <= 9){
+        this.duration = "0" + minute
+      }
+      else{
+        this.duration = minute.toString()  
+      }
+
+      this.duration += ":"
+
+      if(second <= 9){
+        this.duration += "0" + second
+      }
+      else{
+        this.duration += second.toString()
+      }
+    }
+    else{
+      second = time
+
+      if(second <= 9){
+        this.duration = "00:0" + second
+      }
+      else{
+        this.duration = "00:" + second.toString()
+      }
     }
   }
 

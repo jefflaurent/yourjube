@@ -14,24 +14,50 @@
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
+
+    .footer
+    {
+        height: 1px;
+    }
 }
 
 .right
 {
     margin-left: 30px;
     width: 35%;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
 
     .playlist-box
     {
         border: 1px solid lightgrey;
         background-color: white;
         width: 89%;
+        padding-bottom: 1%;
+        height: 462px;
+        overflow: auto;
+        margin-bottom: 4%;
 
         .playlist-box-header
         {
             font-size: .9em;
             font-weight: 500;
-            padding: 2%;
+            padding: 4%;
+            margin-bottom: 4%;
+        }
+    }
+
+
+    .side-container
+    {
+        display: flex;
+        justify-content: flex-start;
+        flex-direction: column;
+
+        .side-container-footer
+        {
+            height: 1px;
         }
     }
 }
@@ -243,6 +269,11 @@
     font-weight: 500;
 }
 
+.autoplay:hover
+{
+    cursor: pointer;
+}
+
 .special
 {
     width: 400px;
@@ -385,10 +416,5 @@
 {
     background-color: rgb(233, 233, 233);
     cursor: pointer;
-}
-
-.footer
-{
-    height: 1px;
 }
 

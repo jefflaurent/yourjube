@@ -1,6 +1,7 @@
 import { Apollo } from 'apollo-angular';
 import { ActivatedRoute } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatVideoComponent } from 'mat-video/lib/video.component';
 
 import { VideoService } from '../data-service/video-service';
 import { CommentService } from '../data-service/comment-service';
@@ -25,6 +26,7 @@ import { Bells } from '../model/bell';
 })
 export class VideoPlayComponent implements OnInit {
 
+  video: HTMLVideoElement
   firstVideo: Videos[] = [];
   videos: Videos[] = [];
   passVideos: Videos[] = [];
@@ -57,27 +59,46 @@ export class VideoPlayComponent implements OnInit {
   
   fromPlaylist: boolean
   playlistId: number
+  playlistIdTemp: string
 
   user: any
   content: string = ""
   declare: any
   videoLimit: number
   commentLimit: number
-  observer: any
+  videoObserver: any
+  commentObserver: any
   description: any
+  autoPlay: boolean
 
   constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private videoService: VideoService, private commentService: CommentService, private userService: UserService, private subscriptionService: SubscriptionService, private notificationService: NotificationService, private playlistService: PlaylistService, private playlistVideoService: PlaylistVideoService) { }
 
   ngOnInit(): void {
     
     this.activatedRoute.paramMap.subscribe(params => {
+      this.autoPlay = true
       this.commentLimit = 3
-      this.videoLimit = 4
       this.id = params.get('id');
+      this.playlistIdTemp = params.get('playlistid')
       this.user = JSON.parse(localStorage.getItem('users'))
       this.videoService.watchVideo(this.id)
 
+      this.fromPlaylist = this.playlistIdTemp ? true : false
+      this.videoLimit = 4
+
+      if(this.fromPlaylist) {
+        this.playlistId = parseInt(this.playlistIdTemp)
+        this.playlistService.fetchAllPlaylist().valueChanges.subscribe( result => {
+          this.currentPlaylist = result.data.allPlaylists.find(p => p.playlistId == this.playlistId)
+        })
+
+        this.playlistVideoService.fetchPlaylistVideosById(this.playlistId).valueChanges.subscribe( result => {
+          this.currentPlaylistVideos = result.data.playlistVideosById
+        })
+      }
+
       this.setObserver()
+      this.setVideoObserver()
 
       this.videoService.checkLiked(this.id, this.user.email).valueChanges.subscribe( result => {
         if(result.data.findLike.length > 0) {
@@ -104,31 +125,11 @@ export class VideoPlayComponent implements OnInit {
           this.paintGrey('.dislike')
         }
       })
-
-      this.videoService.isFromPlaylist.subscribe( status => {
-        this.fromPlaylist = status
-        console.log(this.fromPlaylist)
-
-        if(this.fromPlaylist) {
-          this.videoService.currentPlaylistId.subscribe( playlistId => {
-            this.playlistId = playlistId
-            console.log(this.playlistId)
-
-            this.playlistService.fetchAllPlaylist().valueChanges.subscribe( result => {
-              this.currentPlaylist = result.data.allPlaylists.find(p => p.playlistId == this.playlistId)
-            })
-
-            this.playlistVideoService.fetchPlaylistVideoById(this.playlistId).valueChanges.subscribe( result => {
-              this.currentPlaylistVideos = result.data.playlistVideosById
-            })
-          })
-        }
-      })
       
       this.videoService.fetchAllVideos().valueChanges.subscribe( result =>  {
         this.videos = result.data.videos
         this.currVid = this.videos.find( v => v.videoId == this.id)
-        
+
         setTimeout( () => {
           this.userService.getAllChannel().valueChanges.subscribe(result => {
             this.allChannels = result.data.channels
@@ -156,6 +157,10 @@ export class VideoPlayComponent implements OnInit {
               this.isSubscribed = true
           })
 
+          this.video = (document.getElementsByTagName('mat-video')[0] as HTMLVideoElement).querySelector('video')
+          this.setVideoListener()
+          this.setVideoHotkeys()
+          
           this.shortenDesc()
           this.convertDate()
           this.sortVideos()
@@ -169,6 +174,100 @@ export class VideoPlayComponent implements OnInit {
         this.processComments()
       })
     })
+  }
+
+  findIndex(): number {
+    for(let i = 0; i < this.currentPlaylistVideos.length; i++) {
+      if(this.currentPlaylistVideos[i].videoId == this.currVid.videoId) 
+        return i + 1
+    }
+  }
+
+  setVideoListener(): void {
+    this.video.addEventListener('ended', () => {
+      if(this.fromPlaylist) {
+        if(this.autoPlay) {
+          var idx = this.findIndex()
+          if(idx >= this.currentPlaylistVideos.length)
+            location.href = "http://localhost:4200/video/" + this.passVideos[0].videoId
+          else
+            location.href = "http://localhost:4200/video/playlist/" + this.currentPlaylist.playlistId + '/' + this.currentPlaylistVideos[idx].videoId
+        }
+      }
+      else {
+        if(this.autoPlay)
+          location.href = "http://localhost:4200/video/" + this.firstVideo[0].videoId
+      }
+    })
+  }
+
+  setVideoHotkeys(): void {
+    var audio_element = this.video;
+    document.onkeydown = function(event) {
+      switch (event.keyCode) {
+        case 38:
+            event.preventDefault();
+            var audio_vol = (audio_element).volume;
+            if (audio_vol != 1) {
+              try {
+                  var x = audio_vol + 0.02;
+                  audio_element.volume = x;
+                  var a = (((audio_element.closest("mat-video").querySelector("mat-volume-control")
+                  .querySelector("mat-slider").querySelector(".mat-slider-thumb-container"))) as HTMLElement);
+                  var min = (1-x)*100;
+                  var c = "translate(-" + min +"%)";
+                  a.style.transform = c;
+
+                  a.querySelector(".mat-slider-thumb-label-text").innerHTML = x.toString();
+                }
+              catch(err) {
+                  audio_element.volume = 1;
+              }
+            }
+            break;
+        case 40:
+            event.preventDefault();
+            audio_vol = audio_element.volume;
+            if (audio_vol != 0) {
+              try {
+                var x = audio_vol - 0.02;
+                audio_element.volume = x;
+                var a = (((audio_element.closest("mat-video").querySelector("mat-volume-control")
+                .querySelector("mat-slider").querySelector(".mat-slider-thumb-container"))) as HTMLElement);
+                var min = (1 - x) * 100;
+                var c = "translate(-" + min +"%)";
+                a.style.transform = c;
+
+                a.querySelector(".mat-slider-thumb-label-text").innerHTML = x.toString();
+              }
+              catch(err) {
+                  audio_element.volume = 0;
+              }
+              
+            }
+            break;
+          case 74:
+            event.preventDefault();
+            audio_element.currentTime -= 10;
+            break;
+          case 75:
+            event.preventDefault();
+            audio_element.paused == false ? audio_element.pause() : audio_element.play();
+            break;
+          case 76:
+            event.preventDefault();
+            audio_element.currentTime += 10;
+            break;
+      }
+    }
+  }
+
+  removeVideoListener(): void {
+    this.video.removeEventListener('ended', () => {})
+  }
+
+  loadNext(): void {
+    console.log(this.video.ended)
   }
 
   shortenDesc(): void {
@@ -185,17 +284,27 @@ export class VideoPlayComponent implements OnInit {
     this.description = this.currVid.videoDesc
   }
 
-  setObserver(): void {
-    this.observer = new IntersectionObserver( (entry) => {
+  setVideoObserver(): void {
+    this.videoObserver = new IntersectionObserver( (entry) => {
       if(entry[0].isIntersecting) {
         setTimeout( ()=> {
           this.fetchNewSide()
-          this.fetchNewComments()
         }, 1500)
       }
     })
 
-    this.observer.observe(document.querySelector('.footer'))
+    this.videoObserver.observe(document.querySelector('.side-container-footer'))
+  }
+
+  setObserver(): void {
+    this.commentObserver = new IntersectionObserver( (entry) => {
+      if(entry[0].isIntersecting) {
+        setTimeout( ()=> {
+          this.fetchNewComments()
+        }, 1500)
+      }
+    })
+    this.commentObserver.observe(document.querySelector('.footer'))
   }
 
   fetchNewSide(): void {
@@ -255,6 +364,14 @@ export class VideoPlayComponent implements OnInit {
   paintGrey(whichClass): void {
     var container = document.querySelector(whichClass)
     container.classList.remove('clicked')
+  }
+
+  toggleAutoPlay(): void {
+      this.autoPlay = !this.autoPlay
+      if(this.autoPlay)
+        this.setVideoListener()
+      else 
+        this.removeVideoListener()
   }
 
   initiateLike(): void {
@@ -358,19 +475,26 @@ export class VideoPlayComponent implements OnInit {
   processVideos(): void {
     var j = 0;
     for(let i = 0; i < this.videos.length; i++) {
-      if(this.videos[i].videoId > this.id && this.videos[i].category == this.currVid.category) {
-        this.passVideos[j] = this.videos[i];
+      if(this.videos[i].videoId > this.id) {
+        this.passVideos[j] = this.videos[i]
         j++;
       }
     }
 
     for(let i = 0; i < this.videos.length; i++) {
       if(this.videos[i].videoId < this.id && this.videos[i].category == this.currVid.category) {
-        this.passVideos[j] = this.videos[i];
+        this.passVideos[j] = this.videos[i]
         j++;
       }
     }
 
+    for(let i = 0; i < this.videos.length; i++) {
+      if(this.videos[i].videoId != this.currVid.videoId && this.videos[i].category != this.currVid.category) {
+        this.passVideos[j] = this.videos[i]
+        j++;
+      }
+    }
+    
     this.firstVideo[0] = this.passVideos[0]
     this.passVideos.shift()
   }

@@ -15,6 +15,7 @@ const routes: Routes = [
   { path:"main-menu", component: MainPageComponent },
   { path:"trending", component: TrendingPageComponent },
   { path:"video/:id", component: VideoPlayComponent },
+  { path:"video/playlist/:playlistid/:id", component: VideoPlayComponent },
   { path:"playlist/:id", component: PlaylistPageComponent },
   { path:"channel/:id", component: ChannelPageComponent },
   { path:"premium", component: PremiumPageComponent },

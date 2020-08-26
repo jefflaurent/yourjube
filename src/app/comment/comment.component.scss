@@ -2,7 +2,7 @@
 {
     display: flex;
     justify-content: flex-start;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Roboto';
 }
 
 .left
@@ -35,7 +35,7 @@
 
 .name
 {
-    font-weight: 600;
+    font-weight: 500;
     font-size: 13px;
 }
 
@@ -165,7 +165,7 @@
     margin-bottom: 2%;
     font-size: 13px;
     color: blue;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .view.closed

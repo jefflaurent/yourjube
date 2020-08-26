@@ -48,7 +48,7 @@ export class PlaylistVideoService{
       })
     }
 
-    fetchPlaylistVideoById(playlistId: number) {
+    fetchPlaylistVideosById(playlistId: number): any {
       return this.apollo.watchQuery<any>({
         query: gql`
           query playlistVideosById($playlistId: Int!) {
@@ -63,6 +63,7 @@ export class PlaylistVideoService{
               channelEmail,
               time,
               place,
+            }
           }
         `,
         variables: {

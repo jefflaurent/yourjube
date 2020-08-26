@@ -1,6 +1,6 @@
 <div class="container" *ngIf="comment">
-    <div class="left">
-        <img [src]="comment.channelPhotoURL" alt="">
+    <div class="left" *ngIf="posterChannel">
+        <img [src]="posterChannel.photoURL" alt="">
     </div>
     <div class="right" *ngIf="currComment">
         <div class="inner-container">
@@ -8,7 +8,7 @@
                 {{ currComment.channelName }}
             </div>
             <div class="time">
-                1 day ago
+                {{ post }}
             </div>
         </div>
         <div class="middle">
@@ -26,9 +26,9 @@
             </div>
         </div>
         <div class="reply closed" [id]="dummyId">
-            <div class="inner-container" style="margin-top: 10px;">
+            <div class="inner-container" style="margin-top: 10px;" *ngIf="loggedInChannel"> 
                 <div class="comment-left">
-                    <img [src]="user.photoUrl" alt="">
+                    <img [src]="loggedInChannel.photoURL" alt="">
                 </div>
                 <div class="comment-right">
                     <input type="text" placeholder="Add a public reply..." [value]="content" (input)="content = $event.target.value">
