@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { PlaylistVideoService } from '../data-service/playlist-video-service';
+import { PlaylistVideos } from '../model/playlist-video';
 
 @Component({
   selector: 'app-channel-playlist',
@@ -21,11 +23,18 @@ export class ChannelPlaylistComponent implements OnInit {
     visibility: string,
   }
 
-  constructor() { }
+  currPlaylistVideo: PlaylistVideos[] = []
+
+  constructor(private playlistVideoService: PlaylistVideoService) { }
 
   updated: string
 
-  ngOnInit(): void {
+  ngOnInit(): void { 
+    this.playlistVideoService.fetchPlaylistVideosById(this.playlist.playlistId).valueChanges.subscribe( result => {
+      console.log(result)
+      this.currPlaylistVideo = result.data.playlistVideosById
+    })
+
     var date = new Date()
     if(date.getDate() == this.playlist.lastDate && date.getMonth() == this.playlist.lastMonth && date.getFullYear() == this.playlist.lastYear)
       this.updated = 'Last updated today'

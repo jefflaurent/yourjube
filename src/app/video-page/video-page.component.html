@@ -23,7 +23,9 @@
                 {{ video.videoTitle }}
             </div>
             <div class="right">
-                <i class="fa fa-ellipsis-v fa-lg" (click)="toggleModal()"></i>
+                <div class="dots">
+                    <i class="fa fa-ellipsis-v" (click)="toggleModal()"></i>
+                </div>
                 <span class="modal hidden" [id]="dummyId">
                     <span class="modal-container">
                         <div class="flex-start">

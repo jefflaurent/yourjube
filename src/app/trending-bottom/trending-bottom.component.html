@@ -18,4 +18,27 @@
             {{ desc }}
         </div>
     </div>
+    <div class="right-most">
+        <div class="dots" (click)="toggleModal()">
+            <i class="fa fa-ellipsis-v"></i>
+        </div>
+        <div class="video-modal-container hidden" [id]="dummyId">
+            <div class="flex-start">
+                <div class="modal-left">
+                    <i class="fa fa-align-justify"></i>
+                </div>
+                <div class="modal-right">
+                    Add to queue
+                </div>
+            </div>
+            <div class="flex-start" (click)="showPlaylist()">
+                <div class="modal-left">
+                    <i class="fa fa-plus"></i>
+                </div>
+                <div class="modal-right">
+                    Save to playlist
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,3 +1,5 @@
+$ytGrey: rgba(76, 67, 67, 1);
+
 .container
 {
     display: flex;
@@ -30,21 +32,96 @@
         {
             margin-top: .7%;
             font-size: 13px;
-            color: rgba(76, 67, 67, 1);
+            color: $ytGrey;
         }
 
         .mid a
         {
             text-decoration: none;
             font-size: 13px;
-            color: rgba(76, 67, 67, 1);
+            color: $ytGrey;
         }
 
         .bot
         {
             margin-top: 2%;
             font-size: 13px;
-            color: rgba(76, 67, 67, 1);
+            color: $ytGrey;
+        }
+    }
+
+    .right-most
+    {
+        position: relative;
+
+        .dots
+        {
+            color: $ytGrey;
+            opacity: 0;
+            transition: 0.5s;
+        }
+
+        .dots:hover
+        {
+            cursor: pointer;
+        }
+
+        .video-modal-container
+        {
+            position: absolute;
+            background-color: white;
+            font-family: 'Roboto';
+            font-size: .9em;
+            width: 4500%;
+            padding-top: 150%;
+            padding-bottom: 150%;
+            right: 100%;
+            top: 0;
+
+            .flex-start
+            {
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                height: 40px;
+                width: 100%;
+
+                .modal-left
+                {
+                    display: flex;
+                    justify-content: center;
+                    width: 30%;
+                }
+
+                .modal-right
+                {
+                    display: flex;
+                    justify-content: flex-start;
+                    width: 70%;
+                }
+            }
+
+            .flex-start:hover
+            {
+                cursor: pointer;
+                background-color: lightgrey;
+            }
+        }
+
+        .video-modal-container.hidden
+        {
+            display: none;
+        }
+    }
+}
+
+.container:hover
+{
+    .right-most
+    {
+        .dots
+        {
+            opacity: 1;
         }
     }
 }

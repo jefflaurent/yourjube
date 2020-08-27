@@ -2,9 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { PlaylistService } from '../data-service/playlist-data'; 
 import { PlaylistVideoService } from '../data-service/playlist-video-service';
 import { PlaylistVideos } from '../model/playlist-video';
+import { VideoService } from '../data-service/video-service';
 import { Videos } from '../model/video';
-import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
 
 @Component({
   selector: 'app-playlist-choice',
@@ -14,22 +13,22 @@ import gql from 'graphql-tag';
 export class PlaylistChoiceComponent implements OnInit {
 
   @Input('play') playlist: {
-    playlistId: BigInteger 
+    playlistId: number 
     playlistName: string
     playlistThumbnail: string
     playlistDescription: string
     channelEmail: string
-    lastDate: BigInteger
-    lastMonth: BigInteger
-    lastYear: BigInteger
-    videoCount: BigInteger
-    views: BigInteger
+    lastDate: number
+    lastMonth: number
+    lastYear: number
+    videoCount: number
+    views: number
     visibility: string
   }
 
   playlistVideo: PlaylistVideos
   playlistVideos: PlaylistVideos[] = []
-  video: Videos[] = []
+  video: Videos
   myId: string
   user: any
   empty: any = " "
@@ -37,18 +36,25 @@ export class PlaylistChoiceComponent implements OnInit {
   videoId: any
   videoPlace: any
 
-  constructor(private data: PlaylistService, private apollo: Apollo, private playlistData: PlaylistVideoService) {  }
+  constructor(private data: PlaylistService, private playlistData: PlaylistVideoService, private videoService: VideoService) {  }
 
   ngOnInit(): void {
     this.user = JSON.parse(localStorage.getItem('users'))
     this.myId = "myId" + this.playlist.playlistId
-    this.data.currentVideo.subscribe( videoId => this.videoId = videoId)
-    this.playlistData.fetchPlaylistVideos(this.user.email).valueChanges.subscribe( playlistVideos => {
-      this.playlistVideos = playlistVideos.data.playlistVideos
-      this.getVideoPlace()
-      this.validateVideo()
+    
+    this.data.currentVideo.subscribe( videoId => {
+      this.videoId = parseInt(videoId.toString())
+      
+      this.videoService.findVideo(this.videoId).valueChanges.subscribe( result => {
+        this.video = result.data.findVideo[0]
+      })
+
+      this.playlistData.fetchPlaylistVideos(this.user.email).valueChanges.subscribe( playlistVideos => {
+        this.playlistVideos = playlistVideos.data.playlistVideos
+        this.getVideoPlace()
+        this.validateVideo()
+      })
     })
-    this.findVideo()
   }
 
   paintBlue(): void {
@@ -63,9 +69,9 @@ export class PlaylistChoiceComponent implements OnInit {
 
   addVideo(): void{
     var date
-    this.data.addVideoCount(this.playlist.playlistId)
     date = new Date()
-    this.playlistData.addPlaylistVideo(this.playlist.playlistId, this.video[0], date.getTime(), this.videoPlace)
+    this.data.addVideoCount(this.playlist.playlistId)
+    this.playlistData.addPlaylistVideo(this.playlist.playlistId, this.video, date.getTime(), this.videoPlace)
   }
 
   removeVideo(): void {
@@ -85,15 +91,8 @@ export class PlaylistChoiceComponent implements OnInit {
     this.playlistVideo = null
 
     if(this.playlistVideos) {
-
-      for(let i = 0; i < this.playlistVideos.length; i ++) {
-
-        if(parseInt(this.playlistVideos[i].playlistId.toString()) == parseInt(this.playlist.playlistId.toString()) &&
-        this.playlistVideos[i].videoId == this.videoId) {
-          this.playlistVideo = this.playlistVideos[i];
-          break;
-        }
-      }
+      this.playlistVideo = this.playlistVideos.find(p => p.playlistId == ((this.playlist.playlistId as unknown) as number) 
+      && p.videoId == this.videoId)
   
       if(this.playlistVideo == null) {
         this.clicked = false
@@ -105,38 +104,5 @@ export class PlaylistChoiceComponent implements OnInit {
     else {
       this.clicked = false
     }
-  }
-
-  findVideo(): void {
-    this.apollo.watchQuery<any>({
-      query: gql`
-        query getVideo($videoId: ID!){
-          findVideo(videoId: $videoId){
-            videoId,
-            videoTitle,
-            videoDesc,
-            videoURL,
-            videoThumbnail,
-            uploadDay,
-            uploadMonth,
-            uploadYear,
-            views,
-            likes,
-            dislikes,
-            visibility,
-            viewer,
-            category,
-            channelName,
-            channelPhotoURL,
-            channelEmail,
-          }
-        }
-      `,
-      variables: {
-        videoId: this.videoId
-      }
-    }).valueChanges.subscribe( result => {
-      this.video = result.data.findVideo
-    })
   }
 }

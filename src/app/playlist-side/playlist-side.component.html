@@ -6,20 +6,31 @@
             </div>
         </div>
         <div class="left">
-            <a [routerLink]="['/video', playlistVideo.videoId]">
+            <a [routerLink]="['/video/playlist', playlistVideo.playlistId, playlistVideo.videoId]">
                 <img [src]="playlistVideo.videoThumbnail" alt="">
             </a>
         </div>
         <div class="right">
             <div class="top">
-                <a [routerLink]="['/video', playlistVideo.videoId]">
+                <a [routerLink]="['/video/playlist', playlistVideo.playlistId, playlistVideo.videoId]">
                     {{ playlistVideo.videoName }}
                 </a>
             </div>
             <div class="bottom">
-                <div class="channel">
-                    {{ playlistVideo.channelName }}
+                <div class="channel" *ngIf="posterChannel">
+                    <a [routerLink]="['/channel', posterChannel.id]">
+                        {{ playlistVideo.channelName }}
+                    </a>
                 </div>
+                <div class="views" *ngIf="video">
+                    {{ views }} views
+                </div>
+                <div class="post">
+                    <span>&#8226;</span> {{ post }}
+                </div>
+            </div>
+            <div *ngIf="video" class="desc">
+                {{ description }}
             </div>
         </div>
         <div class="right-most" (click)="toggleModal()">
@@ -37,7 +48,7 @@
                             Add to queue
                         </div>
                     </div>
-                    <div class="flex-start" (click)="addPlaylist()">
+                    <div class="flex-start" (click)="showPlaylist()">
                         <div class="modal-left">
                             <i class="fa fa-plus"></i>
                         </div>

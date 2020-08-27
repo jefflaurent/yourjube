@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { UserService } from '../data-service/user-service';
+import { PlaylistService } from '../data-service/playlist-data'
+import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
 
 @Component({
   selector: 'app-trending-bottom',
@@ -37,8 +39,9 @@ export class TrendingBottomComponent implements OnInit {
   desc: string = ''
   views: string = ''
   channel: any
+  dummyId: string
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private playlistService: PlaylistService, private status: PlaylistModalInfo) {}
 
   ngOnInit(): void {
     var user = JSON.parse(localStorage.getItem('users'))
@@ -46,6 +49,7 @@ export class TrendingBottomComponent implements OnInit {
       this.channel = result.data.findChannel[0]
     })
     
+    this.dummyId = 'avid' + this.video.videoId
     this.date = new Date()
     this.day = this.date.getDate()
     this.month = this.date.getMonth()
@@ -78,6 +82,8 @@ export class TrendingBottomComponent implements OnInit {
       if(gap < 604800000) {
         count = gap / 86400000
         count = Math.floor(count)
+        if(count == 0)
+          this.post = 'Today'
         if(count == 1)
           this.post = count + ' day ago'
         else
@@ -132,6 +138,33 @@ export class TrendingBottomComponent implements OnInit {
     }
     else {
       this.views = this.video.views + ''
+    }
+  }
+
+  toggleModal(): void {
+    var query = '#' + this.dummyId
+    var x = document.querySelector(query)
+    x.classList.toggle('hidden')
+  }
+
+  showPlaylist(): void {
+    var y = ((this.video.videoId as unknown) as Uint8Array) 
+    this.toggleModal()
+    this.playlistService.changeVideo(y)
+    this.status.changeStatus(true)
+  }
+
+  addQueue(): void {
+    var arr = []
+    if(localStorage.getItem('queue') != null) {
+      arr = JSON.parse(localStorage.getItem('queue'))
+      arr.push(this.video.videoId)
+      localStorage.setItem('queue', JSON.stringify(arr))
+    }
+    else {
+      arr.push(this.video.videoId)
+      localStorage.setItem('queue', JSON.stringify(arr))
+      arr = JSON.parse(localStorage.getItem('queue'))
     }
   }
 }
