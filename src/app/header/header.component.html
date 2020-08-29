@@ -239,7 +239,23 @@
                 SUBSCRIPTIONS
             </div>
             <div *ngFor="let subscription of mySubscription, let i = index">
-                <app-subscription-choice [subs]="(subscription)"></app-subscription-choice>
+                <app-subscription-choice *ngIf="i < subscriptionLimit" [subs]="(subscription)"></app-subscription-choice>
+            </div>
+            <div *ngIf="showMoreSubs" class="item show-more-subs" (click)="expandSubs()">
+                <div class="item-content-l">
+                    <i class="fa fa-caret-down"></i>
+                </div>
+                <div class="item-content">
+                    Show more
+                </div>
+            </div>
+            <div *ngIf="showLessSubs" class="item show-less-subs hidden" (click)="shrinkSubs()">
+                <div class="item-content-l">
+                    <i class="fa fa-caret-up"></i>
+                </div>
+                <div class="item-content">
+                    Show less
+                </div>
             </div>
         </div>
     

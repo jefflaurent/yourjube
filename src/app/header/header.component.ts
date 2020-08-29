@@ -37,10 +37,13 @@ export class HeaderComponent implements OnInit {
   allSubscriptions: Subscriptions[] = []
   mySubscription: Subscriptions[] = []
   playlistLimit: number
+  subscriptionLimit: number
   restrictMode: boolean = null
   uploadModal: boolean
   showMore: boolean
   showLess: boolean
+  showMoreSubs: boolean
+  showLessSubs: boolean
   searchFocused: boolean
 
   allNotifications: Notifications[] = []
@@ -56,6 +59,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     this.query = ""
     this.playlistLimit = 5
+    this.subscriptionLimit = 5
     this.searchFocused = false
 
     if(localStorage.getItem('users') == null) {
@@ -101,7 +105,7 @@ export class HeaderComponent implements OnInit {
 
     this.data.fetchAllPlaylist().valueChanges.subscribe( playlist => {
       this.playlists = playlist.data.allPlaylists
-      if(this.playlists.length > 3)
+      if(this.playlists.length > 5)
         this.showMore = true
         this.showLess = true
     })
@@ -127,7 +131,6 @@ export class HeaderComponent implements OnInit {
   }
 
   changeTitle($event): void {
-    console.log('receiving')
     this.query = $event
   }
 
@@ -149,6 +152,10 @@ export class HeaderComponent implements OnInit {
         this.mySubscription[j] = this.allSubscriptions[i]
         j++
       }
+    }
+    if(this.mySubscription.length > 5) {
+      this.showMoreSubs = true
+      this.showLessSubs = true 
     }
   }
 
@@ -227,9 +234,7 @@ export class HeaderComponent implements OnInit {
         subscriber: 0,
         isPremium: 'false',
       }
-    }).subscribe( result => {
-      console.log(result)
-    })
+    }).subscribe()
   }
 
   signOut() : void {
@@ -312,6 +317,22 @@ export class HeaderComponent implements OnInit {
     showMore.classList.remove('hidden')
     showLess.classList.add('hidden')
     this.playlistLimit = 5
+  }
+
+  expandSubs(): void { 
+    var showMore = document.querySelector('.show-more-subs')
+    var showLess = document.querySelector('.show-less-subs')
+    showMore.classList.add('hidden')
+    showLess.classList.remove('hidden')
+    this.subscriptionLimit = this.mySubscription.length
+  }
+
+  shrinkSubs(): void {
+    var showMore = document.querySelector('.show-more-subs')
+    var showLess = document.querySelector('.show-less-subs')
+    showMore.classList.remove('hidden')
+    showLess.classList.add('hidden')
+    this.subscriptionLimit = 5
   }
 
   toggleNotif(): void {

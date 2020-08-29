@@ -67,6 +67,7 @@ import { NotificationService } from './data-service/notification-service';
 import { NotificationListComponent } from './notification-list/notification-list.component';
 import { AutoCompleteComponent } from './auto-complete/auto-complete.component';
 import { PlaylistDetailComponent } from './playlist-detail/playlist-detail.component';
+import { QueueVideosComponent } from './queue-videos/queue-videos.component';
 
 
 @NgModule({
@@ -110,6 +111,7 @@ import { PlaylistDetailComponent } from './playlist-detail/playlist-detail.compo
     NotificationListComponent,
     AutoCompleteComponent,
     PlaylistDetailComponent,
+    QueueVideosComponent,
   ],
   imports: [
     HttpModule,

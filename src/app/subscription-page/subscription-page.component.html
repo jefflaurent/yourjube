@@ -26,9 +26,10 @@
             This month
         </div>
         <div class="videos">
-            <div class="video-container" *ngFor="let video of monthVideos">
-                <app-video-page [vid]="(video)"></app-video-page>
+            <div class="video-container month" *ngFor="let video of monthVideos, let i = index">
+                <app-video-page *ngIf="i < videoLimit" [vid]="(video)"></app-video-page>
             </div>
         </div>
+        <div class="footer" style="height: 1px"></div>
     </div>
 </div>

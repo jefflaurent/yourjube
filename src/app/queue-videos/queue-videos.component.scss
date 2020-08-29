@@ -1,0 +1,54 @@
+a
+{
+    text-decoration: none;
+    color: black;
+}
+
+.container
+{
+    display: flex;
+    justify-content: flex-start;
+    padding: 1%;
+
+    .left
+    {
+        display: flex;
+        justify-content: center;
+        width: 30%;
+        
+        a
+        {
+            display: flex;
+            justify-content: center;
+        }
+
+        img
+        {
+            width: 80%;
+        }
+    }
+
+    .right
+    {
+        width: 70%;
+
+        .title
+        {
+            font-weight: 500;
+            font-size: .9em;
+        }
+
+        .poster
+        {
+            margin-top: 1%;
+            color: rgba(76,67,67,1);
+            font-size: .8em;
+        }
+    }
+}
+
+.container:hover
+{
+    cursor: pointer;
+    background-color: lightgrey;
+}

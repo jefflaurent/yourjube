@@ -1,0 +1,19 @@
+<div class="container">
+    <div class="left">
+        <a [routerLink]="['/video', video.videoId]">
+            <img [src]="video.videoThumbnail" alt="">
+        </a>
+    </div>
+    <div class="right" *ngIf="channel">
+        <div class="title">
+            <a [routerLink]="['/video', video.videoId]">
+                {{ video.videoTitle }}
+            </a>
+        </div>  
+        <a [routerLink]="['/channel', channel.id]">
+            <div class="poster">
+                {{ video.channelName }}
+            </div>
+        </a>
+    </div>
+</div>

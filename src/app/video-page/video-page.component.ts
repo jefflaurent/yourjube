@@ -215,4 +215,21 @@ export class VideoPageComponent implements OnInit {
     this.data.changeVideo(this.video.videoId)
     this.status.changeStatus(true)
   }
+
+  addQueue(): void {
+    this.toggleModal()
+    var arr = []
+    if(localStorage.getItem('queue') != null) {
+      arr = JSON.parse(localStorage.getItem('queue'))
+
+      if(arr.find(p => p == this.video.videoId) == null) {
+        arr.push(this.video.videoId)
+        localStorage.setItem('queue', JSON.stringify(arr))
+      }
+    }
+    else {
+      arr.push(this.video.videoId)
+      localStorage.setItem('queue', JSON.stringify(arr))
+    }
+  }
 }

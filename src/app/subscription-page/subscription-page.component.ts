@@ -24,8 +24,11 @@ export class SubscriptionPageComponent implements OnInit {
   user: any
   allChannel: Channel[]
   loggedInChannel: Channel
+  videoLimit: number
+  observer: any
 
   ngOnInit(): void {
+    this.videoLimit = 10
     this.user = JSON.parse(localStorage.getItem('users'))
 
     this.userService.getAllChannel().valueChanges.subscribe( result => {
@@ -42,9 +45,29 @@ export class SubscriptionPageComponent implements OnInit {
           this.filterToday()
           this.filterWeek()
           this.filterMonth()
+          this.setObserver()
         })
       })
     })
+  }
+
+  setObserver(): void {
+    this.observer = new IntersectionObserver( (entry) => {
+      if(entry[0].isIntersecting) {
+        setTimeout( ()=> {
+          var container = document.querySelector('.month')
+          for(let i = 0; i < 5; i++) {
+            if(this.videoLimit < this.monthVideos.length) {
+              var video = document.createElement('app-video-page')
+              video.setAttribute('vid', 'this.monthVideos[this.videoLimit]')
+              container.appendChild(video)
+              this.videoLimit++
+            }
+          }
+        }, 1500)
+      }
+    })
+    this.observer.observe(document.querySelector('.footer'))
   }
 
   filterSubs(): void {

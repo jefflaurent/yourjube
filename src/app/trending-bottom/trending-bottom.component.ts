@@ -155,16 +155,19 @@ export class TrendingBottomComponent implements OnInit {
   }
 
   addQueue(): void {
+    this.toggleModal()
     var arr = []
     if(localStorage.getItem('queue') != null) {
       arr = JSON.parse(localStorage.getItem('queue'))
-      arr.push(this.video.videoId)
-      localStorage.setItem('queue', JSON.stringify(arr))
+
+      if(arr.find(p => p == this.video.videoId) == null) {
+        arr.push(this.video.videoId)
+        localStorage.setItem('queue', JSON.stringify(arr))
+      }
     }
     else {
       arr.push(this.video.videoId)
       localStorage.setItem('queue', JSON.stringify(arr))
-      arr = JSON.parse(localStorage.getItem('queue'))
     }
   }
 }

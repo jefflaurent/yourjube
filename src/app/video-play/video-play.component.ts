@@ -27,9 +27,10 @@ import { Bells } from '../model/bell';
 export class VideoPlayComponent implements OnInit {
 
   video: HTMLVideoElement
-  firstVideo: Videos[] = [];
-  videos: Videos[] = [];
-  passVideos: Videos[] = [];
+  firstVideo: Videos[] = []
+  videos: Videos[] = []
+  passVideos: Videos[] = []
+  queueVideos: Videos[] = []
   currVid: Videos
 
   showComments: Comments[] = [];
@@ -58,6 +59,7 @@ export class VideoPlayComponent implements OnInit {
   isDisliked: boolean
   
   fromPlaylist: boolean
+  fromQueue: boolean
   playlistId: number
   playlistIdTemp: string
 
@@ -87,6 +89,7 @@ export class VideoPlayComponent implements OnInit {
       this.videoLimit = 4
 
       if(this.fromPlaylist) {
+        this.fromQueue = false
         this.playlistId = parseInt(this.playlistIdTemp)
         this.playlistService.fetchAllPlaylist().valueChanges.subscribe( result => {
           this.currentPlaylist = result.data.allPlaylists.find(p => p.playlistId == this.playlistId)
@@ -95,6 +98,9 @@ export class VideoPlayComponent implements OnInit {
         this.playlistVideoService.fetchPlaylistVideosById(this.playlistId).valueChanges.subscribe( result => {
           this.currentPlaylistVideos = result.data.playlistVideosById
         })
+      }
+      else {
+        this.checkQueue()
       }
 
       this.setObserver()
@@ -129,6 +135,10 @@ export class VideoPlayComponent implements OnInit {
       this.videoService.fetchAllVideos().valueChanges.subscribe( result =>  {
         this.videos = result.data.videos
         this.currVid = this.videos.find( v => v.videoId == this.id)
+
+        if(this.fromQueue) {
+          this.getQueueVideos()
+        }
 
         setTimeout( () => {
           this.userService.getAllChannel().valueChanges.subscribe(result => {
@@ -176,11 +186,52 @@ export class VideoPlayComponent implements OnInit {
     })
   }
 
+  checkQueue(): void {
+    if(localStorage.getItem('queue') != null) {
+      var arr = JSON.parse(localStorage.getItem('queue'))
+      if(arr[0] == this.id) {
+        if(arr.length == 1) 
+          this.fromQueue = false
+        else
+          this.fromQueue = true
+        
+        arr.shift()
+        localStorage.setItem('queue', JSON.stringify(arr))
+      }
+      else {
+        this.fromQueue = true
+      }
+    } 
+    else {
+      this.fromQueue = false
+    }
+  }
+
+  getQueueVideos(): void {
+    var arr = JSON.parse(localStorage.getItem('queue'))
+    console.log('queuenya ini ')
+    console.log(arr)
+    for(let i = 0; i < arr.length; i++) {
+      this.queueVideos[i] = this.videos.find(v => v.videoId == arr[i])
+    }
+  }
+
   findIndex(): number {
     for(let i = 0; i < this.currentPlaylistVideos.length; i++) {
       if(this.currentPlaylistVideos[i].videoId == this.currVid.videoId) 
         return i + 1
     }
+  }
+
+  findQueueIndex(): number {
+    var arr = JSON.parse(localStorage.getItem('queue'))
+    console.log('finding ' + this.id + ' on ')
+    console.log(arr)
+    for(let i = 0; i < arr.length; i++) {
+      if(this.id == arr[i]) {
+        return i;
+      }
+    } 
   }
 
   setVideoListener(): void {
@@ -192,6 +243,23 @@ export class VideoPlayComponent implements OnInit {
             location.href = "http://localhost:4200/video/" + this.passVideos[0].videoId
           else
             location.href = "http://localhost:4200/video/playlist/" + this.currentPlaylist.playlistId + '/' + this.currentPlaylistVideos[idx].videoId
+        }
+      }
+      else if(this.fromQueue) {
+        if(this.autoPlay) {
+          var arr = JSON.parse(localStorage.getItem('queue'))
+          var idx = this.findQueueIndex()
+          if(idx == undefined) {
+            location.href = "http://localhost:4200/video/" + this.queueVideos[0].videoId
+          }
+          else if(idx == arr.length) {
+            arr.splice(idx,1)
+            location.href = "http://localhost:4200/video/" + this.passVideos[0].videoId
+          }
+          else {
+            arr.splice(idx,1)
+            location.href = "http://localhost:4200/video/" + this.queueVideos[idx].videoId
+          }
         }
       }
       else {
