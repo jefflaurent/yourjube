@@ -59,7 +59,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     this.query = ""
     this.playlistLimit = 5
-    this.subscriptionLimit = 5
+    this.subscriptionLimit = 10
     this.searchFocused = false
 
     if(localStorage.getItem('users') == null) {
@@ -105,6 +105,7 @@ export class HeaderComponent implements OnInit {
 
     this.data.fetchAllPlaylist().valueChanges.subscribe( playlist => {
       this.playlists = playlist.data.allPlaylists
+      this.sortPlaylist()
       if(this.playlists.length > 5)
         this.showMore = true
         this.showLess = true
@@ -114,6 +115,14 @@ export class HeaderComponent implements OnInit {
     var btnClose = document.querySelector('#toggleClose');
     btnOn.addEventListener('click', this.toggleOn);
     btnClose.addEventListener('click', this.toggleOff);
+  }
+
+  sortSubscription(): void {
+    this.mySubscription.sort((a,b) => a.channelName < b.channelName ? -1 : 1)
+  }
+
+  sortPlaylist(): void {
+    this.playlists.sort((a,b) => a.visibility.length > b.visibility.length ? -1 : 1)
   }
 
   searchRelated(): void {
@@ -153,10 +162,11 @@ export class HeaderComponent implements OnInit {
         j++
       }
     }
-    if(this.mySubscription.length > 5) {
+    if(this.mySubscription.length > 10) {
       this.showMoreSubs = true
       this.showLessSubs = true 
     }
+    this.sortSubscription()
   }
 
   filterBells(): void {
@@ -332,7 +342,7 @@ export class HeaderComponent implements OnInit {
     var showLess = document.querySelector('.show-less-subs')
     showMore.classList.remove('hidden')
     showLess.classList.add('hidden')
-    this.subscriptionLimit = 5
+    this.subscriptionLimit = 10
   }
 
   toggleNotif(): void {

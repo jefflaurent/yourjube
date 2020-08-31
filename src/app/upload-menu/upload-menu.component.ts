@@ -1,13 +1,17 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { HeaderComponent } from '../header/header.component';
 import { AngularFireStorage, AngularFireUploadTask } from 'angularfire2/storage';
-import { Observable, from } from 'rxjs';
-import { finalize } from 'rxjs/operators';
-import { Apollo } from 'apollo-angular';
 import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
-import { UserService } from '../data-service/user-service';
 import { NotificationService } from '../data-service/notification-service';
+import { UserService } from '../data-service/user-service';
+import { PlaylistService } from '../data-service/playlist-data';
+import { PlaylistVideoService } from '../data-service/playlist-video-service'; 
+import { PlaylistVideos } from '../model/playlist-video';
+import { Playlists } from '../model/playlist';
 import { Channel } from '../model/channel';
+import { Videos } from '../model/video';
+import { finalize } from 'rxjs/operators';
+import { Observable, from } from 'rxjs';
+import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 
 @Component({
@@ -16,9 +20,7 @@ import gql from 'graphql-tag';
   styleUrls: ['./upload-menu.component.scss']
 })
 export class UploadMenuComponent implements OnInit {
-
-  @Input() header: HeaderComponent;
-  
+ 
   task: AngularFireUploadTask;
   imgTask: AngularFireUploadTask;
 
@@ -37,6 +39,7 @@ export class UploadMenuComponent implements OnInit {
   audience: string = "";
   visibility: string = "";
   category: string 
+  playlistId: number
   time: Date
   day: any
   month: any
@@ -51,9 +54,13 @@ export class UploadMenuComponent implements OnInit {
   user: any
   modalStatus: any
 
+  allPlaylists: Playlists[] = []
+  myPlaylists: Playlists[] = []
+  playlistVideos: PlaylistVideos[] = []
   loggedInChannel: Channel
+  toPlaylist: boolean
 
-  constructor(private storage: AngularFireStorage, private apollo: Apollo, private modalInfo: PlaylistModalInfo, private userService: UserService, private notificationService: NotificationService) { }
+  constructor(private storage: AngularFireStorage, private apollo: Apollo, private modalInfo: PlaylistModalInfo, private userService: UserService, private notificationService: NotificationService, private playlistService: PlaylistService, private playlistVideoService: PlaylistVideoService) { }
 
   ngOnInit(){
     if(localStorage.getItem('users') != null)
@@ -61,6 +68,11 @@ export class UploadMenuComponent implements OnInit {
     
     this.userService.getAllChannel().valueChanges.subscribe( result => {
       this.loggedInChannel = result.data.channels.find(c => c.email == this.user.email)
+
+      this.playlistService.fetchAllPlaylist().valueChanges.subscribe( result => {
+        this.allPlaylists = result.data.allPlaylists
+        this.filterPlaylists()
+      })
     })
 
     this.modalInfo.modalStatus.subscribe( status => {
@@ -76,6 +88,33 @@ export class UploadMenuComponent implements OnInit {
     })
   }
 
+  filterPlaylists(): void {
+    var j = 0
+    for(let i = 0; i < this.allPlaylists.length; i++) { 
+      if(this.allPlaylists[i].channelEmail == this.loggedInChannel.email) {
+        this.myPlaylists[j] = this.allPlaylists[i]
+        j++
+      }
+    }
+    this.populateSelect()
+  }
+  
+  populateSelect(): void {
+    var playlistDropdown = document.getElementById('playlist-choice')
+
+    var first = document.createElement('option')
+    first.textContent = 'None'
+    first.value = '0'
+    playlistDropdown.appendChild(first)
+
+    for(let i = 0; i < this.myPlaylists.length; i++) {
+      var element = document.createElement('option')
+      element.textContent = this.myPlaylists[i].playlistName
+      element.value = this.myPlaylists[i].playlistId.toString()
+      playlistDropdown.appendChild(element)
+    }
+  }
+
   closeModal(): void {
     this.modalInfo.changeModal(false)
   }
@@ -89,7 +128,9 @@ export class UploadMenuComponent implements OnInit {
     this.yes = document.querySelector('#yes')
     this.no = document.querySelector('#no')
     var x = (<HTMLSelectElement>document.getElementById('vidCategory'))
+    var y = (<HTMLSelectElement>document.getElementById('playlist-choice'))
     this.category = x.options[x.selectedIndex].value;
+    this.playlistId = parseInt(y.options[y.selectedIndex].value)
 
     if(this.private.checked)
       this.visibility = "private"
@@ -102,6 +143,11 @@ export class UploadMenuComponent implements OnInit {
       this.audience = "kids"
     else if(this.no.checked)
       this.audience =  "mature"
+
+    if(this.playlistId == 0)
+      this.toPlaylist = true
+    else
+      this.toPlaylist = false
 
     if(this.titleBox == "" || this.descriptionBox == "" || this.audience == "" || this.visibility == "" || this.downloadURL == null || this.imgDownloadURL == null) {
       alert('All fields must be filled')
@@ -247,6 +293,34 @@ export class UploadMenuComponent implements OnInit {
     }).subscribe( result => {
       var content = (result as any).data.createVideo.channelName + " uploaded: " + (result as any).data.createVideo.videoTitle
       this.addNotification((result as any).data.createVideo.videoId, (result as any).data.createVideo.videoThumbnail, content)
+    
+      if(this.toPlaylist == true) {
+        this.playlistVideoService.fetchPlaylistVideosById(this.playlistId).valueChanges.subscribe( result => {
+          this.playlistVideos = result.data.playlistVideosById
+          var date = new Date()
+          var video: Videos
+          video.channelEmail = ((result as any).data.createVideo.channelEmail)
+          video.category = ((result as any).data.createVideo.category)
+          video.channelName = ((result as any).data.createVideo.channelName)
+          video.channelPhotoURL = ((result as any).data.createVideo.channelPhotoURL)
+          video.dislikes = 0
+          video.likes = 0
+          video.time = ((result as any).data.createVideo.time)
+          video.uploadDay = ((result as any).data.createVideo.uploadDay)
+          video.uploadMonth = ((result as any).data.createVideo.uploadMonth)
+          video.uploadYear = ((result as any).data.createVideo.uploadYear)
+          video.videoDesc = ((result as any).data.createVideo.videoDesc)
+          video.videoId = ((result as any).data.createVideo.videoId)
+          video.videoThumbnail = ((result as any).data.createVideo.videoThumbnail)
+          video.videoTitle = ((result as any).data.createVideo.videoTitle)
+          video.videoURL = ((result as any).data.createVideo.videoURL)
+          video.viewer = ((result as any).data.createVideo.viewer)
+          video.views = 0
+          video.visibility = ((result as any).data.createVideo.visibility)
+
+          this.playlistVideoService.addPlaylistVideo(this.playlistId, video, date.getTime(), this.playlistVideos.length)
+        })
+      }
     })
   }
 

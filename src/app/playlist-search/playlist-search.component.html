@@ -1,25 +1,30 @@
 <div class="container">
-    <div class="left">
-        <!-- <a [routerLink]="['/video', video.videoId]"> -->
-        <img [src]="playlist.playlistThumbnail" alt="">
-        <!-- </a> -->
-        <div class="overlap">
-            <div class="inner-container">
-                <div class="count" style="margin-bottom: 3%;">
-                    {{ playlist.videoCount }}
-                </div>
-                <div class="icon">
-                    <i class="fa fa-align-justify"></i>
+    <div class="left" *ngIf="playlistVideos">
+        <a [routerLink]="['/video/playlist/', playlist.playlistId, playlistVideos[0].videoId]">
+            <img [src]="playlist.playlistThumbnail" alt="">
+            <div class="overlap">
+                <div class="inner-container">
+                    <div class="count" style="margin-bottom: 3%;">
+                        {{ playlist.videoCount }}
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-align-justify"></i>
+                    </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="right">
         <div class="top">
             {{ playlist.playlistName }}
         </div>
         <div class="mid">
-            {{ playlist.playlistDescription }}
+            {{ description }}
+        </div>
+        <div class="mid" *ngIf="posterChannel">
+            <a [routerLink]="['/channel', posterChannel.id]">
+                {{ posterChannel.name}}
+            </a>
         </div>
         <div class="bot">
             <a [routerLink]="['/playlist', playlist.playlistId]">

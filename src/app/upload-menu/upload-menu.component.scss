@@ -102,6 +102,20 @@ hr
     justify-items: center;
 }
 
+.playlist
+{
+    margin-bottom: 3%;
+    
+    .playlist-dropdown
+    {
+
+        select:focus
+        {
+            outline-width: 0;
+        }
+    }
+}
+
 .left
 {
     width: 70%;
