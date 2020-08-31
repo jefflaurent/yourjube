@@ -3,6 +3,7 @@ import { AngularFireStorage, AngularFireUploadTask } from 'angularfire2/storage'
 import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
 import { NotificationService } from '../data-service/notification-service';
 import { UserService } from '../data-service/user-service';
+import { VideoService } from '../data-service/video-service';
 import { PlaylistService } from '../data-service/playlist-data';
 import { PlaylistVideoService } from '../data-service/playlist-video-service'; 
 import { PlaylistVideos } from '../model/playlist-video';
@@ -44,6 +45,7 @@ export class UploadMenuComponent implements OnInit {
   day: any
   month: any
   year: any
+  video: Videos
 
   private: any
   unlisted: any
@@ -60,9 +62,13 @@ export class UploadMenuComponent implements OnInit {
   loggedInChannel: Channel
   toPlaylist: boolean
 
-  constructor(private storage: AngularFireStorage, private apollo: Apollo, private modalInfo: PlaylistModalInfo, private userService: UserService, private notificationService: NotificationService, private playlistService: PlaylistService, private playlistVideoService: PlaylistVideoService) { }
+  constructor(private storage: AngularFireStorage, private apollo: Apollo, private modalInfo: PlaylistModalInfo, private userService: UserService, private notificationService: NotificationService, private playlistService: PlaylistService, private playlistVideoService: PlaylistVideoService, private videoService: VideoService) { }
 
   ngOnInit(){
+    this.videoService.findVideo(19).valueChanges.subscribe( result => {
+      this.video = result.data.findVideo[0]
+    })
+
     if(localStorage.getItem('users') != null)
       this.user = JSON.parse(localStorage.getItem('users'))
     
@@ -145,9 +151,9 @@ export class UploadMenuComponent implements OnInit {
       this.audience =  "mature"
 
     if(this.playlistId == 0)
-      this.toPlaylist = true
-    else
       this.toPlaylist = false
+    else
+      this.toPlaylist = true
 
     if(this.titleBox == "" || this.descriptionBox == "" || this.audience == "" || this.visibility == "" || this.downloadURL == null || this.imgDownloadURL == null) {
       alert('All fields must be filled')
@@ -291,34 +297,37 @@ export class UploadMenuComponent implements OnInit {
         time: date.getTime(),
       }
     }).subscribe( result => {
+      console.log((result as any).data.createVideo.time)
       var content = (result as any).data.createVideo.channelName + " uploaded: " + (result as any).data.createVideo.videoTitle
       this.addNotification((result as any).data.createVideo.videoId, (result as any).data.createVideo.videoThumbnail, content)
-    
+      
+      var time = (result as any).data.createVideo.time
+      var vidId = (result as any).data.createVideo.videoId
       if(this.toPlaylist == true) {
         this.playlistVideoService.fetchPlaylistVideosById(this.playlistId).valueChanges.subscribe( result => {
           this.playlistVideos = result.data.playlistVideosById
           var date = new Date()
-          var video: Videos
-          video.channelEmail = ((result as any).data.createVideo.channelEmail)
-          video.category = ((result as any).data.createVideo.category)
-          video.channelName = ((result as any).data.createVideo.channelName)
-          video.channelPhotoURL = ((result as any).data.createVideo.channelPhotoURL)
-          video.dislikes = 0
-          video.likes = 0
-          video.time = ((result as any).data.createVideo.time)
-          video.uploadDay = ((result as any).data.createVideo.uploadDay)
-          video.uploadMonth = ((result as any).data.createVideo.uploadMonth)
-          video.uploadYear = ((result as any).data.createVideo.uploadYear)
-          video.videoDesc = ((result as any).data.createVideo.videoDesc)
-          video.videoId = ((result as any).data.createVideo.videoId)
-          video.videoThumbnail = ((result as any).data.createVideo.videoThumbnail)
-          video.videoTitle = ((result as any).data.createVideo.videoTitle)
-          video.videoURL = ((result as any).data.createVideo.videoURL)
-          video.viewer = ((result as any).data.createVideo.viewer)
-          video.views = 0
-          video.visibility = ((result as any).data.createVideo.visibility)
+          
+          this.video.channelEmail = this.user.email.toString()
+          this.video.category = this.category
+          this.video.channelName = this.user.name.toString()
+          this.video.channelPhotoURL = this.loggedInChannel.photoURL
+          this.video.dislikes = 0
+          this.video.likes = 0
+          this.video.time = time
+          this.video.uploadDay = this.day
+          this.video.uploadMonth = this.month
+          this.video.uploadYear = this.year
+          this.video.videoDesc = this.descriptionBox
+          this.video.videoId = vidId
+          this.video.videoThumbnail = this.imgDownloadURL.toString()
+          this.video.videoTitle = this.titleBox
+          this.video.videoURL = this.downloadURL.toString()
+          this.video.viewer = this.audience
+          this.video.views = 0
+          this.video.visibility = this.visibility
 
-          this.playlistVideoService.addPlaylistVideo(this.playlistId, video, date.getTime(), this.playlistVideos.length)
+          this.playlistVideoService.addPlaylistVideo(this.playlistId, this.video, date.getTime(), this.playlistVideos.length)
         })
       }
     })

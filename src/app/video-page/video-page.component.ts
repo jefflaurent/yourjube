@@ -61,10 +61,6 @@ export class VideoPageComponent implements OnInit {
     this.userService.getUser(this.video.channelEmail).valueChanges.subscribe( result => {
       this.creator = result.data.findChannel[0]
     })
-    
-    var query = '#' + this.dummyIdVid
-    this.currVid = (document.getElementsByTagName('mat-video')[0] as HTMLVideoElement).querySelector('video')
-    // this.getDuration(this.currVid.duration)
 
     this.processPost()
   }
@@ -79,7 +75,9 @@ export class VideoPageComponent implements OnInit {
       if(gap < 604800000) {
         count = gap / 86400000
         count = Math.floor(count)
-        if(count == 1)
+        if(count == 0)
+          this.post = 'Today'
+        else if(count == 1)
           this.post = count + ' day ago'
         else
           this.post = count + ' days ago'
