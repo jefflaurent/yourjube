@@ -54,6 +54,10 @@ import { ChannelCommunityComponent } from './channel-community/channel-community
 import { CommunityPostComponent } from './community-post/community-post.component';
 import { ChannelStudioComponent } from './channel-studio/channel-studio.component';
 import { StudioVideoComponent } from './studio-video/studio-video.component';
+import { NotificationListComponent } from './notification-list/notification-list.component';
+import { AutoCompleteComponent } from './auto-complete/auto-complete.component';
+import { PlaylistDetailComponent } from './playlist-detail/playlist-detail.component';
+import { QueueVideosComponent } from './queue-videos/queue-videos.component';
 
 
 import { PlaylistService } from './data-service/playlist-data';
@@ -64,11 +68,8 @@ import { CommentService } from './data-service/comment-service';
 import { UserService } from './data-service/user-service';
 import { SubscriptionService } from './data-service/subscription-service';
 import { NotificationService } from './data-service/notification-service';
-import { NotificationListComponent } from './notification-list/notification-list.component';
-import { AutoCompleteComponent } from './auto-complete/auto-complete.component';
-import { PlaylistDetailComponent } from './playlist-detail/playlist-detail.component';
-import { QueueVideosComponent } from './queue-videos/queue-videos.component';
-
+import { PremiumService } from './data-service/premium-service';
+import { PremiumBillingComponent } from './premium-billing/premium-billing.component';
 
 @NgModule({
   declarations: [
@@ -112,6 +113,7 @@ import { QueueVideosComponent } from './queue-videos/queue-videos.component';
     AutoCompleteComponent,
     PlaylistDetailComponent,
     QueueVideosComponent,
+    PremiumBillingComponent,
   ],
   imports: [
     HttpModule,
@@ -150,6 +152,7 @@ import { QueueVideosComponent } from './queue-videos/queue-videos.component';
     SubscriptionService,
     PostService,
     NotificationService,
+    PremiumService,
   ],
   bootstrap: [AppComponent],
 })

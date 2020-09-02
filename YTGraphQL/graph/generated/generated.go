@@ -135,6 +135,8 @@ type ComplexityRoot struct {
 		AddNotification          func(childComplexity int, input *model.NewNotification) int
 		AddPlaylist              func(childComplexity int, input *model.NewPlaylistVideo) int
 		AddPost                  func(childComplexity int, input *model.NewPost) int
+		AddPremium               func(childComplexity int, input *model.NewPremium) int
+		AddPremiumAccount        func(childComplexity int, input *model.NewPremiumAccount) int
 		AddReplyCount            func(childComplexity int, commentID string) int
 		AddSubscription          func(childComplexity int, input *model.NewSubscription) int
 		AddVideoCount            func(childComplexity int, playlistID string) int
@@ -251,6 +253,28 @@ type ComplexityRoot struct {
 		PostID    func(childComplexity int) int
 	}
 
+	Premium struct {
+		ChannelID  func(childComplexity int) int
+		EndDate    func(childComplexity int) int
+		EndMonth   func(childComplexity int) int
+		EndYear    func(childComplexity int) int
+		ID         func(childComplexity int) int
+		StartDate  func(childComplexity int) int
+		StartMonth func(childComplexity int) int
+		StartYear  func(childComplexity int) int
+	}
+
+	PremiumAccount struct {
+		ChannelID  func(childComplexity int) int
+		EndDate    func(childComplexity int) int
+		EndMonth   func(childComplexity int) int
+		EndYear    func(childComplexity int) int
+		ID         func(childComplexity int) int
+		StartDate  func(childComplexity int) int
+		StartMonth func(childComplexity int) int
+		StartYear  func(childComplexity int) int
+	}
+
 	Query struct {
 		AllPlaylists       func(childComplexity int) int
 		Bells              func(childComplexity int) int
@@ -261,6 +285,8 @@ type ComplexityRoot struct {
 		FindCommentLike    func(childComplexity int, channelEmail string, commentID int) int
 		FindDislike        func(childComplexity int, email string, videoID int) int
 		FindLike           func(childComplexity int, email string, videoID int) int
+		FindPremium        func(childComplexity int, channelID int) int
+		FindPremiumAccount func(childComplexity int, channelID int) int
 		FindReply          func(childComplexity int, replyTo int) int
 		FindVideo          func(childComplexity int, videoID string) int
 		FindVideoPlaylist  func(childComplexity int, playlistID int, videoID int) int
@@ -272,6 +298,8 @@ type ComplexityRoot struct {
 		PostDislikes       func(childComplexity int) int
 		PostLikes          func(childComplexity int) int
 		Posts              func(childComplexity int) int
+		PremiumAccounts    func(childComplexity int) int
+		Premiums           func(childComplexity int) int
 		PublicVideos       func(childComplexity int) int
 		SearchChannel      func(childComplexity int, channelName string) int
 		SearchPlaylist     func(childComplexity int, playlistName string) int
@@ -365,8 +393,12 @@ type MutationResolver interface {
 	AddBell(ctx context.Context, input *model.NewBell) (*model.Bell, error)
 	DeleteBell(ctx context.Context, clientID int, channelID int) (bool, error)
 	AddNotification(ctx context.Context, input *model.NewNotification) (*model.Notification, error)
+	AddPremium(ctx context.Context, input *model.NewPremium) (bool, error)
+	AddPremiumAccount(ctx context.Context, input *model.NewPremiumAccount) (bool, error)
 }
 type QueryResolver interface {
+	PremiumAccounts(ctx context.Context) ([]*model.PremiumAccount, error)
+	Premiums(ctx context.Context) ([]*model.Premium, error)
 	Notifications(ctx context.Context) ([]*model.Notification, error)
 	Bells(ctx context.Context) ([]*model.Bell, error)
 	Posts(ctx context.Context) ([]*model.Post, error)
@@ -382,6 +414,8 @@ type QueryResolver interface {
 	Playlists(ctx context.Context, channelEmail string) ([]*model.Playlist, error)
 	PlaylistVideos(ctx context.Context, channelEmail string) ([]*model.PlaylistVideo, error)
 	PlaylistVideosByID(ctx context.Context, playlistID int) ([]*model.PlaylistVideo, error)
+	FindPremiumAccount(ctx context.Context, channelID int) ([]*model.PremiumAccount, error)
+	FindPremium(ctx context.Context, channelID int) ([]*model.Premium, error)
 	FindVideo(ctx context.Context, videoID string) ([]*model.Video, error)
 	FindLike(ctx context.Context, email string, videoID int) ([]*model.Like, error)
 	FindDislike(ctx context.Context, email string, videoID int) ([]*model.Dislike, error)
@@ -913,6 +947,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.AddPost(childComplexity, args["input"].(*model.NewPost)), true
+
+	case "Mutation.addPremium":
+		if e.complexity.Mutation.AddPremium == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addPremium_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddPremium(childComplexity, args["input"].(*model.NewPremium)), true
+
+	case "Mutation.addPremiumAccount":
+		if e.complexity.Mutation.AddPremiumAccount == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addPremiumAccount_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddPremiumAccount(childComplexity, args["input"].(*model.NewPremiumAccount)), true
 
 	case "Mutation.addReplyCount":
 		if e.complexity.Mutation.AddReplyCount == nil {
@@ -1861,6 +1919,118 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PostLike.PostID(childComplexity), true
 
+	case "Premium.channelId":
+		if e.complexity.Premium.ChannelID == nil {
+			break
+		}
+
+		return e.complexity.Premium.ChannelID(childComplexity), true
+
+	case "Premium.endDate":
+		if e.complexity.Premium.EndDate == nil {
+			break
+		}
+
+		return e.complexity.Premium.EndDate(childComplexity), true
+
+	case "Premium.endMonth":
+		if e.complexity.Premium.EndMonth == nil {
+			break
+		}
+
+		return e.complexity.Premium.EndMonth(childComplexity), true
+
+	case "Premium.endYear":
+		if e.complexity.Premium.EndYear == nil {
+			break
+		}
+
+		return e.complexity.Premium.EndYear(childComplexity), true
+
+	case "Premium.id":
+		if e.complexity.Premium.ID == nil {
+			break
+		}
+
+		return e.complexity.Premium.ID(childComplexity), true
+
+	case "Premium.startDate":
+		if e.complexity.Premium.StartDate == nil {
+			break
+		}
+
+		return e.complexity.Premium.StartDate(childComplexity), true
+
+	case "Premium.startMonth":
+		if e.complexity.Premium.StartMonth == nil {
+			break
+		}
+
+		return e.complexity.Premium.StartMonth(childComplexity), true
+
+	case "Premium.startYear":
+		if e.complexity.Premium.StartYear == nil {
+			break
+		}
+
+		return e.complexity.Premium.StartYear(childComplexity), true
+
+	case "PremiumAccount.channelId":
+		if e.complexity.PremiumAccount.ChannelID == nil {
+			break
+		}
+
+		return e.complexity.PremiumAccount.ChannelID(childComplexity), true
+
+	case "PremiumAccount.endDate":
+		if e.complexity.PremiumAccount.EndDate == nil {
+			break
+		}
+
+		return e.complexity.PremiumAccount.EndDate(childComplexity), true
+
+	case "PremiumAccount.endMonth":
+		if e.complexity.PremiumAccount.EndMonth == nil {
+			break
+		}
+
+		return e.complexity.PremiumAccount.EndMonth(childComplexity), true
+
+	case "PremiumAccount.endYear":
+		if e.complexity.PremiumAccount.EndYear == nil {
+			break
+		}
+
+		return e.complexity.PremiumAccount.EndYear(childComplexity), true
+
+	case "PremiumAccount.id":
+		if e.complexity.PremiumAccount.ID == nil {
+			break
+		}
+
+		return e.complexity.PremiumAccount.ID(childComplexity), true
+
+	case "PremiumAccount.startDate":
+		if e.complexity.PremiumAccount.StartDate == nil {
+			break
+		}
+
+		return e.complexity.PremiumAccount.StartDate(childComplexity), true
+
+	case "PremiumAccount.startMonth":
+		if e.complexity.PremiumAccount.StartMonth == nil {
+			break
+		}
+
+		return e.complexity.PremiumAccount.StartMonth(childComplexity), true
+
+	case "PremiumAccount.startYear":
+		if e.complexity.PremiumAccount.StartYear == nil {
+			break
+		}
+
+		return e.complexity.PremiumAccount.StartYear(childComplexity), true
+
 	case "Query.allPlaylists":
 		if e.complexity.Query.AllPlaylists == nil {
 			break
@@ -1953,6 +2123,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.FindLike(childComplexity, args["email"].(string), args["videoId"].(int)), true
+
+	case "Query.findPremium":
+		if e.complexity.Query.FindPremium == nil {
+			break
+		}
+
+		args, err := ec.field_Query_findPremium_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.FindPremium(childComplexity, args["channelId"].(int)), true
+
+	case "Query.findPremiumAccount":
+		if e.complexity.Query.FindPremiumAccount == nil {
+			break
+		}
+
+		args, err := ec.field_Query_findPremiumAccount_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.FindPremiumAccount(childComplexity, args["channelId"].(int)), true
 
 	case "Query.findReply":
 		if e.complexity.Query.FindReply == nil {
@@ -2060,6 +2254,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Posts(childComplexity), true
+
+	case "Query.premiumAccounts":
+		if e.complexity.Query.PremiumAccounts == nil {
+			break
+		}
+
+		return e.complexity.Query.PremiumAccounts(childComplexity), true
+
+	case "Query.premiums":
+		if e.complexity.Query.Premiums == nil {
+			break
+		}
+
+		return e.complexity.Query.Premiums(childComplexity), true
 
 	case "Query.publicVideos":
 		if e.complexity.Query.PublicVideos == nil {
@@ -2472,6 +2680,28 @@ type Notification {
   time: Int!
 }
 
+type PremiumAccount {
+  id: ID!
+  channelId: Int!
+  startDate: Int!
+  startMonth: Int!
+  startYear: Int!
+  endDate: Int!
+  endMonth: Int!
+  endYear: Int!
+}
+
+type Premium {
+  id: ID!
+  channelId: Int!
+  startDate: Int!
+  startMonth: Int!
+  startYear: Int!
+  endDate: Int!
+  endMonth: Int!
+  endYear: Int!
+}
+
 input newVideo {
   videoTitle: String!
   videoDesc: String!
@@ -2621,7 +2851,29 @@ input newNotification {
   time: Int!
 }
 
+input newPremium {
+  channelId: Int!
+  startDate: Int!
+  startMonth: Int!
+  startYear: Int!
+  endDate: Int!
+  endMonth: Int!
+  endYear: Int!
+}
+
+input newPremiumAccount {
+  channelId: Int!
+  startDate: Int!
+  startMonth: Int!
+  startYear: Int!
+  endDate: Int!
+  endMonth: Int!
+  endYear: Int!
+}
+
 type Query {
+  premiumAccounts: [PremiumAccount!]!
+  premiums: [Premium!]!
   notifications: [Notification!]!
   bells: [Bell!]!
   posts: [Post!]!
@@ -2638,6 +2890,8 @@ type Query {
   playlistVideos(channelEmail: String!): [PlaylistVideo!]!
   playlistVideosById(playlistId: Int!): [PlaylistVideo!]!
 
+  findPremiumAccount(channelId: Int!): [PremiumAccount!]!
+  findPremium(channelId: Int!): [Premium!]!
   findVideo(videoId: ID!): [Video!]!
   findLike(email: String!, videoId: Int!): [Like!]!
   findDislike(email: String!, videoId: Int!): [Dislike!]!
@@ -2720,6 +2974,9 @@ type Mutation {
   addBell(input: newBell): Bell!
   deleteBell(clientId: Int!, channelId: Int!): Boolean!
   addNotification(input: newNotification): Notification!
+
+  addPremium(input: newPremium): Boolean!
+  addPremiumAccount(input: newPremiumAccount): Boolean!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -2818,6 +3075,34 @@ func (ec *executionContext) field_Mutation_addPost_args(ctx context.Context, raw
 	var arg0 *model.NewPost
 	if tmp, ok := rawArgs["input"]; ok {
 		arg0, err = ec.unmarshalOnewPost2ᚖGo_graphqlᚋgraphᚋmodelᚐNewPost(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_addPremiumAccount_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.NewPremiumAccount
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOnewPremiumAccount2ᚖGo_graphqlᚋgraphᚋmodelᚐNewPremiumAccount(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_addPremium_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.NewPremium
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOnewPremium2ᚖGo_graphqlᚋgraphᚋmodelᚐNewPremium(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3963,6 +4248,34 @@ func (ec *executionContext) field_Query_findLike_args(ctx context.Context, rawAr
 		}
 	}
 	args["videoId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_findPremiumAccount_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["channelId"]; ok {
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["channelId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_findPremium_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["channelId"]; ok {
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["channelId"] = arg0
 	return args, nil
 }
 
@@ -8718,6 +9031,88 @@ func (ec *executionContext) _Mutation_addNotification(ctx context.Context, field
 	return ec.marshalNNotification2ᚖGo_graphqlᚋgraphᚋmodelᚐNotification(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_addPremium(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_addPremium_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddPremium(rctx, args["input"].(*model.NewPremium))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_addPremiumAccount(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_addPremiumAccount_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddPremiumAccount(rctx, args["input"].(*model.NewPremiumAccount))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Notification_id(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -10112,6 +10507,618 @@ func (ec *executionContext) _PostLike_postId(ctx context.Context, field graphql.
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Premium_id(ctx context.Context, field graphql.CollectedField, obj *model.Premium) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Premium",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Premium_channelId(ctx context.Context, field graphql.CollectedField, obj *model.Premium) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Premium",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Premium_startDate(ctx context.Context, field graphql.CollectedField, obj *model.Premium) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Premium",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Premium_startMonth(ctx context.Context, field graphql.CollectedField, obj *model.Premium) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Premium",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartMonth, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Premium_startYear(ctx context.Context, field graphql.CollectedField, obj *model.Premium) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Premium",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartYear, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Premium_endDate(ctx context.Context, field graphql.CollectedField, obj *model.Premium) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Premium",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Premium_endMonth(ctx context.Context, field graphql.CollectedField, obj *model.Premium) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Premium",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndMonth, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Premium_endYear(ctx context.Context, field graphql.CollectedField, obj *model.Premium) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Premium",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndYear, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PremiumAccount_id(ctx context.Context, field graphql.CollectedField, obj *model.PremiumAccount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PremiumAccount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PremiumAccount_channelId(ctx context.Context, field graphql.CollectedField, obj *model.PremiumAccount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PremiumAccount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PremiumAccount_startDate(ctx context.Context, field graphql.CollectedField, obj *model.PremiumAccount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PremiumAccount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PremiumAccount_startMonth(ctx context.Context, field graphql.CollectedField, obj *model.PremiumAccount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PremiumAccount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartMonth, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PremiumAccount_startYear(ctx context.Context, field graphql.CollectedField, obj *model.PremiumAccount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PremiumAccount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartYear, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PremiumAccount_endDate(ctx context.Context, field graphql.CollectedField, obj *model.PremiumAccount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PremiumAccount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PremiumAccount_endMonth(ctx context.Context, field graphql.CollectedField, obj *model.PremiumAccount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PremiumAccount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndMonth, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PremiumAccount_endYear(ctx context.Context, field graphql.CollectedField, obj *model.PremiumAccount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PremiumAccount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndYear, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_premiumAccounts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().PremiumAccounts(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.PremiumAccount)
+	fc.Result = res
+	return ec.marshalNPremiumAccount2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐPremiumAccountᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_premiums(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Premiums(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Premium)
+	fc.Result = res
+	return ec.marshalNPremium2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐPremiumᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_notifications(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -10648,6 +11655,88 @@ func (ec *executionContext) _Query_playlistVideosById(ctx context.Context, field
 	res := resTmp.([]*model.PlaylistVideo)
 	fc.Result = res
 	return ec.marshalNPlaylistVideo2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐPlaylistVideoᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_findPremiumAccount(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_findPremiumAccount_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().FindPremiumAccount(rctx, args["channelId"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.PremiumAccount)
+	fc.Result = res
+	return ec.marshalNPremiumAccount2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐPremiumAccountᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_findPremium(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_findPremium_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().FindPremium(rctx, args["channelId"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Premium)
+	fc.Result = res
+	return ec.marshalNPremium2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐPremiumᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_findVideo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -13485,6 +14574,114 @@ func (ec *executionContext) unmarshalInputnewPostLike(ctx context.Context, obj i
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputnewPremium(ctx context.Context, obj interface{}) (model.NewPremium, error) {
+	var it model.NewPremium
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "channelId":
+			var err error
+			it.ChannelID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "startDate":
+			var err error
+			it.StartDate, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "startMonth":
+			var err error
+			it.StartMonth, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "startYear":
+			var err error
+			it.StartYear, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "endDate":
+			var err error
+			it.EndDate, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "endMonth":
+			var err error
+			it.EndMonth, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "endYear":
+			var err error
+			it.EndYear, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputnewPremiumAccount(ctx context.Context, obj interface{}) (model.NewPremiumAccount, error) {
+	var it model.NewPremiumAccount
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "channelId":
+			var err error
+			it.ChannelID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "startDate":
+			var err error
+			it.StartDate, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "startMonth":
+			var err error
+			it.StartMonth, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "startYear":
+			var err error
+			it.StartYear, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "endDate":
+			var err error
+			it.EndDate, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "endMonth":
+			var err error
+			it.EndMonth, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "endYear":
+			var err error
+			it.EndYear, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputnewSubscription(ctx context.Context, obj interface{}) (model.NewSubscription, error) {
 	var it model.NewSubscription
 	var asMap = obj.(map[string]interface{})
@@ -14450,6 +15647,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "addPremium":
+			out.Values[i] = ec._Mutation_addPremium(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "addPremiumAccount":
+			out.Values[i] = ec._Mutation_addPremiumAccount(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -14798,6 +16005,130 @@ func (ec *executionContext) _PostLike(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var premiumImplementors = []string{"Premium"}
+
+func (ec *executionContext) _Premium(ctx context.Context, sel ast.SelectionSet, obj *model.Premium) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, premiumImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Premium")
+		case "id":
+			out.Values[i] = ec._Premium_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channelId":
+			out.Values[i] = ec._Premium_channelId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "startDate":
+			out.Values[i] = ec._Premium_startDate(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "startMonth":
+			out.Values[i] = ec._Premium_startMonth(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "startYear":
+			out.Values[i] = ec._Premium_startYear(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "endDate":
+			out.Values[i] = ec._Premium_endDate(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "endMonth":
+			out.Values[i] = ec._Premium_endMonth(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "endYear":
+			out.Values[i] = ec._Premium_endYear(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var premiumAccountImplementors = []string{"PremiumAccount"}
+
+func (ec *executionContext) _PremiumAccount(ctx context.Context, sel ast.SelectionSet, obj *model.PremiumAccount) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, premiumAccountImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PremiumAccount")
+		case "id":
+			out.Values[i] = ec._PremiumAccount_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channelId":
+			out.Values[i] = ec._PremiumAccount_channelId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "startDate":
+			out.Values[i] = ec._PremiumAccount_startDate(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "startMonth":
+			out.Values[i] = ec._PremiumAccount_startMonth(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "startYear":
+			out.Values[i] = ec._PremiumAccount_startYear(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "endDate":
+			out.Values[i] = ec._PremiumAccount_endDate(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "endMonth":
+			out.Values[i] = ec._PremiumAccount_endMonth(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "endYear":
+			out.Values[i] = ec._PremiumAccount_endYear(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var queryImplementors = []string{"Query"}
 
 func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -14813,6 +16144,34 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "premiumAccounts":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_premiumAccounts(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "premiums":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_premiums(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "notifications":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -15018,6 +16377,34 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_playlistVideosById(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "findPremiumAccount":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_findPremiumAccount(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "findPremium":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_findPremium(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -16305,6 +17692,108 @@ func (ec *executionContext) marshalNPostLike2ᚖGo_graphqlᚋgraphᚋmodelᚐPos
 	return ec._PostLike(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNPremium2Go_graphqlᚋgraphᚋmodelᚐPremium(ctx context.Context, sel ast.SelectionSet, v model.Premium) graphql.Marshaler {
+	return ec._Premium(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPremium2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐPremiumᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Premium) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPremium2ᚖGo_graphqlᚋgraphᚋmodelᚐPremium(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNPremium2ᚖGo_graphqlᚋgraphᚋmodelᚐPremium(ctx context.Context, sel ast.SelectionSet, v *model.Premium) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Premium(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNPremiumAccount2Go_graphqlᚋgraphᚋmodelᚐPremiumAccount(ctx context.Context, sel ast.SelectionSet, v model.PremiumAccount) graphql.Marshaler {
+	return ec._PremiumAccount(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPremiumAccount2ᚕᚖGo_graphqlᚋgraphᚋmodelᚐPremiumAccountᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.PremiumAccount) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPremiumAccount2ᚖGo_graphqlᚋgraphᚋmodelᚐPremiumAccount(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNPremiumAccount2ᚖGo_graphqlᚋgraphᚋmodelᚐPremiumAccount(ctx context.Context, sel ast.SelectionSet, v *model.PremiumAccount) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._PremiumAccount(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
 	return graphql.UnmarshalString(v)
 }
@@ -16977,6 +18466,30 @@ func (ec *executionContext) unmarshalOnewPostLike2ᚖGo_graphqlᚋgraphᚋmodel�
 		return nil, nil
 	}
 	res, err := ec.unmarshalOnewPostLike2Go_graphqlᚋgraphᚋmodelᚐNewPostLike(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) unmarshalOnewPremium2Go_graphqlᚋgraphᚋmodelᚐNewPremium(ctx context.Context, v interface{}) (model.NewPremium, error) {
+	return ec.unmarshalInputnewPremium(ctx, v)
+}
+
+func (ec *executionContext) unmarshalOnewPremium2ᚖGo_graphqlᚋgraphᚋmodelᚐNewPremium(ctx context.Context, v interface{}) (*model.NewPremium, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOnewPremium2Go_graphqlᚋgraphᚋmodelᚐNewPremium(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) unmarshalOnewPremiumAccount2Go_graphqlᚋgraphᚋmodelᚐNewPremiumAccount(ctx context.Context, v interface{}) (model.NewPremiumAccount, error) {
+	return ec.unmarshalInputnewPremiumAccount(ctx, v)
+}
+
+func (ec *executionContext) unmarshalOnewPremiumAccount2ᚖGo_graphqlᚋgraphᚋmodelᚐNewPremiumAccount(ctx context.Context, v interface{}) (*model.NewPremiumAccount, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOnewPremiumAccount2Go_graphqlᚋgraphᚋmodelᚐNewPremiumAccount(ctx, v)
 	return &res, err
 }
 

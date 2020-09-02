@@ -266,4 +266,21 @@ export class UserService {
       }]
     }).subscribe()
   }
+
+  changePremium(channelId: number, premium: number): void {
+    this.apollo.mutate({
+      mutation: gql`
+        mutation validPremium($id: ID!, $validPremium: Int!) {
+          validPremium(id: $id, validPremium: $validPremium)
+        }
+      `,
+      variables: { 
+        id: channelId,
+        validPremium: premium
+      },
+      refetchQueries:[{
+        query: this.getAllChannelQuery
+      }]
+    }).subscribe()
+  }
 }

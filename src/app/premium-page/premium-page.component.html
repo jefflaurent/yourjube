@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="!isPremium">
     <div class="inner-container">
         <div class="icon">
             <div class="img">
@@ -11,11 +11,11 @@
         </div>
 
         <div class="billing">
-            <div class="try-it">
+            <div class="try-it" (click)="registerMonth()">
                 MONTHLY
             </div>
 
-            <div class="try-it">
+            <div class="try-it" (click)="registerYear()">
                 ANNUAL
             </div>
         </div>
@@ -24,7 +24,7 @@
             Monthly <span>&#183;</span> IDR 59,000.00/month
         </div>
         <div class="billing-detail" style="margin-top: 2%;">
-            Annual <span>&#183;</span> IDR 650,000.00/month
+            Annual <span>&#183;</span> IDR 650,000.00/year
         </div>
 
         <div class="desc2">
@@ -33,6 +33,39 @@
 
         <div class="desc2" style="margin-top: 2%">
             Recurring billing <span>&#183;</span> Cancel anytime
+        </div>
+    </div>
+</div>
+
+<div class="container" *ngIf="isPremium">
+    <div class="inner-container">
+        <div class="icon">
+            <div class="img">
+                <img src="../../assets/upload/Youtube_Premium.png">
+            </div>
+        </div>
+
+        <div style="font-size: 1.1em; font-weight: 500; margin-top: 2%;">
+            Your Subscription History
+        </div>
+
+        <div class="history-header">
+            <div class="hist-left">
+                Start Date
+            </div>
+            <div class="hist-right">
+                End Date
+            </div>
+        </div>
+
+        <div class="history">
+            <div *ngIf="premiums">
+                <app-premium-billing *ngFor="let premium of premiums" [bill]="premium"></app-premium-billing>
+            </div>
+        </div>
+
+        <div class="ending">
+            Your YouRJube Premium ends on {{ endsIn}}
         </div>
     </div>
 </div>

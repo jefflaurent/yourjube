@@ -66,6 +66,11 @@
                 background-color: blue;
                 box-sizing: border-box;
             }
+
+            .try-it:hover
+            {
+                cursor: pointer;
+            }
         }
 
         .billing-detail
@@ -78,6 +83,49 @@
         {
             font-weight: 200;
             margin-top: 4%;
+        }
+
+        .history-header
+        {
+            margin-top: 4%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            font-weight: 500;
+
+            .hist-left
+            {
+                width: 50%;
+                padding-top: 1%;
+                padding-bottom: 1%;
+                padding-left: 3%;
+                padding-right: 3%;
+                border: 1px solid lightgrey;
+                text-align: center;
+            }
+        
+            .hist-right
+            {
+                width: 50%;
+                padding-top: 1%;
+                padding-bottom: 1%;
+                padding-left: 3%;
+                padding-right: 3%;
+                border: 1px solid lightgrey;
+                text-align: center;
+            }
+        }
+
+        .history 
+        {
+            width: 100%;
+        }
+
+        .ending
+        {
+            margin-top: 2%;
+            font-size: .9em;
+            font-weight: 500;
         }
     }
 }

@@ -8,6 +8,7 @@ import (
 	"Go_graphql/graph/model"
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -1331,6 +1332,70 @@ func (r *mutationResolver) AddNotification(ctx context.Context, input *model.New
 	return &notification, nil
 }
 
+func (r *mutationResolver) AddPremium(ctx context.Context, input *model.NewPremium) (bool, error) {
+	premium := model.Premium{
+		ChannelID:  input.ChannelID,
+		StartDate:  input.StartDate,
+		StartMonth: input.StartMonth,
+		StartYear:  input.StartYear,
+		EndDate:    input.EndDate,
+		EndMonth:   input.EndMonth,
+		EndYear:    input.EndYear,
+	}
+
+	_, err := r.DB.Model(&premium).Insert()
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (r *mutationResolver) AddPremiumAccount(ctx context.Context, input *model.NewPremiumAccount) (bool, error) {
+	premiumAccount := model.PremiumAccount{
+		ChannelID:  input.ChannelID,
+		StartDate:  input.StartDate,
+		StartMonth: input.StartMonth,
+		StartYear:  input.StartYear,
+		EndDate:    input.EndDate,
+		EndMonth:   input.EndMonth,
+		EndYear:    input.EndYear,
+	}
+
+	_, err := r.DB.Model(&premiumAccount).Insert()
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (r *queryResolver) PremiumAccounts(ctx context.Context) ([]*model.PremiumAccount, error) {
+	var premiumAccounts []*model.PremiumAccount
+
+	err := r.DB.Model(&premiumAccounts).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return premiumAccounts, nil
+}
+
+func (r *queryResolver) Premiums(ctx context.Context) ([]*model.Premium, error) {
+	var premiums []*model.Premium
+
+	err := r.DB.Model(&premiums).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return premiums, nil
+}
+
 func (r *queryResolver) Notifications(ctx context.Context) ([]*model.Notification, error) {
 	var notifications []*model.Notification
 
@@ -1510,6 +1575,22 @@ func (r *queryResolver) PlaylistVideosByID(ctx context.Context, playlistID int) 
 	}
 
 	return playlistVideos, nil
+}
+
+func (r *queryResolver) FindPremiumAccount(ctx context.Context, channelID int) ([]*model.PremiumAccount, error) {
+	var premiumAccount []*model.PremiumAccount
+
+	err := r.DB.Model(&premiumAccount).Where("channel_id = ?", channelID).First()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return premiumAccount, nil
+}
+
+func (r *queryResolver) FindPremium(ctx context.Context, channelID int) ([]*model.Premium, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *queryResolver) FindVideo(ctx context.Context, videoID string) ([]*model.Video, error) {

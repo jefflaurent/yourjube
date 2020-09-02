@@ -145,6 +145,28 @@ type PostLike struct {
 	PostID    int    `json:"postId"`
 }
 
+type Premium struct {
+	ID         string `json:"id"`
+	ChannelID  int    `json:"channelId"`
+	StartDate  int    `json:"startDate"`
+	StartMonth int    `json:"startMonth"`
+	StartYear  int    `json:"startYear"`
+	EndDate    int    `json:"endDate"`
+	EndMonth   int    `json:"endMonth"`
+	EndYear    int    `json:"endYear"`
+}
+
+type PremiumAccount struct {
+	ID         string `json:"id"`
+	ChannelID  int    `json:"channelId"`
+	StartDate  int    `json:"startDate"`
+	StartMonth int    `json:"startMonth"`
+	StartYear  int    `json:"startYear"`
+	EndDate    int    `json:"endDate"`
+	EndMonth   int    `json:"endMonth"`
+	EndYear    int    `json:"endYear"`
+}
+
 type Video struct {
 	VideoID         string `json:"videoId"`
 	VideoTitle      string `json:"videoTitle"`
@@ -285,6 +307,26 @@ type NewPostDislike struct {
 type NewPostLike struct {
 	ChannelID int `json:"channelId"`
 	PostID    int `json:"postId"`
+}
+
+type NewPremium struct {
+	ChannelID  int `json:"channelId"`
+	StartDate  int `json:"startDate"`
+	StartMonth int `json:"startMonth"`
+	StartYear  int `json:"startYear"`
+	EndDate    int `json:"endDate"`
+	EndMonth   int `json:"endMonth"`
+	EndYear    int `json:"endYear"`
+}
+
+type NewPremiumAccount struct {
+	ChannelID  int `json:"channelId"`
+	StartDate  int `json:"startDate"`
+	StartMonth int `json:"startMonth"`
+	StartYear  int `json:"startYear"`
+	EndDate    int `json:"endDate"`
+	EndMonth   int `json:"endMonth"`
+	EndYear    int `json:"endYear"`
 }
 
 type NewSubscription struct {

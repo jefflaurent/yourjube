@@ -162,6 +162,28 @@ type Notification {
   time: Int!
 }
 
+type PremiumAccount {
+  id: ID!
+  channelId: Int!
+  startDate: Int!
+  startMonth: Int!
+  startYear: Int!
+  endDate: Int!
+  endMonth: Int!
+  endYear: Int!
+}
+
+type Premium {
+  id: ID!
+  channelId: Int!
+  startDate: Int!
+  startMonth: Int!
+  startYear: Int!
+  endDate: Int!
+  endMonth: Int!
+  endYear: Int!
+}
+
 input newVideo {
   videoTitle: String!
   videoDesc: String!
@@ -311,7 +333,29 @@ input newNotification {
   time: Int!
 }
 
+input newPremium {
+  channelId: Int!
+  startDate: Int!
+  startMonth: Int!
+  startYear: Int!
+  endDate: Int!
+  endMonth: Int!
+  endYear: Int!
+}
+
+input newPremiumAccount {
+  channelId: Int!
+  startDate: Int!
+  startMonth: Int!
+  startYear: Int!
+  endDate: Int!
+  endMonth: Int!
+  endYear: Int!
+}
+
 type Query {
+  premiumAccounts: [PremiumAccount!]!
+  premiums: [Premium!]!
   notifications: [Notification!]!
   bells: [Bell!]!
   posts: [Post!]!
@@ -328,6 +372,8 @@ type Query {
   playlistVideos(channelEmail: String!): [PlaylistVideo!]!
   playlistVideosById(playlistId: Int!): [PlaylistVideo!]!
 
+  findPremiumAccount(channelId: Int!): [PremiumAccount!]!
+  findPremium(channelId: Int!): [Premium!]!
   findVideo(videoId: ID!): [Video!]!
   findLike(email: String!, videoId: Int!): [Like!]!
   findDislike(email: String!, videoId: Int!): [Dislike!]!
@@ -410,4 +456,7 @@ type Mutation {
   addBell(input: newBell): Bell!
   deleteBell(clientId: Int!, channelId: Int!): Boolean!
   addNotification(input: newNotification): Notification!
+
+  addPremium(input: newPremium): Boolean!
+  addPremiumAccount(input: newPremiumAccount): Boolean!
 }
