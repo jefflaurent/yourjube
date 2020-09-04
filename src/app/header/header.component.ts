@@ -193,6 +193,7 @@ export class HeaderComponent implements OnInit {
       if(this.checkBelled(this.allNotifications[i].channelId)) {
         this.myNotifications[j] = this.allNotifications[i]
         j++
+        this.myNotifications.sort((a,b) => a.time > b.time ? -1 : 1)
       }
     }
   }

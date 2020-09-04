@@ -10,6 +10,27 @@
 .container:hover
 {
     background-color: lightgrey;
+
+    .right-most
+    {
+        .dots
+        {
+            opacity: 1;
+        }
+    }
+
+    .before-most
+    {
+        .arr-up
+        {
+            opacity: 1;
+        }
+
+        .arr-down
+        {
+            opacity: 1;
+        }
+    }
 }
 
 .inner-container
@@ -41,7 +62,7 @@
 
 .right
 {
-    width: 80%;
+    width: 75%;
     margin-left: 10px;
     display: flex;
     flex-direction: column;
@@ -116,6 +137,12 @@
 {
     width: 5%;
     color: rgba(76, 67, 67, 1);
+
+    .dots
+    {
+        opacity: 0;
+        transition: 400ms;
+    }
 }
 
 .right-most:hover
@@ -176,4 +203,37 @@ hr
     border: 1px solid lightgrey;
     border-top: none;
     color: rgba(76, 67, 67, 1);
+}
+
+.before-most
+{
+    width: 5%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    .arr-up
+    {
+        opacity: 0;
+        margin-bottom: 10%;
+        color: rgba(76, 67, 67, 1);
+        transition: 400ms;
+    }
+
+    .arr-down
+    {
+        opacity: 0;
+        color: rgba(76, 67, 67, 1);
+        transition: 400ms;
+    }
+
+    .arr-up:hover
+    {
+        cursor: pointer;
+    }
+
+    .arr-down
+    {
+        cursor: pointer;
+    }
 }

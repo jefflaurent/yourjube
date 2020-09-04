@@ -418,3 +418,50 @@
     cursor: pointer;
 }
 
+.settings
+{
+    position: relative;
+
+    .add-modal
+    {
+        position: absolute;
+        background-color: white;
+        width: 900%;
+        padding-top: 20%;
+        padding-bottom: 20%;
+        right: 0;
+        z-index: 70;
+
+        .add-m-fs
+        {
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .add-m-fs-l
+            {
+                width: 40%;
+                display: flex;
+                justify-content: center;
+            }
+
+            .add-m-fs-r
+            {
+                width: 60%;
+                display: flex;
+                justify-content: flex-start;
+            }
+        }
+
+        .add-m-fs:hover
+        {
+            background-color: lightgrey;
+        }
+    }
+
+    .add-modal.hidden
+    {
+        display: none;
+    }
+}

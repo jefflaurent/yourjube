@@ -1,7 +1,6 @@
 import { Apollo } from 'apollo-angular';
 import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatVideoComponent } from 'mat-video/lib/video.component';
 
 import { VideoService } from '../data-service/video-service';
 import { CommentService } from '../data-service/comment-service';
@@ -10,6 +9,7 @@ import { SubscriptionService } from '../data-service/subscription-service';
 import { NotificationService } from '../data-service/notification-service';
 import { PlaylistService } from '../data-service/playlist-data';
 import { PlaylistVideoService } from '../data-service/playlist-video-service';
+import { PlaylistModalInfo } from '../data-service/playlist-modal-service';
 
 import { PlaylistVideos } from '../model/playlist-video';
 import { Subscriptions } from '../model/subscription';
@@ -73,7 +73,7 @@ export class VideoPlayComponent implements OnInit {
   description: any
   autoPlay: boolean
 
-  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private videoService: VideoService, private commentService: CommentService, private userService: UserService, private subscriptionService: SubscriptionService, private notificationService: NotificationService, private playlistService: PlaylistService, private playlistVideoService: PlaylistVideoService) { }
+  constructor(private apollo: Apollo, private activatedRoute: ActivatedRoute, private videoService: VideoService, private commentService: CommentService, private userService: UserService, private subscriptionService: SubscriptionService, private notificationService: NotificationService, private playlistService: PlaylistService, private playlistVideoService: PlaylistVideoService, private playlistModalInfo: PlaylistModalInfo) { }
 
   ngOnInit(): void {
     
@@ -189,7 +189,9 @@ export class VideoPlayComponent implements OnInit {
   checkQueue(): void {
     if(localStorage.getItem('queue') != null) {
       var arr = JSON.parse(localStorage.getItem('queue'))
-      if(arr[0] == this.id) {
+      if(arr.length == 0)
+        this.fromQueue = false
+      else if(arr[0] == this.id) {
         if(arr.length == 1) 
           this.fromQueue = false
         else
@@ -198,9 +200,8 @@ export class VideoPlayComponent implements OnInit {
         arr.shift()
         localStorage.setItem('queue', JSON.stringify(arr))
       }
-      else {
+      else
         this.fromQueue = true
-      }
     } 
     else {
       this.fromQueue = false
@@ -592,5 +593,34 @@ export class VideoPlayComponent implements OnInit {
 
   removeBell(): void {
     this.notificationService.deleteBell(this.loggedInChannel.id, this.channel.id)
+  }
+
+  showAddModal(): void {
+    var x = document.querySelector('.add-modal')
+    x.classList.toggle('hidden')
+  }
+
+  addQueue(): void {
+    this.showAddModal()
+    var arr = []
+    if(localStorage.getItem('queue') != null) {
+      arr = JSON.parse(localStorage.getItem('queue'))
+
+      if(arr.find(p => p == this.currVid.videoId) == null) {
+        arr.push(this.currVid.videoId)
+        localStorage.setItem('queue', JSON.stringify(arr))
+      }
+    }
+    else {
+      arr.push(this.currVid.videoId)
+      localStorage.setItem('queue', JSON.stringify(arr))
+    }
+  }
+
+  showPlaylist(): void {
+    this.showAddModal()
+    var y = ((this.currVid.videoId as unknown) as Uint8Array) 
+    this.playlistService.changeVideo(y)
+    this.playlistModalInfo.changeStatus(true)
   }
 }

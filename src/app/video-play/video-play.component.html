@@ -39,7 +39,25 @@
                     </div>
                 </div>
                 <div class="settings icon">
-                    <i class="fa fa-ellipsis-h fa-2x"></i>
+                    <i class="fa fa-ellipsis-h fa-2x" (click)="showAddModal()"></i>
+                    <div class="add-modal hidden">
+                        <div class="add-m-fs" (click)="addQueue()">
+                            <div class="add-m-fs-l">
+                                <i class="fa fa-align-justify fa-lg"></i>
+                            </div>
+                            <div class="add-m-fs-r">
+                                Add to Queue
+                            </div>
+                        </div>
+                        <div class="add-m-fs" (click)="showPlaylist()">
+                            <div class="add-m-fs-l">
+                                <i class="fa fa-plus fa-lg"></i>
+                            </div>
+                            <div class="add-m-fs-r">
+                                Save to Playlist
+                            </div>
+                        </div>
+                    </div>
                 </div>                
             </div>
         </div>

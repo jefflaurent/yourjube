@@ -47,7 +47,6 @@ export class PlaylistSideComponent implements OnInit {
     })
 
     this.videoService.findVideo(this.playlistVideo.videoId).valueChanges.subscribe( result => {
-      console.log(result)
       this.video = result.data.findVideo[0]
       this.processViews()
       this.processDesc()
@@ -205,5 +204,33 @@ export class PlaylistSideComponent implements OnInit {
     var tempTop = this.playlistVideos[this.playlistVideos.length-1].place
     this.playlistVideoService.updatePlace(this.playlistVideo.playlistId, this.playlistVideos[this.playlistVideos.length-1].videoId, this.playlistVideo.place)
     this.playlistVideoService.updatePlace(this.playlistVideo.playlistId, this.playlistVideo.videoId, tempTop)
+  }
+
+  findCurrIndex(videoId: number): number {
+    for(let i = 0; i < this.playlistVideos.length; i++) {
+      if(videoId == this.playlistVideos[i].videoId)
+        return i
+    }
+  }
+
+  swapToTop(): void {
+    var index = this.findCurrIndex(this.playlistVideo.videoId)
+    var temp = this.playlistVideo.place
+    if(this.playlistVideo.place != 1) {
+      this.playlistVideoService.updatePlace(this.playlistVideo.playlistId, this.playlistVideo.videoId, index)
+      this.playlistVideoService.updatePlace(this.playlistVideo.playlistId, this.playlistVideos[index-1].videoId, temp)
+
+      if(index == 1)
+        this.playlistService.updateThumbnail(this.playlistVideo.playlistId, this.playlistVideo.videoThumbnail)
+    }
+  }
+
+  swapToBot(): void {
+    var index = this.findCurrIndex(this.playlistVideo.videoId)
+    var temp = this.playlistVideo.place
+    if(this.playlistVideo.place != this.playlistVideos.length) {
+      this.playlistVideoService.updatePlace(this.playlistVideo.playlistId, this.playlistVideo.videoId, index+2)
+      this.playlistVideoService.updatePlace(this.playlistVideo.playlistId, this.playlistVideos[index+1].videoId, temp)
+    }
   }
 }
