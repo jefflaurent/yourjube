@@ -514,4 +514,11 @@ hr
         cursor: pointer;
         background-color: #f5f5f0;
     }
+
+    .sp-cp:hover
+    {
+        cursor: pointer;
+        background-color: green;
+        color: red;
+    }
 }
